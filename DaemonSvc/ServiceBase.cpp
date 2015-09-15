@@ -284,12 +284,12 @@ BOOL CServiceBase::StopService()
     return Tools::StopService(m_lpServiceName, 30 * 1000, &m_Status);
 }
 
-BOOL CServiceBase::ReportRunningStatus(const DWORD nWaitHint)
+BOOL CServiceBase::ReportRunning(const DWORD nWaitHint)
 {
     return ReportStatus(SERVICE_RUNNING, nWaitHint);
 }
 
-BOOL CServiceBase::ReportStopPendingStatus(const DWORD nWaitHint)
+BOOL CServiceBase::ReportStopPending(const DWORD nWaitHint)
 {
     return ReportStatus(SERVICE_STOP_PENDING, nWaitHint);
 }

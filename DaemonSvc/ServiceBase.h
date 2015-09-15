@@ -29,12 +29,12 @@ public:
     ~CServiceBase(void);
 
 public:
-    BOOL ReportRunningStatus(const DWORD nWaitHint)
+    BOOL ReportRunning(const DWORD nWaitHint)
     {
         return ReportStatus(SERVICE_RUNNING, nWaitHint);
     }
 
-    BOOL ReportStopPendingStatus(const DWORD nWaitHint)
+    BOOL ReportStopPending(const DWORD nWaitHint)
     {
         return ReportStatus(SERVICE_STOP_PENDING, nWaitHint);
     }
@@ -91,15 +91,15 @@ private:
     const tstring m_ServiceName;
     const tstring m_DisplayName;
     const RunAction m_RunAction;
-    DWORD m_DesiredAccess;
-    DWORD m_ServiceType;
-    DWORD m_StartType;
-    DWORD m_ErrorControl;
-    tchar* m_LoadOrderGroup;
-    DWORD m_TagId;
-    tchar* m_Dependencies;
-    tchar* m_ServiceStartName;
-    tchar* m_Password;
+    const DWORD m_DesiredAccess;
+    const DWORD m_ServiceType;
+    const DWORD m_StartType;
+    const DWORD m_ErrorControl;
+    const tchar* m_LoadOrderGroup;
+    const DWORD m_TagId;
+    const tchar* m_Dependencies;
+    const tchar* m_ServiceStartName;
+    const tchar* m_Password;
 
     DWORD m_ControlsAccepted;//可接受的控制指令
     bool m_bInServiceMode;//是否是以服务方式运行的。当非服务方式运行时，ReportStatus不作为

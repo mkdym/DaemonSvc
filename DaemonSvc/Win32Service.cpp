@@ -1,4 +1,5 @@
 #include <boost/algorithm/string.hpp>
+#include "ServiceUtil.h"
 #include "Win32Service.h"
 
 
@@ -63,18 +64,22 @@ bool CWin32Service::Go()
                 if (boost::algorithm::iequals(arg2, TEXT("install")))
                 {
                     //install service
+                    bReturn = ServiceUtil::InstallService(m_info);
                 }
                 else if (boost::algorithm::iequals(arg2, TEXT("remove")))
                 {
                     //remove service
+                    bReturn = ServiceUtil::RemoveService(m_info.name);
                 }
                 else if (boost::algorithm::iequals(arg2, TEXT("start")))
                 {
                     //start service
+                    bReturn = ServiceUtil::StartupService(m_info.name, WAIT_HINT_MS);
                 }
                 else if (boost::algorithm::iequals(arg2, TEXT("stop")))
                 {
                     //stop service
+                    bReturn = ServiceUtil::StopService(m_info.name, WAIT_HINT_MS);
                 }
                 else
                 {

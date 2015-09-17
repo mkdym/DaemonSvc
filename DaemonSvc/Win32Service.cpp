@@ -13,9 +13,10 @@ CWin32Service::~CWin32Service(void)
 {
 }
 
-bool CWin32Service::Init(const ServiceInfo& info)
+bool CWin32Service::Init(const ServiceInfo& info, const bool service_mode)
 {
     m_info = info;
+    m_service_mode = service_mode;
 
     m_args.clear();
     int arg_count = 0;
@@ -46,7 +47,7 @@ bool CWin32Service::Go()
 {
     bool bReturn = false;
 
-    if (m_info.service_mode)
+    if (m_service_mode)
     {
         switch (m_args.size())
         {
@@ -119,7 +120,7 @@ bool CWin32Service::Go()
 
 bool CWin32Service::ReportStatus(const DWORD nState, const DWORD nWaitHintMS)
 {
-    if (!m_info.service_mode)
+    if (!m_service_mode)
     {
         InfoLogA("ReportStatus: %d", nState);
         return true;

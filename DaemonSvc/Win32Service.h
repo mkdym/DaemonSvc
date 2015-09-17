@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
+#include "ServiceInfo.h"
 #include "logger.h"
 
 
@@ -21,45 +22,7 @@ public:
     }
 
 public:
-    struct ServiceInfo
-    {
-        tstring name;
-        tstring display_name;
-        DWORD desired_access;
-        DWORD service_type;
-        DWORD start_type;
-        DWORD error_control;
-        tstring load_order_group;
-
-        bool use_tagid;
-        DWORD tag_id;
-
-        tstring dependencies;
-
-        bool use_startname;
-        tstring start_name;
-
-        bool use_password;
-        tstring password;
-
-        DWORD accepted_controls;
-        bool service_mode;//是否是以服务方式运行的。当非服务方式运行时，ReportStatus不作为
-
-        ServiceInfo()
-            : desired_access(SERVICE_ALL_ACCESS)
-            , service_type(SERVICE_WIN32_OWN_PROCESS | SERVICE_INTERACTIVE_PROCESS)
-            , start_type(SERVICE_AUTO_START)
-            , error_control(SERVICE_ERROR_NORMAL)
-            , use_tagid(false)
-            , use_startname(false)
-            , use_password(false)
-            , accepted_controls(SERVICE_ACCEPT_STOP)
-            , service_mode(true)
-        {
-        }
-    };
-
-    bool Init(const ServiceInfo& info);
+    bool Init(const ServiceInfo& info, const bool service_mode);
 
     typedef std::vector<tstring> ArgList;
     typedef boost::function<bool(const ArgList&)> StartingFunction;//ArgList是应用程序的命令行参数
@@ -99,6 +62,7 @@ private:
     ArgList m_args;
     StartingFunction m_startingfunc;
     ServiceFunction m_runningfunc;
+    bool m_service_mode;//是否是以服务方式运行的。当非服务方式运行时，ReportStatus不作为
 
     typedef std::map<DWORD, ServiceFunction> CtrlFuncs;
     CtrlFuncs m_ctrlfuncs;

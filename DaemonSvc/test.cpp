@@ -22,11 +22,10 @@ void stopping(const CWin32Service::ArgList& args)
 
 int main(int argc, char * argv[])
 {
-    CWin32Service::ServiceInfo si;
+    ServiceInfo si;
     si.name = TEXT("TestService");
     si.display_name = si.name;
-    si.service_mode = false;
-    if (!CWin32Service::GetInstanceRef().Init(si))
+    if (!CWin32Service::GetInstanceRef().Init(si, false))
     {
         ErrorLogA("init service fail");
     }

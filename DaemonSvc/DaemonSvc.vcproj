@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ServiceInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Win32Service.h"
 				>
 			</File>

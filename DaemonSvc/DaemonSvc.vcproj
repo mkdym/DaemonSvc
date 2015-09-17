@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="DaemonSvc"
-	ProjectGUID="{5805E4BE-D857-40B3-B25B-3C7C588644E9}"
+	ProjectGUID="{61685909-E76A-4ADF-96FD-BDA086C89B87}"
 	RootNamespace="DaemonSvc"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
@@ -171,7 +171,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ServiceBase.cpp"
+				RelativePath=".\logger.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\test.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Win32Service.cpp"
 				>
 			</File>
 		</Filter>
@@ -181,11 +189,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\header.h"
+				RelativePath=".\common.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ServiceBase.h"
+				RelativePath=".\logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Win32Service.h"
 				>
 			</File>
 		</Filter>

@@ -11,16 +11,19 @@ bool starting(const CWin32Service::ArgList& args)
     g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (NULL == g_exit_event)
     {
+        ErrorLogA("CreateEvent fail, error code: %d", GetLastError());
         return false;
     }
     else
     {
+        InfoLogA("starting OK");
         return true;
     }
 }
 
 void running(const CWin32Service::ArgList& args)
 {
+    InfoLogA("running begin");
     const DWORD r = WaitForSingleObject(g_exit_event, INFINITE);
     switch (r)
     {
@@ -32,10 +35,12 @@ void running(const CWin32Service::ArgList& args)
         ErrorLogA("WaitForSingleObject fail, return code: %d, error code: %d", r, GetLastError());
         break;
     }
+    InfoLogA("running end");
 }
 
 void stopping(const CWin32Service::ArgList& args)
 {
+    InfoLogA("stoppping");
     SetEvent(g_exit_event);
 }
 
@@ -61,6 +66,8 @@ int main(int argc, char * argv[])
     }
     else
     {
+        InfoLogA("init service success");
+
         CWin32Service::GetInstanceRef().RegisterStartingFunction(starting);
         CWin32Service::GetInstanceRef().RegisterRunningFunction(running);
         CWin32Service::GetInstanceRef().RegisterControlCodeFunction(SERVICE_CONTROL_STOP, stopping);

@@ -100,7 +100,7 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
             break;
         }
 
-        if(SERVICE_RUNNING != status.dwCurrentState)
+        if (SERVICE_RUNNING != status.dwCurrentState)
         {
             DebugLog(TEXT("service[%s] is not running. status: %d"), name.c_str(), status.dwCurrentState);
             break;
@@ -253,7 +253,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
             break;
         }
 
-        if(SERVICE_RUNNING == status.dwCurrentState)
+        if (SERVICE_RUNNING == status.dwCurrentState)
         {
             bReturn = true;
             break;
@@ -288,7 +288,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
                 break;
             }
 
-            if(SERVICE_START_PENDING == status.dwCurrentState)
+            if (SERVICE_START_PENDING == status.dwCurrentState)
             {
                 DebugLogA("SERVICE_START_PENDING");
                 Sleep(interval_ms);
@@ -299,7 +299,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
             }
         }
 
-        if(SERVICE_RUNNING != status.dwCurrentState)
+        if (SERVICE_RUNNING != status.dwCurrentState)
         {
             ErrorLog(TEXT("start service[%s] fail, current status: %d"), name.c_str(), status.dwCurrentState);
             break;
@@ -354,7 +354,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
             break;
         }
 
-        if(SERVICE_STOPPED == status.dwCurrentState)
+        if (SERVICE_STOPPED == status.dwCurrentState)
         {
             bReturn = true;
             break;
@@ -380,7 +380,12 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
                 break;
             }
 
-            if(SERVICE_STOP_PENDING == status.dwCurrentState)
+            if (SERVICE_RUNNING == status.dwCurrentState)
+            {
+                DebugLogA("SERVICE_RUNNING");
+                Sleep(interval_ms);
+            }
+            else if (SERVICE_STOP_PENDING == status.dwCurrentState)
             {
                 DebugLogA("SERVICE_STOP_PENDING");
                 Sleep(interval_ms);
@@ -391,7 +396,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
             }
         }
 
-        if(SERVICE_STOPPED != status.dwCurrentState)
+        if (SERVICE_STOPPED != status.dwCurrentState)
         {
             ErrorLog(TEXT("stop service[%s] fail, current status: %d"), name.c_str(), status.dwCurrentState);
             break;

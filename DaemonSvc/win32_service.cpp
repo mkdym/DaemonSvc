@@ -1,8 +1,8 @@
 #include <Windows.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
-#include "ServiceUtil.h"
-#include "Win32Service.h"
+#include "service_util.h"
+#include "win32_service.h"
 
 
 static const DWORD WAIT_HINT_MS = 30 * 1000;

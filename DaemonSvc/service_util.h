@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include "common.h"
-#include "ServiceInfo.h"
+#include "service_info.h"
 
 
 namespace ServiceUtil

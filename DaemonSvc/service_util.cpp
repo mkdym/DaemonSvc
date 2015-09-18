@@ -3,7 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
 #include "logger.h"
-#include "ServiceUtil.h"
+#include "service_util.h"
 
 
 #pragma comment(lib, "Advapi32.lib")

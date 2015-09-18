@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
-#include "ServiceInfo.h"
+#include "service_info.h"
 #include "logger.h"
 
 

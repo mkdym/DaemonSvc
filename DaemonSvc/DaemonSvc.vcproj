@@ -175,7 +175,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ServiceUtil.cpp"
+				RelativePath=".\service_util.cpp"
 				>
 			</File>
 			<File
@@ -183,7 +183,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Win32Service.cpp"
+				RelativePath=".\win32_service.cpp"
 				>
 			</File>
 		</Filter>
@@ -201,15 +201,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ServiceInfo.h"
+				RelativePath=".\service_info.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ServiceUtil.h"
+				RelativePath=".\service_util.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Win32Service.h"
+				RelativePath=".\win32_service.h"
 				>
 			</File>
 		</Filter>

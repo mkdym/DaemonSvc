@@ -1,21 +1,42 @@
+#include <Windows.h>
 #include "Win32Service.h"
 
 
 
+HANDLE g_exit_event = NULL;
+
+
 bool starting(const CWin32Service::ArgList& args)
 {
-    system("pause");
-    return true;
+    g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (NULL == g_exit_event)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 void running(const CWin32Service::ArgList& args)
 {
-    system("pause");
+    const DWORD r = WaitForSingleObject(g_exit_event, INFINITE);
+    switch (r)
+    {
+    case WAIT_OBJECT_0:
+        InfoLogA("got exit notify");
+        break;
+
+    default:
+        ErrorLogA("WaitForSingleObject fail, return code: %d, error code: %d", r, GetLastError());
+        break;
+    }
 }
 
 void stopping(const CWin32Service::ArgList& args)
 {
-    system("pause");
+    SetEvent(g_exit_event);
 }
 
 
@@ -45,6 +66,11 @@ int main(int argc, char * argv[])
         }
     }
 
+    if (g_exit_event)
+    {
+        CloseHandle(g_exit_event);
+        g_exit_event = NULL;
+    }
     system("pause");
     return 0;
 }

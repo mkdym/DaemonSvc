@@ -9,7 +9,7 @@ namespace ServiceUtil
     bool IsServiceExist(const tstring& name);
     bool IsServiceRunning(const tstring& name);
 
-    bool InstallService(const ServiceInfo& info);
+    bool InstallService(const ServiceInfo& info, const tstring& binary_file);
     bool RemoveService(const tstring& name);
 
     bool StartupService(const tstring& name, const DWORD timeout_ms);

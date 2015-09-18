@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
 #include "ServiceUtil.h"
@@ -65,7 +66,18 @@ bool CWin32Service::Go()
                 if (boost::algorithm::iequals(arg2, TEXT("install")))
                 {
                     //install service
-                    bReturn = ServiceUtil::InstallService(m_info);
+                    const DWORD len = 1024;
+                    tchar szBinaryFile[len] = {0};
+                    if (!GetModuleFileName(NULL, szBinaryFile, len - 1))
+                    {
+                        ErrorLogA("GetModuleFileName fail, error code: %d", GetLastError());
+                        bReturn = false;
+                    }
+                    else
+                    {
+                        szBinaryFile[len - 1] = TEXT('\0');
+                        bReturn = ServiceUtil::InstallService(m_info, szBinaryFile);
+                    }
                 }
                 else if (boost::algorithm::iequals(arg2, TEXT("remove")))
                 {

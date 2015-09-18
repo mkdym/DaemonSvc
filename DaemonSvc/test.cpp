@@ -48,7 +48,14 @@ int main(int argc, char * argv[])
     ServiceInfo si;
     si.name = TEXT("TestService");
     si.display_name = si.name;
-    if (!CWin32Service::GetInstanceRef().Init(si, false))
+
+#if defined(DEBUG) || defined(_DEBUG)
+    const bool service_mode = false;
+#else
+    const bool service_mode = true;
+#endif
+
+    if (!CWin32Service::GetInstanceRef().Init(si, service_mode))
     {
         ErrorLogA("init service fail");
     }
@@ -73,7 +80,11 @@ int main(int argc, char * argv[])
         CloseHandle(g_exit_event);
         g_exit_event = NULL;
     }
+
+#if defined(DEBUG) || defined(_DEBUG)
     system("pause");
+#endif
+
     return 0;
 }
 

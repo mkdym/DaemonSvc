@@ -136,10 +136,10 @@ public:
 #define _tsplitpath_s _splitpath_s
 #endif
 #endif
-                const DWORD FNAME_LEN = 1000;
-                tchar name_buf[FNAME_LEN] = {0};
-                _tsplitpath_s(binary_file, NULL, 0, NULL, 0, name_buf, FNAME_LEN, NULL, 0);
-                name_buf[FNAME_LEN - 1] = TEXT('\0');
+                const DWORD name_buf_size = 1000;
+                tchar name_buf[name_buf_size] = {0};
+                _tsplitpath_s(binary_file, NULL, 0, NULL, 0, name_buf, name_buf_size, NULL, 0);
+                name_buf[name_buf_size - 1] = TEXT('\0');
 
                 file_path += name_buf;
             }

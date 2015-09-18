@@ -3,6 +3,7 @@
 #include <time.h>
 #include <Windows.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/smart_ptr.hpp>
 #include "logger.h"
 
 
@@ -10,7 +11,6 @@
 static std::wstring ANSIStr2WideStr(const std::string& s)
 {
     std::wstring ws;
-    wchar_t *wide_str_buf = NULL;
 
     do 
     {
@@ -20,20 +20,19 @@ static std::wstring ANSIStr2WideStr(const std::string& s)
             break;
         }
 
-        wide_str_buf = new wchar_t[need_wchars + 1];
-        memset(wide_str_buf, 0, (need_wchars + 1) * sizeof(wchar_t));
-        MultiByteToWideChar(CP_ACP, 0, s.c_str(), s.size(), wide_str_buf, need_wchars);
+        boost::scoped_array<wchar_t> wide_str_buf(new wchar_t[need_wchars + 1]);
+        memset(wide_str_buf.get(), 0, (need_wchars + 1) * sizeof(wchar_t));
+        MultiByteToWideChar(CP_ACP, 0, s.c_str(), s.size(), wide_str_buf.get(), need_wchars);
         if (0 == need_wchars)
         {
             DWORD e = GetLastError();
             break;
         }
         wide_str_buf[need_wchars] = L'\0';
-        ws = wide_str_buf;
+        ws = wide_str_buf.get();
 
     } while (false);
 
-    delete wide_str_buf;
     return ws;
 }
 

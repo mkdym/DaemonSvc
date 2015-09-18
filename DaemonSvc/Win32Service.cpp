@@ -1,4 +1,5 @@
 #include <boost/algorithm/string.hpp>
+#include <boost/smart_ptr.hpp>
 #include "ServiceUtil.h"
 #include "Win32Service.h"
 
@@ -89,7 +90,7 @@ bool CWin32Service::Go()
             }
             break;
 
-        default://nothing todo
+        default:
             ErrorLogA("invalid argc: %d", m_args.size());
             bReturn = false;
             break;
@@ -211,13 +212,13 @@ void CWin32Service::ServiceCtrl(const DWORD code)
 bool CWin32Service::StartDispatcher()
 {
     const DWORD name_len = m_info.name.size();
-    tchar *name = new tchar[name_len + 1];
-    memset(name, 0, sizeof(tchar) * (name_len + 1));
-    memcpy_s(name, sizeof(tchar) * name_len, m_info.name.c_str(), sizeof(tchar) * name_len);
+    boost::scoped_array<tchar> name(new tchar[name_len + 1]);
+    memset(name.get(), 0, sizeof(tchar) * (name_len + 1));
+    memcpy_s(name.get(), sizeof(tchar) * name_len, m_info.name.c_str(), sizeof(tchar) * name_len);
 
     const SERVICE_TABLE_ENTRY dispatchTable[] =
     {
-        {name, (LPSERVICE_MAIN_FUNCTION)s_ServiceMain},
+        {name.get(), (LPSERVICE_MAIN_FUNCTION)s_ServiceMain},
         {0, 0}
     };
 
@@ -227,7 +228,6 @@ bool CWin32Service::StartDispatcher()
         ErrorLogA("StartServiceCtrlDispatcher fail, error code: %d", GetLastError());
     }
 
-    delete [] name;
     return (TRUE == bReturn);
 }
 

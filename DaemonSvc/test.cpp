@@ -43,6 +43,8 @@ void stopping(const CWin32Service::ArgList& args)
 
 int main(int argc, char * argv[])
 {
+    InitLog(TEXT("C:\\"));
+
     ServiceInfo si;
     si.name = TEXT("TestService");
     si.display_name = si.name;

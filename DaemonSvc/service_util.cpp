@@ -10,24 +10,94 @@
 
 
 
+class CScopedSCHandle
+{
+public:
+    CScopedSCHandle(const DWORD access)
+        : m_h(NULL)
+    {
+        m_h = OpenSCManager(NULL, NULL, access);
+        if (NULL == m_h)
+        {
+            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
+        }
+    }
+
+    ~CScopedSCHandle()
+    {
+        if (m_h)
+        {
+            CloseServiceHandle(m_h);
+            m_h = NULL;
+        }
+    }
+
+public:
+    SC_HANDLE& get()
+    {
+        return m_h;
+    }
+
+private:
+    SC_HANDLE m_h;
+};
+
+
+class CScopedSvcHandle
+{
+public:
+    CScopedSvcHandle(const tstring& name, const DWORD sc_access, const DWORD svc_access)
+        : m_sc(sc_access)
+        , m_h(NULL)
+    {
+        if (m_sc.get())
+        {
+            m_h = OpenService(m_sc.get(), name.c_str(), svc_access);
+            if (NULL == m_h)
+            {
+                ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
+            }
+        }
+    }
+
+    ~CScopedSvcHandle()
+    {
+        if (m_h)
+        {
+            CloseServiceHandle(m_h);
+            m_h = NULL;
+        }
+    }
+
+public:
+    SC_HANDLE& get()
+    {
+        return m_h;
+    }
+
+private:
+    CScopedSCHandle m_sc;
+    SC_HANDLE m_h;
+};
+
+
+
 bool ServiceUtil::IsServiceExist(const tstring& name)
 {
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_READ);
-        if (NULL == hSCMgr)
+        CScopedSCHandle hSCMgr(GENERIC_READ);
+        if (NULL == hSCMgr.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
             break;
         }
 
         DWORD dwNeededBytes = 0;
         DWORD dwReturnedSerivice = 0;
         DWORD dwResumeEntryNum = 0;
-        if (EnumServicesStatusEx(hSCMgr, SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
+        if (EnumServicesStatusEx(hSCMgr.get(), SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
             SERVICE_STATE_ALL, NULL, 0, &dwNeededBytes, &dwReturnedSerivice, &dwResumeEntryNum, NULL))
         {
             ErrorLogA("EnumServicesStatusEx success while query needed bytes");
@@ -42,7 +112,7 @@ bool ServiceUtil::IsServiceExist(const tstring& name)
 
         boost::scoped_array<BYTE> lpData(new BYTE[dwNeededBytes]);
         memset(lpData.get(), 0, dwNeededBytes);
-        if (!EnumServicesStatusEx(hSCMgr, SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
+        if (!EnumServicesStatusEx(hSCMgr.get(), SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
             SERVICE_STATE_ALL, lpData.get(), dwNeededBytes, &dwNeededBytes, &dwReturnedSerivice, &dwResumeEntryNum, NULL))
         {
             ErrorLogA("EnumServicesStatusEx fail, error code: %d", GetLastError());
@@ -62,12 +132,6 @@ bool ServiceUtil::IsServiceExist(const tstring& name)
 
     } while (false);
 
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-
     return bReturn;
 }
 
@@ -75,26 +139,16 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
 {
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
-    SC_HANDLE hService = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_READ);
-        if (NULL == hSCMgr)
+        CScopedSvcHandle hService(name, GENERIC_READ, GENERIC_READ);
+        if (NULL == hService.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
-            break;
-        }
-
-        hService = OpenService(hSCMgr, name.c_str(), GENERIC_READ);
-        if (NULL == hService)
-        {
-            ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
         }
 
         SERVICE_STATUS status = {0};
-        if (!QueryServiceStatus(hService, &status))
+        if (!QueryServiceStatus(hService.get(), &status))
         {
             ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
@@ -110,17 +164,6 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
 
     } while (false);
 
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-    if (hService)
-    {
-        CloseServiceHandle(hService);
-        hService = NULL;
-    }
-
     return bReturn;
 }
 
@@ -128,19 +171,16 @@ bool ServiceUtil::InstallService(const ServiceInfo& info, const tstring& binary_
 {
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
-    SC_HANDLE hService = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_ALL);
-        if (NULL == hSCMgr)
+        CScopedSCHandle hSCMgr(GENERIC_ALL);
+        if (NULL == hSCMgr.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
             break;
         }
 
         DWORD tag_id = info.tag_id;
-        hService = CreateService(hSCMgr,
+        SC_HANDLE hService = CreateService(hSCMgr.get(),
             info.name.c_str(),
             info.display_name.c_str(),
             SERVICE_ALL_ACCESS,
@@ -159,20 +199,12 @@ bool ServiceUtil::InstallService(const ServiceInfo& info, const tstring& binary_
             break;
         }
 
+        CloseServiceHandle(hService);
+        hService = NULL;
+
         bReturn = true;
 
     } while (false);
-
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-    if (hService)
-    {
-        CloseServiceHandle(hService);
-        hService = NULL;
-    }
 
     return bReturn;
 }
@@ -181,25 +213,15 @@ bool ServiceUtil::RemoveService(const tstring& name)
 {
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
-    SC_HANDLE hService = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_ALL);
-        if (NULL == hSCMgr)
+        CScopedSvcHandle hService(name, GENERIC_ALL, SERVICE_ALL_ACCESS);
+        if (NULL == hService.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
             break;
         }
 
-        hService = OpenService(hSCMgr, name.c_str(), SERVICE_ALL_ACCESS);
-        if (NULL == hService)
-        {
-            ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
-            break;
-        }
-
-        if (!DeleteService(hService))
+        if (!DeleteService(hService.get()))
         {
             ErrorLog(TEXT("DeleteService[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
@@ -209,17 +231,6 @@ bool ServiceUtil::RemoveService(const tstring& name)
 
     } while (false);
 
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-    if (hService)
-    {
-        CloseServiceHandle(hService);
-        hService = NULL;
-    }
-
     return bReturn;
 }
 
@@ -228,26 +239,16 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
     DebugLog(TEXT("StartupService[%s] begin"), name.c_str());
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
-    SC_HANDLE hService = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_ALL);
-        if (NULL == hSCMgr)
+        CScopedSvcHandle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
+        if (NULL == hService.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
-            break;
-        }
-
-        hService = OpenService(hSCMgr, name.c_str(), GENERIC_EXECUTE | GENERIC_READ);
-        if (NULL == hService)
-        {
-            ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
         }
 
         SERVICE_STATUS status = {0};
-        if (!QueryServiceStatus(hService, &status))
+        if (!QueryServiceStatus(hService.get(), &status))
         {
             ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
@@ -261,7 +262,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
 
         if (SERVICE_START_PENDING != status.dwCurrentState)
         {
-            if (!StartService(hService, 0, NULL))
+            if (!StartService(hService.get(), 0, NULL))
             {
                 const DWORD e = GetLastError();
                 if (ERROR_SERVICE_ALREADY_RUNNING == e)
@@ -282,7 +283,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
         DWORD total_count = total_ms / interval_ms;
         for (DWORD index = 0; index != total_count; ++index)
         {
-            if (!QueryServiceStatus(hService, &status))
+            if (!QueryServiceStatus(hService.get(), &status))
             {
                 ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
                 break;
@@ -309,17 +310,6 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
 
     } while (false);
 
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-    if (hService)
-    {
-        CloseServiceHandle(hService);
-        hService = NULL;
-    }
-
     DebugLog(TEXT("StartupService[%s] end"), name.c_str());
     return bReturn;
 }
@@ -329,26 +319,16 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
     DebugLog(TEXT("StopService[%s] begin"), name.c_str());
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
-    SC_HANDLE hService = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_ALL);
-        if (NULL == hSCMgr)
+        CScopedSvcHandle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
+        if (NULL == hService.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
-            break;
-        }
-
-        hService = OpenService(hSCMgr, name.c_str(), GENERIC_EXECUTE | GENERIC_READ);
-        if (NULL == hService)
-        {
-            ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
         }
 
         SERVICE_STATUS status = {0};
-        if (!QueryServiceStatus(hService, &status))
+        if (!QueryServiceStatus(hService.get(), &status))
         {
             ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
@@ -362,7 +342,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
 
         if (SERVICE_STOP_PENDING != status.dwCurrentState)
         {
-            if (!ControlService(hService, SERVICE_CONTROL_STOP, &status))
+            if (!ControlService(hService.get(), SERVICE_CONTROL_STOP, &status))
             {
                 ErrorLog(TEXT("ControlService[%s] for stopping fail, error code: %d"), name.c_str(), GetLastError());
                 break;
@@ -374,7 +354,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
         DWORD total_count = total_ms / interval_ms;
         for (DWORD index = 0; index != total_count; ++index)
         {
-            if (!QueryServiceStatus(hService, &status))
+            if (!QueryServiceStatus(hService.get(), &status))
             {
                 ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
                 break;
@@ -406,17 +386,6 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
 
     } while (false);
 
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-    if (hService)
-    {
-        CloseServiceHandle(hService);
-        hService = NULL;
-    }
-
     DebugLog(TEXT("StopService[%s] end"), name.c_str());
     return bReturn;
 }
@@ -425,26 +394,16 @@ bool ServiceUtil::SendControlCode2Service(const tstring& name, const DWORD code)
 {
     bool bReturn = false;
 
-    SC_HANDLE hSCMgr = NULL;
-    SC_HANDLE hService = NULL;
     do 
     {
-        hSCMgr = OpenSCManager(NULL, NULL, GENERIC_WRITE | GENERIC_EXECUTE);
-        if (NULL == hSCMgr)
+        CScopedSvcHandle hService(name, GENERIC_WRITE | GENERIC_EXECUTE, GENERIC_WRITE | GENERIC_EXECUTE);
+        if (NULL == hService.get())
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
-            break;
-        }
-
-        hService = OpenService(hSCMgr, name.c_str(), GENERIC_WRITE | GENERIC_EXECUTE);
-        if (NULL == hService)
-        {
-            ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
             break;
         }
 
         SERVICE_STATUS status = {0};
-        if (!ControlService(hService, code, &status))
+        if (!ControlService(hService.get(), code, &status))
         {
             ErrorLog(TEXT("ControlService[%s:%d] fail, error code: %d"), name.c_str(), code, GetLastError());
             break;
@@ -453,17 +412,6 @@ bool ServiceUtil::SendControlCode2Service(const tstring& name, const DWORD code)
         bReturn = true;
 
     } while (false);
-
-    if (hSCMgr)
-    {
-        CloseServiceHandle(hSCMgr);
-        hSCMgr = NULL;
-    }
-    if (hService)
-    {
-        CloseServiceHandle(hService);
-        hService = NULL;
-    }
 
     return bReturn;
 }

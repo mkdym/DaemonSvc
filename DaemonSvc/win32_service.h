@@ -22,7 +22,22 @@ public:
     }
 
 public:
-    bool Init(const ServiceInfo& info, const bool service_mode);
+    enum S_MODE
+    {
+        S_DISPATCH,
+        S_INSTALL,
+        S_REMOVE,
+        S_START,
+        S_STOP,
+        S_NORMAL_APP,
+    };
+
+    bool Init(const ServiceInfo& info);
+
+    S_MODE GetMode()
+    {
+        return m_mode;
+    }
 
     typedef std::vector<tstring> ArgList;
     typedef boost::function<bool(const ArgList&)> StartingFunction;//ArgList是应用程序的命令行参数
@@ -51,7 +66,7 @@ private:
     void ServiceCtrl(const DWORD code);
     bool StartDispatcher();
     BOOL ConsoleCtrl(DWORD code);
-    void ServiceMain(int argc, tchar * argv[]);
+    bool ServiceMain();
 
     static void WINAPI s_ServiceCtrl(DWORD code);
     static BOOL WINAPI s_ConsoleCtrl(DWORD code);
@@ -62,7 +77,8 @@ private:
     ArgList m_args;
     StartingFunction m_startingfunc;
     ServiceFunction m_runningfunc;
-    bool m_service_mode;//是否是以服务方式运行的。当非服务方式运行时，ReportStatus不作为
+
+    S_MODE m_mode;
 
     typedef std::map<DWORD, ServiceFunction> CtrlFuncs;
     CtrlFuncs m_ctrlfuncs;

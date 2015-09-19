@@ -51,16 +51,10 @@ int main(int argc, char * argv[])
     InitLog(TEXT("C:\\"));
 
     ServiceInfo si;
-    si.name = TEXT("TestService");
+    si.name = TEXT("DaemonSvc");
     si.display_name = si.name;
 
-#if defined(DEBUG) || defined(_DEBUG)
-    const bool service_mode = false;
-#else
-    const bool service_mode = true;
-#endif
-
-    if (!CWin32Service::GetInstanceRef().Init(si, service_mode))
+    if (!CWin32Service::GetInstanceRef().Init(si))
     {
         ErrorLogA("init service fail");
     }
@@ -89,7 +83,10 @@ int main(int argc, char * argv[])
     }
 
 #if defined(DEBUG) || defined(_DEBUG)
-    system("pause");
+    if (CWin32Service::GetInstanceRef().GetMode() != CWin32Service::S_DISPATCH)
+    {
+        system("pause");
+    }
 #endif
 
     return 0;

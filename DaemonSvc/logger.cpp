@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr.hpp>
+#include "self_path.h"
 #include "logger.h"
 
 
@@ -91,7 +92,8 @@ public:
 
 private:
     __LogFile()
-        : m_hFile(INVALID_HANDLE_VALUE)
+        : m_has_init(false)
+        , m_hFile(INVALID_HANDLE_VALUE)
     {
     }
 
@@ -107,52 +109,40 @@ private:
 public:
     bool init(const tstring& dir)
     {
-        if (m_hFile != INVALID_HANDLE_VALUE)
+        if (m_has_init)
         {
-            CloseHandle(m_hFile);
-            m_hFile = INVALID_HANDLE_VALUE;
+            return true;
         }
-
-        bool bReturn = false;
-
-        do 
+        else
         {
-            tstring file_path = dir + TEXT("\\");
+            std::cout << "init log" << std::endl;
+            bool bReturn = false;
 
+            do 
             {
-                const DWORD len = 4096;
-                tchar binary_file[len] = {0};
-                if (!GetModuleFileName(NULL, binary_file, len - 1))
+                if (!CSelfPath::GetInstanceRef().init())
                 {
-                    const DWORD e = GetLastError();
-                    std::cout << "GetModuleBaseName fail, error code: " << e << std::endl;
+                    std::cout << "can not get self path" << std::endl;
                     break;
                 }
 
-#if !defined(_tsplitpath_s)
-#if defined(_UNICODE) || defined(UNICODE)
-#define _tsplitpath_s _wsplitpath_s
-#else
-#define _tsplitpath_s _splitpath_s
-#endif
-#endif
-                const DWORD name_buf_size = 1000;
-                tchar name_buf[name_buf_size] = {0};
-                _tsplitpath_s(binary_file, NULL, 0, NULL, 0, name_buf, name_buf_size, NULL, 0);
-                name_buf[name_buf_size - 1] = TEXT('\0');
-
-                file_path += name_buf;
-            }
-
-            {
-                time_t raw_time = time(NULL);
-                tm timeinfo = {0};
-                const int e = localtime_s(&timeinfo, &raw_time);
-                if (e)
+                if (m_hFile != INVALID_HANDLE_VALUE)
                 {
-                    std::cout << "localtime_s fail, return code: " << e << std::endl;
-                    break;
+                    CloseHandle(m_hFile);
+                    m_hFile = INVALID_HANDLE_VALUE;
                 }
+
+                tstring file_path = dir + TEXT("\\") + CSelfPath::GetInstanceRef().get_name();
+
+                {
+                    time_t raw_time = time(NULL);
+                    tm timeinfo = {0};
+                    const int e = localtime_s(&timeinfo, &raw_time);
+                    if (e)
+                    {
+                        std::cout << "localtime_s fail, return code: " << e << std::endl;
+                        break;
+                    }
 
 #if !defined(_tcsftime)
 #if defined(_UNICODE) || defined(UNICODE)
@@ -162,63 +152,74 @@ public:
 #endif
 #endif
 
-                const int time_buffer_size = 100;
-                tchar time_buffer[time_buffer_size] = {0};
-                _tcsftime(time_buffer, time_buffer_size, TEXT("%Y%m%d%H%M%S"), &timeinfo);
-                time_buffer[time_buffer_size - 1] = TEXT('\0');
+                    const int time_buffer_size = 100;
+                    tchar time_buffer[time_buffer_size] = {0};
+                    _tcsftime(time_buffer, time_buffer_size, TEXT("%Y%m%d%H%M%S"), &timeinfo);
+                    time_buffer[time_buffer_size - 1] = TEXT('\0');
 
-                file_path += TEXT(".");
-                file_path += time_buffer;
-            }
+                    file_path += TEXT(".");
+                    file_path += time_buffer;
+                }
 
-            {
-                const DWORD pid = GetCurrentProcessId();
-                file_path += TEXT(".");
-                file_path += boost::lexical_cast<tstring>(pid);
-            }
+                {
+                    const DWORD pid = GetCurrentProcessId();
+                    file_path += TEXT(".");
+                    file_path += boost::lexical_cast<tstring>(pid);
+                }
 
-            file_path += TEXT(".log");
-            m_hFile = CreateFile(file_path.c_str(),
-                GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ,
-                NULL,
-                OPEN_ALWAYS,
-                FILE_ATTRIBUTE_NORMAL,
-                NULL);
-            if (INVALID_HANDLE_VALUE == m_hFile)
-            {
-                const DWORD e = GetLastError();
-                tcout << TEXT("CreateFile fail, file path: ") << file_path.c_str() << TEXT(", error code: ") << e << std::endl;
-                break;
-            }
+                file_path += TEXT(".log");
+                m_hFile = CreateFile(file_path.c_str(),
+                    GENERIC_READ | GENERIC_WRITE,
+                    FILE_SHARE_READ,
+                    NULL,
+                    OPEN_ALWAYS,
+                    FILE_ATTRIBUTE_NORMAL,
+                    NULL);
+                if (INVALID_HANDLE_VALUE == m_hFile)
+                {
+                    const DWORD e = GetLastError();
+                    tcout << TEXT("CreateFile fail, file path: ") << file_path.c_str() << TEXT(", error code: ") << e << std::endl;
+                    break;
+                }
 
-            bReturn = true;
+                m_has_init = true;
+                bReturn = true;
 
-        } while (false);
+            } while (false);
 
-        return bReturn;
+            return bReturn;
+        }
     }
 
     bool write(const void *buf, const DWORD len)
     {
-        DWORD written_bytes = 0;
-        if (!WriteFile(m_hFile, buf, len, &written_bytes, NULL))
+        if (INVALID_HANDLE_VALUE == m_hFile)
         {
-            const DWORD e = GetLastError();
-            std::cout << "WriteFile fail, error code: " << e << std::endl;
+            std::cout << "must call log init first" << std::endl;
             return false;
         }
         else
         {
-            if (written_bytes != len)
+            DWORD written_bytes = 0;
+            if (!WriteFile(m_hFile, buf, len, &written_bytes, NULL))
             {
-                std::cout << "not all written, to write: " << len << ", written: " << written_bytes << std::endl;
+                const DWORD e = GetLastError();
+                std::cout << "WriteFile fail, error code: " << e << std::endl;
+                return false;
             }
-            return true;
+            else
+            {
+                if (written_bytes != len)
+                {
+                    std::cout << "not all written, to write: " << len << ", written: " << written_bytes << std::endl;
+                }
+                return true;
+            }
         }
     }
 
 private:
+    bool m_has_init;
     HANDLE m_hFile;
 };
 

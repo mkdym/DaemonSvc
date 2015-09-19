@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
+#include "self_path.h"
 #include "service_util.h"
 #include "win32_service.h"
 
@@ -116,18 +117,16 @@ bool CWin32Service::Go()
 
     case S_INSTALL:
         {
-            const DWORD len = 1024;
-            tchar binary_file_buf[len] = {0};
-            if (!GetModuleFileName(NULL, binary_file_buf, len - 1))
+            tstring command = CSelfPath::GetInstanceRef().get_full();
+            if (command.empty())
             {
-                ErrorLogA("GetModuleFileName fail, error code: %d", GetLastError());
+                ErrorLogA("can not get full path name");
                 bReturn = false;
             }
             else
             {
-                binary_file_buf[len - 1] = TEXT('\0');
-                tstring command = binary_file_buf;
                 command += TEXT(" -svc");
+                InfoLog(TEXT("install command: %s"), command.c_str());
                 bReturn = ServiceUtil::InstallService(m_info, command);
             }
         }

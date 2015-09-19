@@ -175,6 +175,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\self_path.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\service_util.cpp"
 				>
 			</File>
@@ -198,6 +202,10 @@
 			</File>
 			<File
 				RelativePath=".\logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\self_path.h"
 				>
 			</File>
 			<File

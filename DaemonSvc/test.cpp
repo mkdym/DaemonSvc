@@ -48,7 +48,7 @@ void stopping(const CWin32Service::ArgList& args)
 
 int main(int argc, char * argv[])
 {
-    InitLog(TEXT("C:\\"));
+    InitLog(TEXT(""));
 
     ServiceInfo si;
     si.name = TEXT("DaemonSvc");

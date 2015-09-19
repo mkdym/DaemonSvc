@@ -13,6 +13,8 @@ bool CSelfPath::init()
     else
     {
         std::cout << "init self path" << std::endl;
+
+        //size limit
         const DWORD full_buf_size = 2048;
         tchar full_path_buf[full_buf_size] = {0};
         if (!GetModuleFileName(NULL, full_path_buf, full_buf_size - 1))

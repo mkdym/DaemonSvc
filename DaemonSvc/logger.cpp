@@ -118,6 +118,12 @@ public:
             std::cout << "init log" << std::endl;
             bool bReturn = false;
 
+            if (m_hFile != INVALID_HANDLE_VALUE)
+            {
+                CloseHandle(m_hFile);
+                m_hFile = INVALID_HANDLE_VALUE;
+            }
+
             do 
             {
                 if (!CSelfPath::GetInstanceRef().init())
@@ -126,13 +132,24 @@ public:
                     break;
                 }
 
-                if (m_hFile != INVALID_HANDLE_VALUE)
+                tstring file_path = dir;
+                if (file_path.empty())
                 {
-                    CloseHandle(m_hFile);
-                    m_hFile = INVALID_HANDLE_VALUE;
+                    file_path = CSelfPath::GetInstanceRef().get_dir() + TEXT("\\log");
+                    //file_path size limit 248, see MSDN CreateDirectory
+                    if (!CreateDirectory(file_path.c_str(), NULL))
+                    {
+                        const DWORD e = GetLastError();
+                        if (ERROR_ALREADY_EXISTS != e)
+                        {
+                            tcout << TEXT("CreateDirectory for create log dir[")
+                                << file_path.c_str() << TEXT("] fail, error code: ")
+                                << e << std::endl;
+                            break;
+                        }
+                    }
                 }
-
-                tstring file_path = dir + TEXT("\\") + CSelfPath::GetInstanceRef().get_name();
+                file_path += TEXT("\\") + CSelfPath::GetInstanceRef().get_name();
 
                 {
                     time_t raw_time = time(NULL);

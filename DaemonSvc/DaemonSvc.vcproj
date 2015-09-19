@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\str_encode.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\test.cpp"
 				>
 			</File>
@@ -214,6 +218,10 @@
 			</File>
 			<File
 				RelativePath=".\service_util.h"
+				>
+			</File>
+			<File
+				RelativePath=".\str_encode.h"
 				>
 			</File>
 			<File

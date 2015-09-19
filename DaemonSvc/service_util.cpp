@@ -236,7 +236,7 @@ bool ServiceUtil::RemoveService(const tstring& name)
 
 bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
 {
-    DebugLog(TEXT("StartupService[%s] begin"), name.c_str());
+    InfoLog(TEXT("StartupService[%s] begin"), name.c_str());
     bool bReturn = false;
 
     do 
@@ -310,13 +310,13 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
 
     } while (false);
 
-    DebugLog(TEXT("StartupService[%s] end"), name.c_str());
+    InfoLog(TEXT("StartupService[%s] end"), name.c_str());
     return bReturn;
 }
 
 bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
 {
-    DebugLog(TEXT("StopService[%s] begin"), name.c_str());
+    InfoLog(TEXT("StopService[%s] begin"), name.c_str());
     bool bReturn = false;
 
     do 
@@ -386,7 +386,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
 
     } while (false);
 
-    DebugLog(TEXT("StopService[%s] end"), name.c_str());
+    InfoLog(TEXT("StopService[%s] end"), name.c_str());
     return bReturn;
 }
 

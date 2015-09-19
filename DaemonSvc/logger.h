@@ -31,6 +31,10 @@ enum __LOG_LEVEL
     LOG_DEBUG,
 };
 
+#define ErrorLogBytes(prefix, buf, len)         __LogBytes(LOG_ERROR, __FILE__, __LINE__, prefix, buf, len)
+#define InfoLogBytes(prefix, buf, len)          __LogBytes(LOG_INFO, __FILE__, __LINE__, prefix, buf, len)
+#define DebugLogBytes(prefix, buf, len)         __LogBytes(LOG_DEBUG, __FILE__, __LINE__, prefix, buf, len)
+
 #define ErrorLogA(format, ...)          __LogA(LOG_ERROR, __FILE__, __LINE__, format, __VA_ARGS__)
 #define InfoLogA(format, ...)           __LogA(LOG_INFO, __FILE__, __LINE__, format, __VA_ARGS__)
 #define DebugLogA(format, ...)          __LogA(LOG_DEBUG, __FILE__, __LINE__, format, __VA_ARGS__)
@@ -45,7 +49,8 @@ std::string WideStr2ANSIStr(const std::wstring& ws);
 
 
 bool InitLog(const tstring& dir);
-bool LogBytes(const tstring& prefix, const void *buf, const DWORD len);
+bool __LogBytes(const __LOG_LEVEL level, const char *file, const int line,
+                const tstring& prefix, const void *buf, const DWORD len);
 void __LogA(const __LOG_LEVEL level, const char *file, const int line, const char *format, ...);
 void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wchar_t *format, ...);
 

@@ -305,9 +305,14 @@ bool InitLog(const tstring& dir)
     return __LogFile::GetInstanceRef().init(dir);
 }
 
-bool LogBytes(const tstring& prefix, const void *buf, const DWORD len)
+bool __LogBytes(const __LOG_LEVEL level, const char *file, const int line,
+                const tstring& prefix, const void *buf, const DWORD len)
 {
-    std::string s = tstr2ansistr(prefix) + "\r\n" + "@@@@@begin, buffer size = " + boost::lexical_cast<std::string>(len) + "@@@@@\r\n";
+    std::string s = BuildPrefixA(level, file, line)
+        + tstr2ansistr(prefix) + "\r\n"
+        + "@@@@@begin, buffer size = "
+        + boost::lexical_cast<std::string>(len)
+        + "@@@@@\r\n";
     s.append(reinterpret_cast<const char *>(buf), len);
     s += "\r\n";
     s += "@@@@@end, buffer size = " + boost::lexical_cast<std::string>(len) + "@@@@@\r\n";

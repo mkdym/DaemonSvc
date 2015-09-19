@@ -20,20 +20,12 @@ bool CSelfPath::init()
         tchar full_path_buf[full_buf_size] = {0};
         if (!GetModuleFileName(NULL, full_path_buf, full_buf_size - 1))
         {
-            print_last_err(TEXT("GetModuleBaseName fail"));
+            print_last_err(CLastError(), TEXT("GetModuleBaseName fail"));
             return false;
         }
         else
         {
             m_full = full_path_buf;
-
-#if !defined(_tsplitpath_s)
-#if defined(_UNICODE) || defined(UNICODE)
-#define _tsplitpath_s _wsplitpath_s
-#else
-#define _tsplitpath_s _splitpath_s
-#endif
-#endif
 
             const DWORD driver_buf_size = 4;
             const DWORD ext_buf_size = 260;

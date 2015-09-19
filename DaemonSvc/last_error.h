@@ -70,15 +70,22 @@ private:
 };
 
 
-inline void print_last_err(const CLastError& e, const tstring& prefix)
+inline void print_last_err(const CLastError& e, const tchar* prefix, ...)
 {
-    _tprintf_s(TEXT("%s, error code: %d, error msg: %s\r\n"), prefix.c_str(), e.code(), e.str().c_str());
-}
+    tchar buf[4096] = {0};
+    va_list args;
+    va_start(args, prefix);
+    const int count = _vsntprintf_s(buf, 4096, _TRUNCATE, prefix, args);
+    if (count < 0)
+    {
+        std::cout << "_vsntprintf_s error" << std::endl;
+    }
+    va_end(args);
 
-inline void print_last_err(const tstring& prefix)
-{
-    CLastError e;
-    print_last_err(e, prefix);
+    tstring s;
+    s.append(buf, count);
+
+    _tprintf_s(TEXT("%s, error code: %d, error msg: %s\r\n"), s.c_str(), e.code(), e.str().c_str());
 }
 
 

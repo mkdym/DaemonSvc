@@ -18,7 +18,7 @@ std::wstring ANSIStr2WideStr(const std::string& s)
         int need_ch_len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), s.size(), NULL, 0);
         if (0 == need_ch_len)
         {
-            print_last_err(TEXT("MultiByteToWideChar fail when query need size"));
+            print_last_err(CLastError(), TEXT("MultiByteToWideChar fail when query need size"));
             break;
         }
 
@@ -28,7 +28,7 @@ std::wstring ANSIStr2WideStr(const std::string& s)
         need_ch_len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), s.size(), str_buf.get(), need_ch_len);
         if (0 == need_ch_len)
         {
-            print_last_err(TEXT("MultiByteToWideChar fail"));
+            print_last_err(CLastError(), TEXT("MultiByteToWideChar fail"));
             break;
         }
 
@@ -51,7 +51,7 @@ std::string WideStr2ANSIStr(const std::wstring& ws)
         int need_ch_len = WideCharToMultiByte(CP_ACP, 0, ws.c_str(), ws.size(), NULL, 0, NULL, NULL);
         if (0 == need_ch_len)
         {
-            print_last_err(TEXT("WideCharToMultiByte fail when query need size"));
+            print_last_err(CLastError(), TEXT("WideCharToMultiByte fail when query need size"));
             break;
         }
 
@@ -61,7 +61,7 @@ std::string WideStr2ANSIStr(const std::wstring& ws)
         need_ch_len = WideCharToMultiByte(CP_ACP, 0, ws.c_str(), ws.size(), str_buf.get(), need_ch_len, NULL, NULL);
         if (0 == need_ch_len)
         {
-            print_last_err(TEXT("WideCharToMultiByte fail"));
+            print_last_err(CLastError(), TEXT("WideCharToMultiByte fail"));
             break;
         }
 

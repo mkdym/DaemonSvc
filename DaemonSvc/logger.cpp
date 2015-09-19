@@ -4,7 +4,6 @@
 #include <Windows.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr.hpp>
-#include "last_error.h"
 #include "str_encode.h"
 #include "self_path.h"
 #include "logger.h"
@@ -72,8 +71,7 @@ public:
                         CLastError e;
                         if (ERROR_ALREADY_EXISTS != e.code())
                         {
-                            tstring s = TEXT("CreateDirectory for create log dir[") + file_path + TEXT("] fail");
-                            print_last_err(e, s);
+                            print_last_err(e, TEXT("CreateDirectory for create log dir[%s] fail"), file_path.c_str());
                             break;
                         }
                     }
@@ -89,14 +87,6 @@ public:
                         std::cout << "localtime_s fail, return code: " << e << std::endl;
                         break;
                     }
-
-#if !defined(_tcsftime)
-#if defined(_UNICODE) || defined(UNICODE)
-#define _tcsftime wcsftime
-#else
-#define _tcsftime strftime
-#endif
-#endif
 
                     const int time_buffer_size = 100;
                     tchar time_buffer[time_buffer_size] = {0};
@@ -123,9 +113,7 @@ public:
                     NULL);
                 if (INVALID_HANDLE_VALUE == m_hFile)
                 {
-                    CLastError e;
-                    tstring s = TEXT("CreateFile fail, file path: ") + file_path;
-                    print_last_err(e, s);
+                    print_last_err(CLastError(), TEXT("CreateFile fail, file path: %s"), file_path.c_str());
                     break;
                 }
 
@@ -150,7 +138,7 @@ public:
             DWORD written_bytes = 0;
             if (!WriteFile(m_hFile, buf, len, &written_bytes, NULL))
             {
-                print_last_err(TEXT("WriteFile fail"));
+                print_last_err(CLastError(), TEXT("WriteFile fail"));
                 return false;
             }
             else
@@ -225,6 +213,13 @@ static std::wstring BuildPrefixW(const __LOG_LEVEL level, const char *file, cons
 }
 
 
+#if defined(_UNICODE) || defined(UNICODE)
+#define BuildPrefix         BuildPrefixW
+#else
+#define BuildPrefix         BuildPrefixA
+#endif
+
+
 /*
 functions below are exported functions
 */
@@ -254,14 +249,17 @@ void __LogA(const __LOG_LEVEL level, const char *file, const int line, const cha
     char buf[4096] = {0};
     va_list args;
     va_start(args, format);
-    if (_vsnprintf_s(buf, 4096, _TRUNCATE, format, args) < 0)
+    const int count = _vsnprintf_s(buf, 4096, _TRUNCATE, format, args);
+    if (count < 0)
     {
         std::cout << "_vsnprintf_s error" << std::endl;
     }
     va_end(args);
-    buf[4096 - 1] = TEXT('\0');
 
-    std::string s = BuildPrefixA(level, file, line) + buf + "\r\n";
+    std::string s = BuildPrefixA(level, file, line);
+    s.append(buf, count);
+    s += "\r\n";
+
     std::cout << s.c_str();
     OutputDebugStringA(s.c_str());
 
@@ -273,20 +271,47 @@ void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wch
     wchar_t buf[4096] = {0};
     va_list args;
     va_start(args, format);
-    if (_vsnwprintf_s(buf, 4096, _TRUNCATE, format, args) < 0)
+    const int count = _vsnwprintf_s(buf, 4096, _TRUNCATE, format, args);
+    if (count < 0)
     {
         std::cout << "_vsnwprintf_s error" << std::endl;
     }
     va_end(args);
-    buf[4096 - 1] = L'\0';
 
-    std::wstring ws = BuildPrefixW(level, file, line) + buf + L"\r\n";
+    std::wstring ws = BuildPrefixW(level, file, line);
+    ws.append(buf, count);
+    ws += L"\r\n";
+
     std::wcout << ws.c_str();
     OutputDebugStringW(ws.c_str());
 
     const std::string s = WideStr2ANSIStr(ws);
     __LogFile::GetInstanceRef().write(s.c_str(), s.size());
 }
+
+void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, const CLastError& e, const tchar* prefix, ...)
+{
+    tchar buf[4096] = {0};
+    va_list args;
+    va_start(args, prefix);
+    const int count = _vsntprintf_s(buf, 4096, _TRUNCATE, prefix, args);
+    if (count < 0)
+    {
+        std::cout << "_vsntprintf_s error" << std::endl;
+    }
+    va_end(args);
+
+    tstring err_str = BuildPrefix(level, file, line);
+    err_str.append(buf, count);
+    err_str += TEXT("\r\n");
+
+    tcout << err_str.c_str();
+    OutputDebugString(err_str.c_str());
+
+    const std::string s = tstr2ansistr(err_str);
+    __LogFile::GetInstanceRef().write(s.c_str(), s.size());
+}
+
 
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "last_error.h"
 #include "self_path.h"
 
 
@@ -19,8 +20,7 @@ bool CSelfPath::init()
         tchar full_path_buf[full_buf_size] = {0};
         if (!GetModuleFileName(NULL, full_path_buf, full_buf_size - 1))
         {
-            const DWORD e = GetLastError();
-            std::cout << "GetModuleBaseName fail, error code: " << e << std::endl;
+            print_last_err(TEXT("GetModuleBaseName fail"));
             return false;
         }
         else

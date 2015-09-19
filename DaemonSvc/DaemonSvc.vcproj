@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\last_error.h"
+				>
+			</File>
+			<File
 				RelativePath=".\logger.h"
 				>
 			</File>

@@ -4,8 +4,9 @@
 #include <Windows.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr.hpp>
-#include "self_path.h"
+#include "last_error.h"
 #include "str_encode.h"
+#include "self_path.h"
 #include "logger.h"
 
 
@@ -68,12 +69,11 @@ public:
                     //file_path size limit 248, see MSDN CreateDirectory
                     if (!CreateDirectory(file_path.c_str(), NULL))
                     {
-                        const DWORD e = GetLastError();
-                        if (ERROR_ALREADY_EXISTS != e)
+                        CLastError e;
+                        if (ERROR_ALREADY_EXISTS != e.code())
                         {
-                            tcout << TEXT("CreateDirectory for create log dir[")
-                                << file_path.c_str() << TEXT("] fail, error code: ")
-                                << e << std::endl;
+                            tstring s = TEXT("CreateDirectory for create log dir[") + file_path + TEXT("] fail");
+                            print_last_err(e, s);
                             break;
                         }
                     }
@@ -123,8 +123,9 @@ public:
                     NULL);
                 if (INVALID_HANDLE_VALUE == m_hFile)
                 {
-                    const DWORD e = GetLastError();
-                    tcout << TEXT("CreateFile fail, file path: ") << file_path.c_str() << TEXT(", error code: ") << e << std::endl;
+                    CLastError e;
+                    tstring s = TEXT("CreateFile fail, file path: ") + file_path;
+                    print_last_err(e, s);
                     break;
                 }
 
@@ -149,8 +150,7 @@ public:
             DWORD written_bytes = 0;
             if (!WriteFile(m_hFile, buf, len, &written_bytes, NULL))
             {
-                const DWORD e = GetLastError();
-                std::cout << "WriteFile fail, error code: " << e << std::endl;
+                print_last_err(TEXT("WriteFile fail"));
                 return false;
             }
             else

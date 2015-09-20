@@ -5,7 +5,6 @@
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
 #include "service_info.h"
-#include "logger.h"
 
 
 class CWin32Service : public boost::noncopyable

@@ -2,6 +2,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
 #include "self_path.h"
+#include "logger.h"
 #include "service_util.h"
 #include "win32_service.h"
 
@@ -28,7 +29,7 @@ bool CWin32Service::Init(const ServiceInfo& info)
     LPWSTR *arg_str_list = CommandLineToArgvW(GetCommandLineW(), &arg_count);
     if (NULL == arg_str_list)
     {
-        ErrorLogA("can not get commoand line, error code: %d", GetLastError());
+        ErrorLogLastErr(CLastError(), TEXT("can not get commoand line"));
         return false;
     }
     else
@@ -97,7 +98,7 @@ bool CWin32Service::Init(const ServiceInfo& info)
         {
             if (!SetConsoleCtrlHandler(s_ConsoleCtrl, TRUE))
             {
-                ErrorLogA("SetConsoleCtrlHandler fail, error code: %d", GetLastError());
+                ErrorLogLastErr(CLastError(), TEXT("SetConsoleCtrlHandler fail"));
             }
         }
 
@@ -188,7 +189,7 @@ bool CWin32Service::ReportStatus(const DWORD nState, const DWORD nWaitHintMS)
     BOOL bReturn = SetServiceStatus(m_service_status_handle, &m_service_status);
     if (!bReturn)
     {
-        ErrorLogA("SetServiceStatus fail when ReportStatus, error code: %d", GetLastError());
+        ErrorLogLastErr(CLastError(), TEXT("SetServiceStatus fail when ReportStatus"));
     }
     return (TRUE == bReturn);
 }
@@ -248,7 +249,7 @@ bool CWin32Service::StartDispatcher()
     BOOL bReturn = StartServiceCtrlDispatcher(dispatchTable);
     if (!bReturn)
     {
-        ErrorLogA("StartServiceCtrlDispatcher fail, error code: %d", GetLastError());
+        ErrorLogLastErr(CLastError(), TEXT("StartServiceCtrlDispatcher fail"));
     }
 
     return (TRUE == bReturn);
@@ -294,7 +295,7 @@ bool CWin32Service::ServiceMain()
             m_service_status_handle = RegisterServiceCtrlHandler(m_info.name.c_str(), s_ServiceCtrl);
             if (NULL == m_service_status_handle)
             {
-                ErrorLogA("RegisterServiceCtrlHandler fail, error code: %d", GetLastError());
+                ErrorLogLastErr(CLastError(), TEXT("RegisterServiceCtrlHandler fail"));
                 break;
             }
 

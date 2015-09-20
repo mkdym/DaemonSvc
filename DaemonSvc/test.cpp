@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "logger.h"
 #include "win32_service.h"
 
 
@@ -11,7 +12,7 @@ bool starting(const CWin32Service::ArgList& args)
     g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (NULL == g_exit_event)
     {
-        ErrorLogA("CreateEvent fail, error code: %d", GetLastError());
+        ErrorLogLastErr(CLastError(), TEXT("CreateEvent fail"));
         return false;
     }
     else
@@ -32,7 +33,7 @@ void running(const CWin32Service::ArgList& args)
         break;
 
     default:
-        ErrorLogA("WaitForSingleObject fail, return code: %d, error code: %d", r, GetLastError());
+        ErrorLogLastErr(CLastError(), TEXT("WaitForSingleObject fail, return code: %d"), r);
         break;
     }
     InfoLogA("running end");

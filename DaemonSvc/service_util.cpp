@@ -19,7 +19,7 @@ public:
         m_h = OpenSCManager(NULL, NULL, access);
         if (NULL == m_h)
         {
-            ErrorLogA("OpenSCManager fail, error code: %d", GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("OpenSCManager fail"));
         }
     }
 
@@ -55,7 +55,7 @@ public:
             m_h = OpenService(m_sc.get(), name.c_str(), svc_access);
             if (NULL == m_h)
             {
-                ErrorLog(TEXT("OpenService[%s] fail, error code: %d"), name.c_str(), GetLastError());
+                ErrorLogLastErr(CLastError(), TEXT("OpenService[%s] fail"), name.c_str());
             }
         }
     }
@@ -104,9 +104,10 @@ bool ServiceUtil::IsServiceExist(const tstring& name)
             break;
         }
 
-        if (ERROR_MORE_DATA != GetLastError())
+        CLastError e;
+        if (ERROR_MORE_DATA != e.code())
         {
-            ErrorLogA("EnumServicesStatusEx error code is not ERROR_MORE_DATA while query needed bytes");
+            ErrorLogLastErr(e, TEXT("EnumServicesStatusEx error code is not ERROR_MORE_DATA while query needed bytes"));
             break;
         }
 
@@ -115,7 +116,7 @@ bool ServiceUtil::IsServiceExist(const tstring& name)
         if (!EnumServicesStatusEx(hSCMgr.get(), SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
             SERVICE_STATE_ALL, lpData.get(), dwNeededBytes, &dwNeededBytes, &dwReturnedSerivice, &dwResumeEntryNum, NULL))
         {
-            ErrorLogA("EnumServicesStatusEx fail, error code: %d", GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("EnumServicesStatusEx fail"));
             break;
         }
 
@@ -150,7 +151,7 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
         SERVICE_STATUS status = {0};
         if (!QueryServiceStatus(hService.get(), &status))
         {
-            ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("QueryServiceStatus[%s] fail"), name.c_str());
             break;
         }
 
@@ -195,7 +196,7 @@ bool ServiceUtil::InstallService(const ServiceInfo& info, const tstring& binary_
             info.use_password ? info.password.c_str() : NULL);
         if (NULL == hService)
         {
-            ErrorLog(TEXT("CreateService[%s] fail, error code: %d"), info.name.c_str(), GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("CreateService[%s] fail"), info.name.c_str());
             break;
         }
 
@@ -223,7 +224,7 @@ bool ServiceUtil::RemoveService(const tstring& name)
 
         if (!DeleteService(hService.get()))
         {
-            ErrorLog(TEXT("DeleteService[%s] fail, error code: %d"), name.c_str(), GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("DeleteService[%s] fail"), name.c_str());
             break;
         }
 
@@ -250,7 +251,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
         SERVICE_STATUS status = {0};
         if (!QueryServiceStatus(hService.get(), &status))
         {
-            ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("QueryServiceStatus[%s] fail"), name.c_str());
             break;
         }
 
@@ -264,15 +265,15 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
         {
             if (!StartService(hService.get(), 0, NULL))
             {
-                const DWORD e = GetLastError();
-                if (ERROR_SERVICE_ALREADY_RUNNING == e)
+                const CLastError e;
+                if (ERROR_SERVICE_ALREADY_RUNNING == e.code())
                 {
                     DebugLogA("service is already running");
                     bReturn = true;
                 }
                 else
                 {
-                    ErrorLog(TEXT("StartService[%s] fail, error code: %d"), name.c_str(), e);
+                    ErrorLogLastErr(e, TEXT("StartService[%s] fail"), name.c_str());
                 }
                 break;
             }
@@ -285,7 +286,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
         {
             if (!QueryServiceStatus(hService.get(), &status))
             {
-                ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
+                ErrorLogLastErr(CLastError(), TEXT("QueryServiceStatus[%s] fail"), name.c_str());
                 break;
             }
 
@@ -330,7 +331,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
         SERVICE_STATUS status = {0};
         if (!QueryServiceStatus(hService.get(), &status))
         {
-            ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("QueryServiceStatus[%s] fail"), name.c_str());
             break;
         }
 
@@ -344,7 +345,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
         {
             if (!ControlService(hService.get(), SERVICE_CONTROL_STOP, &status))
             {
-                ErrorLog(TEXT("ControlService[%s] for stopping fail, error code: %d"), name.c_str(), GetLastError());
+                ErrorLogLastErr(CLastError(), TEXT("ControlService[%s] for stopping fail"), name.c_str());
                 break;
             }
         }
@@ -356,7 +357,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
         {
             if (!QueryServiceStatus(hService.get(), &status))
             {
-                ErrorLog(TEXT("QueryServiceStatus[%s] fail, error code: %d"), name.c_str(), GetLastError());
+                ErrorLogLastErr(CLastError(), TEXT("QueryServiceStatus[%s] fail"), name.c_str());
                 break;
             }
 
@@ -405,7 +406,7 @@ bool ServiceUtil::SendControlCode2Service(const tstring& name, const DWORD code)
         SERVICE_STATUS status = {0};
         if (!ControlService(hService.get(), code, &status))
         {
-            ErrorLog(TEXT("ControlService[%s:%d] fail, error code: %d"), name.c_str(), code, GetLastError());
+            ErrorLogLastErr(CLastError(), TEXT("ControlService[%s:%d] fail"), name.c_str(), code);
             break;
         }
 

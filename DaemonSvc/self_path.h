@@ -4,7 +4,7 @@
 
 
 //do not use log, because we use this class to init log module
-class CSelfPath : boost::noncopyable
+class CSelfPath : public boost::noncopyable
 {
 private:
     CSelfPath(void)

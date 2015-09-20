@@ -2,6 +2,7 @@
 #include <string>
 #include <time.h>
 #include <Windows.h>
+#include <boost/noncopyable.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr.hpp>
 #include "str_encode.h"
@@ -10,7 +11,7 @@
 
 
 
-class __LogFile
+class __LogFile : public boost::noncopyable
 {
 public:
     static __LogFile& GetInstanceRef()

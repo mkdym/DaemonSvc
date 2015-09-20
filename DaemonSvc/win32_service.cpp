@@ -10,6 +10,41 @@
 static const DWORD WAIT_HINT_MS = 30 * 1000;
 
 
+static const tchar* console_event_str(const DWORD e)
+{
+    const tchar *p = TEXT("");
+    switch (e)
+    {
+    case CTRL_C_EVENT:
+        p = TEXT("CTRL_C_EVENT");
+        break;
+
+    case CTRL_BREAK_EVENT:
+        p = TEXT("CTRL_BREAK_EVENT");
+        break;
+
+    case CTRL_CLOSE_EVENT:
+        p = TEXT("CTRL_CLOSE_EVENT");
+        break;
+
+    case CTRL_LOGOFF_EVENT:
+        p = TEXT("CTRL_LOGOFF_EVENT");
+        break;
+
+    case CTRL_SHUTDOWN_EVENT:
+        p = TEXT("CTRL_SHUTDOWN_EVENT");
+        break;
+
+    default:
+        p = TEXT("unknown??");
+        break;
+    }
+
+    return p;
+}
+
+
+
 CWin32Service::CWin32Service(void)
     : m_mode(S_NORMAL_APP)
     , m_service_status_handle(NULL)
@@ -265,7 +300,7 @@ BOOL CWin32Service::ConsoleCtrl(DWORD code)
     case CTRL_C_EVENT:
     case CTRL_CLOSE_EVENT:
     case CTRL_SHUTDOWN_EVENT:
-        InfoLogA("got console stop event: %d", code);
+        InfoLog(TEXT("got console stop event: %d, %s"), code, console_event_str(code));
         {
             CtrlFuncs::const_iterator it_func = m_ctrlfuncs.find(SERVICE_CONTROL_STOP);
             if (it_func != m_ctrlfuncs.end())

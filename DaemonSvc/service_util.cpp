@@ -10,6 +10,48 @@
 
 
 
+static const tchar* service_status_str(const DWORD status)
+{
+    const tchar *p = TEXT("");
+    switch (status)
+    {
+    case SERVICE_STOPPED:
+        p = TEXT("SERVICE_STOPPED");
+        break;
+
+    case SERVICE_START_PENDING:
+        p = TEXT("SERVICE_START_PENDING");
+        break;
+
+    case SERVICE_STOP_PENDING:
+        p = TEXT("SERVICE_STOP_PENDING");
+        break;
+
+    case SERVICE_RUNNING:
+        p = TEXT("SERVICE_RUNNING");
+        break;
+
+    case SERVICE_CONTINUE_PENDING:
+        p = TEXT("SERVICE_CONTINUE_PENDING");
+        break;
+
+    case SERVICE_PAUSE_PENDING:
+        p = TEXT("SERVICE_PAUSE_PENDING");
+        break;
+
+    case SERVICE_PAUSED:
+        p = TEXT("SERVICE_PAUSED");
+        break;
+
+    default:
+        p = TEXT("unknown??");
+        break;
+    }
+
+    return p;
+}
+
+
 class CScopedSCHandle
 {
 public:
@@ -157,7 +199,8 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
 
         if (SERVICE_RUNNING != status.dwCurrentState)
         {
-            DebugLog(TEXT("service[%s] is not running. status: %d"), name.c_str(), status.dwCurrentState);
+            DebugLog(TEXT("service[%s] is not running. status: %d, %s"),
+                name.c_str(), status.dwCurrentState, service_status_str(status.dwCurrentState));
             break;
         }
 
@@ -303,7 +346,8 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
 
         if (SERVICE_RUNNING != status.dwCurrentState)
         {
-            ErrorLog(TEXT("start service[%s] fail, current status: %d"), name.c_str(), status.dwCurrentState);
+            ErrorLog(TEXT("start service[%s] fail, current status: %d, %s"),
+                name.c_str(), status.dwCurrentState, service_status_str(status.dwCurrentState));
             break;
         }
 
@@ -379,7 +423,8 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
 
         if (SERVICE_STOPPED != status.dwCurrentState)
         {
-            ErrorLog(TEXT("stop service[%s] fail, current status: %d"), name.c_str(), status.dwCurrentState);
+            ErrorLog(TEXT("stop service[%s] fail, current status: %d, %s"),
+                name.c_str(), status.dwCurrentState, service_status_str(status.dwCurrentState));
             break;
         }
 

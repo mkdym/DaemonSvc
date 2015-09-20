@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "logger.h"
+#include "single_checker.h"
 #include "win32_service.h"
 
 
@@ -9,6 +10,12 @@ HANDLE g_exit_event = NULL;
 
 bool starting(const CWin32Service::ArgList& args)
 {
+    if (!CSingleChecker::GetInstanceRef().single(TEXT("{3387415F-A686-4692-AA54-3A16AAEF9D5C}")))
+    {
+        ErrorLogA("app already running");
+        return false;
+    }
+
     g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (NULL == g_exit_event)
     {

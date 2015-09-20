@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\task_mgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\test.cpp"
 				>
 			</File>
@@ -234,6 +238,10 @@
 			</File>
 			<File
 				RelativePath=".\str_encode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\task_mgr.h"
 				>
 			</File>
 			<File

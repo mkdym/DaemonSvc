@@ -20,7 +20,7 @@ bool CSelfPath::init()
         tchar full_path_buf[full_buf_size] = {0};
         if (!GetModuleFileName(NULL, full_path_buf, full_buf_size - 1))
         {
-            print_last_err(CLastError(), TEXT("GetModuleBaseName fail"));
+            print_last_err(CLastError(), TSTR("GetModuleBaseName fail"));
             return false;
         }
         else
@@ -43,10 +43,10 @@ bool CSelfPath::init()
                 name_buf, name_buf_size,
                 ext_buf, ext_buf_size);
 
-            driver_buf[driver_buf_size - 1] = TEXT('\0');
-            dir_buf[dir_buf_size - 1] = TEXT('\0');
-            name_buf[name_buf_size - 1] = TEXT('\0');
-            ext_buf[ext_buf_size - 1] = TEXT('\0');
+            driver_buf[driver_buf_size - 1] = TSTR('\0');
+            dir_buf[dir_buf_size - 1] = TSTR('\0');
+            name_buf[name_buf_size - 1] = TSTR('\0');
+            ext_buf[ext_buf_size - 1] = TSTR('\0');
 
             m_dir = driver_buf;
             m_dir += dir_buf;

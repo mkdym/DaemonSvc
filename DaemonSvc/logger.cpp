@@ -65,19 +65,19 @@ public:
                 tstring file_path = dir;
                 if (file_path.empty())
                 {
-                    file_path = CSelfPath::GetInstanceRef().get_dir() + TEXT("\\log");
+                    file_path = CSelfPath::GetInstanceRef().get_dir() + TSTR("\\log");
                     //file_path size limit 248, see MSDN CreateDirectory
                     if (!CreateDirectory(file_path.c_str(), NULL))
                     {
                         CLastError e;
                         if (ERROR_ALREADY_EXISTS != e.code())
                         {
-                            print_last_err(e, TEXT("CreateDirectory for create log dir[%s] fail"), file_path.c_str());
+                            print_last_err(e, TSTR("CreateDirectory for create log dir[%s] fail"), file_path.c_str());
                             break;
                         }
                     }
                 }
-                file_path += TEXT("\\") + CSelfPath::GetInstanceRef().get_name();
+                file_path += TSTR("\\") + CSelfPath::GetInstanceRef().get_name();
 
                 {
                     time_t raw_time = time(NULL);
@@ -91,20 +91,20 @@ public:
 
                     const int time_buffer_size = 100;
                     tchar time_buffer[time_buffer_size] = {0};
-                    _tcsftime(time_buffer, time_buffer_size, TEXT("%Y%m%d%H%M%S"), &timeinfo);
-                    time_buffer[time_buffer_size - 1] = TEXT('\0');
+                    _tcsftime(time_buffer, time_buffer_size, TSTR("%Y%m%d%H%M%S"), &timeinfo);
+                    time_buffer[time_buffer_size - 1] = TSTR('\0');
 
-                    file_path += TEXT(".");
+                    file_path += TSTR(".");
                     file_path += time_buffer;
                 }
 
                 {
                     const DWORD pid = GetCurrentProcessId();
-                    file_path += TEXT(".");
+                    file_path += TSTR(".");
                     file_path += boost::lexical_cast<tstring>(pid);
                 }
 
-                file_path += TEXT(".log");
+                file_path += TSTR(".log");
                 m_hFile = CreateFile(file_path.c_str(),
                     GENERIC_READ | GENERIC_WRITE,
                     FILE_SHARE_READ,
@@ -114,7 +114,7 @@ public:
                     NULL);
                 if (INVALID_HANDLE_VALUE == m_hFile)
                 {
-                    print_last_err(CLastError(), TEXT("CreateFile fail, file path: %s"), file_path.c_str());
+                    print_last_err(CLastError(), TSTR("CreateFile fail, file path: %s"), file_path.c_str());
                     break;
                 }
 
@@ -139,7 +139,7 @@ public:
             DWORD written_bytes = 0;
             if (!WriteFile(m_hFile, buf, len, &written_bytes, NULL))
             {
-                print_last_err(CLastError(), TEXT("WriteFile fail"));
+                print_last_err(CLastError(), TSTR("WriteFile fail"));
                 return false;
             }
             else
@@ -304,7 +304,7 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
 
     tstring err_str = BuildPrefix(level, file, line);
     err_str.append(buf, count);
-    err_str += TEXT("\r\n");
+    err_str += TSTR("\r\n");
 
     tcout << err_str.c_str();
     OutputDebugString(err_str.c_str());

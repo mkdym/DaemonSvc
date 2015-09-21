@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include "logger.h"
 #include "single_checker.h"
 #include "win32_service.h"
@@ -10,7 +9,7 @@ HANDLE g_exit_event = NULL;
 
 bool starting(const CWin32Service::ArgList& args)
 {
-    if (!CSingleChecker::GetInstanceRef().single(TEXT("{3387415F-A686-4692-AA54-3A16AAEF9D5C}")))
+    if (!CSingleChecker::GetInstanceRef().single(TSTR("{3387415F-A686-4692-AA54-3A16AAEF9D5C}")))
     {
         ErrorLogA("app already running");
         return false;
@@ -19,7 +18,7 @@ bool starting(const CWin32Service::ArgList& args)
     g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (NULL == g_exit_event)
     {
-        ErrorLogLastErr(CLastError(), TEXT("CreateEvent fail"));
+        ErrorLogLastErr(CLastError(), TSTR("CreateEvent fail"));
         return false;
     }
     else
@@ -40,7 +39,7 @@ void running(const CWin32Service::ArgList& args)
         break;
 
     default:
-        ErrorLogLastErr(CLastError(), TEXT("WaitForSingleObject fail, return code: %d"), r);
+        ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %d"), r);
         break;
     }
     InfoLogA("running end");
@@ -56,10 +55,10 @@ void stopping(const CWin32Service::ArgList& args)
 
 int main(int argc, char * argv[])
 {
-    InitLog(TEXT(""));
+    InitLog(TSTR(""));
 
     ServiceInfo si;
-    si.name = TEXT("DaemonSvc");
+    si.name = TSTR("DaemonSvc");
     si.display_name = si.name;
 
     if (!CWin32Service::GetInstanceRef().Init(si))

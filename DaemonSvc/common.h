@@ -9,8 +9,8 @@
 
 #if defined(_UNICODE) || defined(UNICODE)
 
-#ifndef TEXT
-#define TEXT(quote) L##quote
+#ifndef TSTR
+#define TSTR(quote) L##quote
 #endif
 
 #ifndef _tprintf_s
@@ -35,8 +35,8 @@ typedef std::wstring tstring;
 
 #else
 
-#ifndef TEXT
-#define TEXT(quote) quote
+#ifndef TSTR
+#define TSTR(quote) quote
 #endif
 
 #ifndef _tprintf_s

@@ -72,6 +72,7 @@ private:
     static void WINAPI s_ServiceMain(int argc, tchar * argv[]);
 
 private:
+    bool m_init_success;
     ServiceInfo m_info;
     ArgList m_args;
     StartingFunction m_startingfunc;

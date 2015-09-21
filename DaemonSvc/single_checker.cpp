@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 #include "logger.h"
 #include "single_checker.h"
 
@@ -32,12 +31,12 @@ bool CSingleChecker::single(const tstring& mutex_name)
             SECURITY_DESCRIPTOR sd;
             if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION))
             {
-                ErrorLogLastErr(CLastError(), TEXT("InitializeSecurityDescriptor fail"));
+                ErrorLogLastErr(CLastError(), TSTR("InitializeSecurityDescriptor fail"));
                 break;
             }
             if (!SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE))
             {
-                ErrorLogLastErr(CLastError(), TEXT("SetSecurityDescriptorDacl fail"));
+                ErrorLogLastErr(CLastError(), TSTR("SetSecurityDescriptorDacl fail"));
                 break;
             }
 
@@ -46,7 +45,7 @@ bool CSingleChecker::single(const tstring& mutex_name)
             sa.lpSecurityDescriptor = &sd;
             sa.bInheritHandle = TRUE;
 
-            tstring mutex_global_name(TEXT("Global\\"));
+            tstring mutex_global_name(TSTR("Global\\"));
             mutex_global_name += mutex_name;
             m_mutex = CreateMutex(&sa, FALSE, mutex_global_name.c_str());
 
@@ -70,7 +69,7 @@ bool CSingleChecker::single(const tstring& mutex_name)
                 //if (e.code() == ERROR_ACCESS_DENIED)
                 //{
                 //}
-                ErrorLogLastErr(e, TEXT("CreateMutex[%s] fail"), mutex_global_name.c_str());
+                ErrorLogLastErr(e, TSTR("CreateMutex[%s] fail"), mutex_global_name.c_str());
             }
 
         } while (false);

@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 #include "common.h"
 #include "service_info.h"
 

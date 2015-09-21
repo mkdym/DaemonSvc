@@ -85,7 +85,7 @@ inline void print_last_err(const CLastError& e, const tchar* prefix, ...)
     tstring s;
     s.append(buf, count);
 
-    _tprintf_s(TEXT("%s, error code: %d, error msg: %s\r\n"), s.c_str(), e.code(), e.str().c_str());
+    _tprintf_s(TSTR("%s, error code: %d, error msg: %s\r\n"), s.c_str(), e.code(), e.str().c_str());
 }
 
 

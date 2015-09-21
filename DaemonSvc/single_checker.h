@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <boost/noncopyable.hpp>
-#include "common.h"
+#include "tdef.h"
 
 
 class CSingleChecker : public boost::noncopyable

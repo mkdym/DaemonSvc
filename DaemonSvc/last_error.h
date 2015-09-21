@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <Windows.h>
-#include "common.h"
+#include "tdef.h"
 
 
 //do not use any other user-defined function or class

@@ -1,6 +1,6 @@
 #pragma once
 #include <boost/noncopyable.hpp>
-#include "common.h"
+#include "tdef.h"
 
 
 //do not use log, because we use this class to init log module

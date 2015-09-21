@@ -7,8 +7,8 @@
 #include "task_common.h"
 #include "task_base.h"
 #include "time_point_task.h"
-//#include "time_interval_task.h"
-//#include "proc_non_exist_task.h"
+#include "time_interval_task.h"
+#include "proc_non_exist_task.h"
 
 
 class CTaskMgr : public boost::noncopyable
@@ -27,9 +27,9 @@ public:
 public:
     typedef unsigned int TaskId;
 
-    TaskId add_time_point_task(const TaskFunc& f, const tstring& hint, const PERIOD_TYPE& type, const TaskTime& tm);
-    //const TaskId& add_time_interval_task(const TaskFunc& f, const tstring& hint);
-    //const TaskId& add_proc_non_exist_task(const TaskFunc& f, const tstring& hint);
+    TaskId add_time_point_task(const TaskFunc& f, const PeriodTime& tm);
+    TaskId add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds);
+    TaskId add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds);
 
     bool start_one(const TaskId id);
     void start_all(std::vector<TaskId>& failed_ids);

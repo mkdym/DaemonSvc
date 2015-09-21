@@ -1,3 +1,4 @@
+#include <cassert>
 #include <limits>
 #include "logger.h"
 #include "task_mgr.h"
@@ -13,10 +14,35 @@ CTaskMgr::~CTaskMgr(void)
 
 }
 
-CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const tstring& hint, const PERIOD_TYPE& type, const TaskTime& tm)
+CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTime& tm)
 {
+    assert(!(0 == tm.dayofmonth
+        && 0 == tm.dayofweek
+        && 0 == tm.hour
+        && 0 == tm.minute
+        && 0 == tm.second));
+
     const TaskId id = alloc_task_num_id();
-    m_tasks[id] = TaskBasePtr(new CTimePointTask(f, type, tm));
+    m_tasks[id] = TaskBasePtr(new CTimePointTask(f, tm));
+    return id;
+}
+
+CTaskMgr::TaskId CTaskMgr::add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds)
+{
+    assert(interval_seconds);
+
+    const TaskId id = alloc_task_num_id();
+    m_tasks[id] = TaskBasePtr(new CTimeIntervalTask(f, interval_seconds));
+    return id;
+}
+
+CTaskMgr::TaskId CTaskMgr::add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
+{
+    assert(!proc_path.empty());
+    assert(interval_seconds);
+
+    const TaskId id = alloc_task_num_id();
+    m_tasks[id] = TaskBasePtr(new CProcNonExistTask(f, proc_path, interval_seconds));
     return id;
 }
 
@@ -152,3 +178,7 @@ CTaskMgr::TaskId CTaskMgr::alloc_task_num_id()
 
     return id;
 }
+
+
+
+

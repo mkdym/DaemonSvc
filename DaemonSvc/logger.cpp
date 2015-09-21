@@ -80,21 +80,15 @@ public:
                 file_path += TSTR("\\") + CSelfPath::GetInstanceRef().get_name();
 
                 {
-                    time_t raw_time = time(NULL);
-                    tm timeinfo = {0};
-                    const int e = localtime_s(&timeinfo, &raw_time);
-                    if (e)
-                    {
-                        std::cout << "localtime_s fail, return code: " << e << std::endl;
-                        break;
-                    }
+                    SYSTEMTIME systime = {0};
+                    GetLocalTime(&systime);
 
                     const int time_buffer_size = 100;
                     tchar time_buffer[time_buffer_size] = {0};
-                    _tcsftime(time_buffer, time_buffer_size, TSTR("%Y%m%d%H%M%S"), &timeinfo);
-                    time_buffer[time_buffer_size - 1] = TSTR('\0');
+                    _stprintf_s(time_buffer, TSTR(".%04d%02d%02d%02d%02d%02d"),
+                        systime.wYear, systime.wMonth, systime.wDay,
+                        systime.wHour, systime.wMinute, systime.wSecond);
 
-                    file_path += TSTR(".");
                     file_path += time_buffer;
                 }
 
@@ -163,21 +157,16 @@ static std::string BuildPrefixA(const __LOG_LEVEL level, const char *file, const
 {
     std::string s;
 
-    time_t raw_time = time(NULL);
-    tm timeinfo = {0};
-    if (0 == localtime_s(&timeinfo, &raw_time))
-    {
-        const int time_buffer_size = 100;
-        char time_buffer[time_buffer_size] = {0};
-        strftime(time_buffer, time_buffer_size, "%Y-%m-%d-%H:%M:%S", &timeinfo);
-        time_buffer[time_buffer_size - 1] = 0;
-        s += time_buffer;
-    }
-    else
-    {
-        s += "unknown time???";
-    }
-    s += " ";
+    SYSTEMTIME systime = {0};
+    GetLocalTime(&systime);
+
+    const int time_buffer_size = 100;
+    char time_buffer[time_buffer_size] = {0};
+    sprintf_s(time_buffer, "%04d/%02d/%02d-%02d:%02d:%02d.%03d ",
+        systime.wYear, systime.wMonth, systime.wDay,
+        systime.wHour, systime.wMinute, systime.wSecond,
+        systime.wMilliseconds);
+    s += time_buffer;
 
     static const DWORD pid = GetCurrentProcessId();
     s += "[" + boost::lexical_cast<std::string>(pid) + ":" + boost::lexical_cast<std::string>(GetCurrentThreadId()) + "] ";

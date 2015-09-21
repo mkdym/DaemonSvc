@@ -175,6 +175,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\proc_non_exist_task.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\self_path.cpp"
 				>
 			</File>
@@ -199,6 +203,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\time_interval_task.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\time_point_task.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\win32_service.cpp"
 				>
 			</File>
@@ -214,6 +226,10 @@
 			</File>
 			<File
 				RelativePath=".\logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\proc_non_exist_task.h"
 				>
 			</File>
 			<File
@@ -237,11 +253,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\task_base.h"
+				>
+			</File>
+			<File
+				RelativePath=".\task_common.h"
+				>
+			</File>
+			<File
 				RelativePath=".\task_mgr.h"
 				>
 			</File>
 			<File
 				RelativePath=".\tdef.h"
+				>
+			</File>
+			<File
+				RelativePath=".\time_interval_task.h"
+				>
+			</File>
+			<File
+				RelativePath=".\time_point_task.h"
 				>
 			</File>
 			<File

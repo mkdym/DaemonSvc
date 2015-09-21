@@ -1,8 +1,14 @@
-#include <time.h>
+#pragma once
 #include <map>
 #include <boost/noncopyable.hpp>
-#include <boost/function.hpp>
-#include "logger.h"
+#include <boost/smart_ptr.hpp>
+#include <boost/thread.hpp>
+#include "tdef.h"
+#include "task_common.h"
+#include "task_base.h"
+#include "time_point_task.h"
+//#include "time_interval_task.h"
+//#include "proc_non_exist_task.h"
 
 
 class CTaskMgr : public boost::noncopyable
@@ -19,56 +25,30 @@ public:
     }
 
 public:
-    typedef unsigned int TaskNumId;
+    typedef unsigned int TaskId;
 
-    struct TaskId
-    {
-        TaskNumId num_id;
-        time_t added_time;
-        tstring hint;
-    };
+    TaskId add_time_point_task(const TaskFunc& f, const tstring& hint, const PERIOD_TYPE& type, const TaskTime& tm);
+    //const TaskId& add_time_interval_task(const TaskFunc& f, const tstring& hint);
+    //const TaskId& add_proc_non_exist_task(const TaskFunc& f, const tstring& hint);
 
-    enum TaskType
-    {
-        TIME_POINT,
-        TIME_INTERVAL,
-        PROC_NON_EXIST,
-    };
+    bool start_one(const TaskId id);
+    void start_all(std::vector<TaskId>& failed_ids);
 
-    typedef boost::function<void()> TaskFunc;
-    const TaskId& add(const TaskType& t, const TaskFunc& f, const tstring& hint);
-
-    bool start_one(const TaskId& t);
-    bool start_all();
-
-    void stop_one(const TaskId& t);
+    void stop_one(const TaskId id);
     void stop_all();
 
-    void delete_one(const TaskId& t);
+    void delete_one(const TaskId id);
     void delete_all();
 
 private:
-    //原子操作
-    TaskNumId alloc_task_num_id();
+    //上锁
+    TaskId alloc_task_num_id();
 
 private:
-    enum TaskStatus
-    {
-        TASK_ADDED,
-        TASK_STARTED,
-        TASK_STOPPED,
-        TASK_DELETED,
-    };
-
-    struct TaskInfo
-    {
-        TaskId task_id;
-        TaskType type;
-        TaskFunc f;
-        TaskStatus status;
-    };
-
-    std::map<TaskNumId, TaskInfo> m_tasks;
+    typedef boost::shared_ptr<CTaskBase> TaskBasePtr;
+    typedef std::map<TaskId, TaskBasePtr> TaskMap;
+    TaskMap m_tasks;
+    boost::mutex m_tasks_lock;
 };
 
 

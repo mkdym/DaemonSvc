@@ -293,6 +293,11 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
 
     tstring err_str = BuildPrefix(level, file, line);
     err_str.append(buf, count);
+
+    err_str += TSTR(", error code: ");
+    err_str += boost::lexical_cast<tstring>(e.code());
+    err_str += TSTR(", error msg: ");
+    err_str += e.str();
     err_str += TSTR("\r\n");
 
     tcout << err_str.c_str();

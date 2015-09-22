@@ -29,4 +29,7 @@ private:
 
     boost::thread m_worker_thread;
     HANDLE m_hExitEvent;
+
+    static bool m_s_has_init_process_path_query;
+    static boost::mutex m_s_lock_process_path_query;
 };

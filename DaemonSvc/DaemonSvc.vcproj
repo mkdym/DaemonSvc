@@ -171,11 +171,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\last_error.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\logger.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\proc_non_exist_task.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\process_path_query.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\process_scanner.cpp"
 				>
 			</File>
 			<File
@@ -230,6 +242,14 @@
 			</File>
 			<File
 				RelativePath=".\proc_non_exist_task.h"
+				>
+			</File>
+			<File
+				RelativePath=".\process_path_query.h"
+				>
+			</File>
+			<File
+				RelativePath=".\process_scanner.h"
 				>
 			</File>
 			<File

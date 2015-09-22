@@ -2,7 +2,13 @@
 #include <Windows.h>
 #include <boost/bind.hpp>
 #include "logger.h"
+#include "process_path_query.h"
+#include "process_scanner.h"
 #include "proc_non_exist_task.h"
+
+
+bool CProcNonExistTask::m_s_has_init_process_path_query = false;
+boost::mutex CProcNonExistTask::m_s_lock_process_path_query;
 
 
 CProcNonExistTask::CProcNonExistTask(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
@@ -12,6 +18,12 @@ CProcNonExistTask::CProcNonExistTask(const TaskFunc& f, const tstring& proc_path
     , m_interval_seconds(interval_seconds)
     , m_hExitEvent(NULL)
 {
+    boost::lock_guard<boost::mutex> locker(m_s_lock_process_path_query);
+    if (!m_s_has_init_process_path_query)
+    {
+        CProcessPathQuery::init();
+        m_s_has_init_process_path_query = true;
+    }
 }
 
 CProcNonExistTask::~CProcNonExistTask(void)
@@ -88,3 +100,4 @@ void CProcNonExistTask::worker_func()
 
     InfoLogA("proc non exist task worker thread func end");
 }
+

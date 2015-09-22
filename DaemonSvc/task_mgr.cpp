@@ -24,6 +24,7 @@ CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTi
 
     const TaskId id = alloc_task_num_id();
     m_tasks[id] = TaskBasePtr(new CTimePointTask(f, tm));
+    InfoLogA("added a time point task, id: %d", id);
     return id;
 }
 
@@ -33,6 +34,7 @@ CTaskMgr::TaskId CTaskMgr::add_time_interval_task(const TaskFunc& f, const DWORD
 
     const TaskId id = alloc_task_num_id();
     m_tasks[id] = TaskBasePtr(new CTimeIntervalTask(f, interval_seconds));
+    InfoLogA("added a time interval task, id: %d", id);
     return id;
 }
 
@@ -43,6 +45,7 @@ CTaskMgr::TaskId CTaskMgr::add_proc_non_exist_task(const TaskFunc& f, const tstr
 
     const TaskId id = alloc_task_num_id();
     m_tasks[id] = TaskBasePtr(new CProcNonExistTask(f, proc_path, interval_seconds));
+    InfoLogA("added a proc non exist task, id: %d", id);
     return id;
 }
 

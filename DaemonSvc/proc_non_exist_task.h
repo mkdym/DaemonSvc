@@ -19,6 +19,8 @@ public:
 
 private:
     void worker_func();
+    //if can not find, return 0
+    DWORD find_process_id();
 
 private:
     bool m_started;
@@ -26,10 +28,8 @@ private:
     TaskFunc m_f;
     const tstring m_proc_path;
     const DWORD m_interval_seconds;
+    bool m_need_query_full_path;
 
     boost::thread m_worker_thread;
     HANDLE m_hExitEvent;
-
-    static bool m_s_has_init_process_path_query;
-    static boost::mutex m_s_lock_process_path_query;
 };

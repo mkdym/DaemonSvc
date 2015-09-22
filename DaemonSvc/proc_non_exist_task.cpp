@@ -1,14 +1,15 @@
 #include <cassert>
 #include <Windows.h>
 #include <boost/bind.hpp>
+#include <boost/algorithm/string.hpp>
 #include "logger.h"
 #include "process_path_query.h"
 #include "process_scanner.h"
 #include "proc_non_exist_task.h"
 
 
-bool CProcNonExistTask::m_s_has_init_process_path_query = false;
-boost::mutex CProcNonExistTask::m_s_lock_process_path_query;
+static bool g_s_has_init_process_path_query = false;
+static boost::mutex g_s_lock_process_path_query;
 
 
 CProcNonExistTask::CProcNonExistTask(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
@@ -16,13 +17,19 @@ CProcNonExistTask::CProcNonExistTask(const TaskFunc& f, const tstring& proc_path
     , m_f(f)
     , m_proc_path(proc_path)
     , m_interval_seconds(interval_seconds)
+    , m_need_query_full_path(false)
     , m_hExitEvent(NULL)
 {
-    boost::lock_guard<boost::mutex> locker(m_s_lock_process_path_query);
-    if (!m_s_has_init_process_path_query)
+    if (tstring::npos != m_proc_path.find_first_of(TSTR("\\/")))
     {
-        CProcessPathQuery::init();
-        m_s_has_init_process_path_query = true;
+        m_need_query_full_path = true;
+
+        boost::lock_guard<boost::mutex> locker(g_s_lock_process_path_query);
+        if (!g_s_has_init_process_path_query)
+        {
+            CProcessPathQuery::init();
+            g_s_has_init_process_path_query = true;
+        }
     }
 }
 
@@ -95,9 +102,121 @@ void CProcNonExistTask::worker_func()
 
     while (true)
     {
-        Sleep(30 * 1000);
+        const DWORD pid = find_process_id();
+        if (0 == pid)//non exist
+        {
+            InfoLog(TSTR("can not find process[%s], try to execute function if has"), m_proc_path.c_str());
+            if (m_f)
+            {
+                try
+                {
+                    m_f();
+                }
+                catch (...)
+                {
+                    ErrorLogA("execute proc non exist task function exception");
+                }
+            }
+
+            const DWORD wait_result = WaitForSingleObject(m_hExitEvent, 1000);//sleep some while if function has done something which will effect later on
+            if (WAIT_OBJECT_0 == wait_result)
+            {
+                InfoLogA("got exit notify");
+                break;
+            }
+        }
+        else//exist
+        {
+            HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
+            if (NULL == hProcess)
+            {
+                ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%d] fail"), pid);
+
+                const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
+                if (WAIT_OBJECT_0 == wait_result)
+                {
+                    InfoLogA("got exit notify");
+                    break;
+                }
+            }
+            else
+            {
+                bool should_break = false;
+
+                HANDLE pHandles[2] = {m_hExitEvent, hProcess};
+                const DWORD wait_result = WaitForMultipleObjects(sizeof(pHandles) / sizeof(pHandles[0]), pHandles, FALSE, INFINITE);
+                switch (wait_result)
+                {
+                case WAIT_OBJECT_0:
+                    InfoLogA("got exit notify");
+                    should_break = true;
+                    break;
+
+                case WAIT_OBJECT_0 + 1:
+                    InfoLog(TSTR("process[%s] exited, try to execute function if has"), m_proc_path.c_str());
+                    if (m_f)
+                    {
+                        try
+                        {
+                            m_f();
+                        }
+                        catch (...)
+                        {
+                            ErrorLogA("execute proc non exist task function exception");
+                        }
+                    }
+                    break;
+
+                default:
+                    //sleep some while for recover from error state
+                    if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
+                    {
+                        InfoLogA("got exit notify");
+                        should_break = true;
+                    }
+                    break;
+                }
+
+                CloseHandle(hProcess);
+                hProcess = NULL;
+
+                if (should_break)
+                {
+                    break;
+                }
+            }
+        }
     }
 
     InfoLogA("proc non exist task worker thread func end");
+}
+
+DWORD CProcNonExistTask::find_process_id()
+{
+    DWORD pid = 0;
+
+    ProcessInfo pi;
+    CProcessScanner ps(m_need_query_full_path);
+    while (ps.next(pi))
+    {
+        if (m_need_query_full_path)
+        {
+            if (boost::algorithm::iends_with(pi.full_path, m_proc_path))
+            {
+                pid = pi.pid;
+                break;
+            }
+        }
+        else
+        {
+            if (boost::algorithm::iequals(pi.exe_name, m_proc_path))
+            {
+                pid = pi.pid;
+                break;
+            }
+        }
+    }
+
+    return pid;
 }
 

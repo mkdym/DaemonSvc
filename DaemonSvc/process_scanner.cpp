@@ -62,6 +62,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         info.thread_count = pe32.cntThreads;
         info.exe_name = pe32.szExeFile;
 
+        info.full_path.clear();
         if (m_query_full_path)
         {
             if (0 == info.pid || 4 == info.pid)

@@ -1,31 +1,55 @@
+#include <boost/bind.hpp>
 #include "logger.h"
 #include "single_checker.h"
 #include "win32_service.h"
+#include "task_mgr.h"
 
 
 
 HANDLE g_exit_event = NULL;
 
 
+
+void task_func(const tstring& hint)
+{
+    InfoLog(TSTR("task function: %s"), hint.c_str());
+}
+
+
+
+
 bool starting(const CWin32Service::ArgList& args)
 {
-    if (!CSingleChecker::GetInstanceRef().single(TSTR("{3387415F-A686-4692-AA54-3A16AAEF9D5C}")))
-    {
-        ErrorLogA("app already running");
-        return false;
-    }
+    bool bReturn = false;
 
-    g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (NULL == g_exit_event)
+    do 
     {
-        ErrorLogLastErr(CLastError(), TSTR("CreateEvent fail"));
-        return false;
-    }
-    else
-    {
+        if (!CSingleChecker::GetInstanceRef().single(TSTR("{3387415F-A686-4692-AA54-3A16AAEF9D5C}")))
+        {
+            ErrorLogA("app already running");
+            break;
+        }
+
+        CTaskMgr::TaskId id = CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(task_func, TSTR("proc_non_exist_task")), TSTR("test.exe"), 3);
+        if (!CTaskMgr::GetInstanceRef().start_one(id))
+        {
+            ErrorLogA("start task fail");
+            break;
+        }
+
+        g_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (NULL == g_exit_event)
+        {
+            ErrorLogLastErr(CLastError(), TSTR("CreateEvent fail"));
+            break;
+        }
+
         InfoLogA("starting OK");
-        return true;
-    }
+        bReturn = true;
+
+    } while (false);
+
+    return bReturn;
 }
 
 void running(const CWin32Service::ArgList& args)

@@ -86,7 +86,12 @@ void CTimePointTask::worker_func()
         GetLocalTime(&systime);
 
         //todo
-        Sleep(30 * 1000);
+        const DWORD wait_result = WaitForSingleObject(m_hExitEvent, INFINITE);
+        if (WAIT_OBJECT_0 == wait_result)
+        {
+            InfoLogA("got exit notify");
+            break;
+        }
     }
 
     InfoLogA("time point task worker thread func end");

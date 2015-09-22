@@ -168,6 +168,7 @@ void CProcNonExistTask::worker_func()
                     break;
 
                 default:
+                    ErrorLogLastErr(CLastError(), TSTR("WaitForMultipleObjects fail, return code: %d"), wait_result);
                     //sleep some while for recover from error state
                     if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
                     {

@@ -30,10 +30,14 @@ bool starting(const CWin32Service::ArgList& args)
             break;
         }
 
-        CTaskMgr::TaskId id = CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(task_func, TSTR("proc_non_exist_task")), TSTR("test.exe"), 3);
-        if (!CTaskMgr::GetInstanceRef().start_one(id))
+        CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(task_func, TSTR("proc_non_exist_task")), TSTR("test.exe"), 5);
+        CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(task_func, TSTR("time_interval_task")), 5);
+
+        std::vector<CTaskMgr::TaskId> failed_ids;
+        CTaskMgr::GetInstanceRef().start_all(failed_ids);
+        if (!failed_ids.empty())
         {
-            ErrorLogA("start task fail");
+            ErrorLogA("start all tasks fail");
             break;
         }
 

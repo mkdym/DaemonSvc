@@ -82,11 +82,37 @@ void CTimeIntervalTask::worker_func()
 
     while (true)
     {
-        SYSTEMTIME systime = {0};
-        GetLocalTime(&systime);
+        const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
+        if (WAIT_OBJECT_0 == wait_result)
+        {
+            InfoLogA("got exit notify");
+            break;
+        }
 
-        //todo
-        Sleep(30 * 1000);
+        if (WAIT_TIMEOUT == wait_result)
+        {
+            if (m_f)
+            {
+                try
+                {
+                    m_f();
+                }
+                catch (...)
+                {
+                    ErrorLogA("execute time interval task function exception");
+                }
+            }
+        }
+        else
+        {
+            ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %d"), wait_result);
+            //sleep some while for recover from error state
+            if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
+            {
+                InfoLogA("got exit notify");
+                break;
+            }
+        }
     }
 
     InfoLogA("time interval task worker thread func end");

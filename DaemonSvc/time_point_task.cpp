@@ -5,10 +5,12 @@
 #include "time_point_task.h"
 
 
-CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& tm)
+CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DIFF_TYPE& diff_type, const DWORD diff_seconds)
     : m_started(false)
     , m_f(f)
-    , m_tm(tm)
+    , m_period(period)
+    , m_diff_type(diff_type)
+    , m_diff_seconds(diff_seconds)
     , m_hExitEvent(NULL)
 {
 }

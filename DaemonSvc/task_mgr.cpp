@@ -14,16 +14,16 @@ CTaskMgr::~CTaskMgr(void)
 
 }
 
-CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTime& tm)
+CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTime& period, const CTimePointTask::DIFF_TYPE& diff_type, const DWORD diff_seconds)
 {
-    assert(!(0 == tm.dayofmonth
-        && 0 == tm.dayofweek
-        && 0 == tm.hour
-        && 0 == tm.minute
-        && 0 == tm.second));
+    assert(!(0 == period.dayofmonth
+        && 0 == period.dayofweek
+        && 0 == period.hour
+        && 0 == period.minute
+        && 0 == period.second));
 
     const TaskId id = alloc_task_num_id();
-    m_tasks[id] = TaskBasePtr(new CTimePointTask(f, tm));
+    m_tasks[id] = TaskBasePtr(new CTimePointTask(f, period, diff_type, diff_seconds));
     InfoLogA("added a time point task, id: %d", id);
     return id;
 }

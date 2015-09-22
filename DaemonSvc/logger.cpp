@@ -256,7 +256,7 @@ void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wch
     va_end(args);
 
     std::string s = BuildPrefixA(level, file, line);
-    s += WideStr2ANSIStr(std::wstring(buf, cout));
+    s += WideStr2ANSIStr(std::wstring(buf, count));
     s += "\r\n";
 
     std::cout << s.c_str();
@@ -278,7 +278,7 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
     va_end(args);
 
     std::string s = BuildPrefixA(level, file, line);
-    s += tstr2ansistr(tstring(buf, cout));
+    s += tstr2ansistr(tstring(buf, count));
 
     s += ", error code: ";
     s += boost::lexical_cast<std::string>(e.code());
@@ -287,7 +287,7 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
     s += "\r\n";
 
     std::cout << s.c_str();
-    OutputDebugString(s.c_str());
+    OutputDebugStringA(s.c_str());
 
     __LogFile::GetInstanceRef().write(s.c_str(), s.size());
 }

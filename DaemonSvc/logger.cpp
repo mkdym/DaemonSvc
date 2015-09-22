@@ -196,19 +196,6 @@ static std::string BuildPrefixA(const __LOG_LEVEL level, const char *file, const
     return s;
 }
 
-static std::wstring BuildPrefixW(const __LOG_LEVEL level, const char *file, const int line)
-{
-    std::string s = BuildPrefixA(level, file, line);
-    return ANSIStr2WideStr(s);
-}
-
-
-#if defined(_UNICODE) || defined(UNICODE)
-#define BuildPrefix         BuildPrefixW
-#else
-#define BuildPrefix         BuildPrefixA
-#endif
-
 
 /*
 functions below are exported functions
@@ -268,14 +255,13 @@ void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wch
     }
     va_end(args);
 
-    std::wstring ws = BuildPrefixW(level, file, line);
-    ws.append(buf, count);
-    ws += L"\r\n";
+    std::string s = BuildPrefixA(level, file, line);
+    s += WideStr2ANSIStr(std::wstring(buf, cout));
+    s += "\r\n";
 
-    std::wcout << ws.c_str();
-    OutputDebugStringW(ws.c_str());
+    std::cout << s.c_str();
+    OutputDebugStringA(s.c_str());
 
-    const std::string s = WideStr2ANSIStr(ws);
     __LogFile::GetInstanceRef().write(s.c_str(), s.size());
 }
 
@@ -291,19 +277,18 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
     }
     va_end(args);
 
-    tstring err_str = BuildPrefix(level, file, line);
-    err_str.append(buf, count);
+    std::string s = BuildPrefixA(level, file, line);
+    s += tstr2ansistr(tstring(buf, cout));
 
-    err_str += TSTR(", error code: ");
-    err_str += boost::lexical_cast<tstring>(e.code());
-    err_str += TSTR(", error msg: ");
-    err_str += e.str();
-    err_str += TSTR("\r\n");
+    s += ", error code: ";
+    s += boost::lexical_cast<std::string>(e.code());
+    s += ", error msg: ";
+    s += tstr2ansistr(e.str());
+    s += "\r\n";
 
-    tcout << err_str.c_str();
-    OutputDebugString(err_str.c_str());
+    std::cout << s.c_str();
+    OutputDebugString(s.c_str());
 
-    const std::string s = tstr2ansistr(err_str);
     __LogFile::GetInstanceRef().write(s.c_str(), s.size());
 }
 

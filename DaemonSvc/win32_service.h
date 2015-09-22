@@ -33,7 +33,7 @@ public:
 
     bool Init(const ServiceInfo& info);
 
-    S_MODE GetMode()
+    const S_MODE& GetMode() const
     {
         return m_mode;
     }

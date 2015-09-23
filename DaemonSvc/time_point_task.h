@@ -19,14 +19,14 @@ struct PeriodTime
     unsigned short dayofweek;//Sunday is 0, 0-6
     unsigned short hour;//0-23
     unsigned short minute;//0-59
-    unsigned short second;//0-59
+    //unsigned short second;//0-59
 
     PeriodTime()
         : dayofmonth(0)
         , dayofweek(0)
         , hour(0)
         , minute(0)
-        , second(0)
+        //, second(0)
     {
     }
 };
@@ -36,15 +36,8 @@ struct PeriodTime
 class CTimePointTask : public CTaskBase
 {
 public:
-    enum DIFF_TYPE
-    {
-        POSITIVE,
-        NEGATIVE,
-        BOTH,
-    };
-
-    //diff_type «ŒÛ≤Ó∑˚∫≈£¨diff_seconds «ŒÛ≤Ó√Î ˝
-    CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DIFF_TYPE& diff_type, const DWORD diff_seconds);
+    //deviation_minutes «ŒÛ≤Ó
+    CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DWORD deviation_minutes);
     ~CTimePointTask(void);
 
 public:
@@ -57,11 +50,11 @@ private:
 
 private:
     bool m_started;
+    SYSTEMTIME m_last_execute_time;
 
     TaskFunc m_f;
     const PeriodTime m_period;
-    const DIFF_TYPE m_diff_type;
-    const DWORD m_diff_seconds;
+    const DWORD m_deviation_minutes;
 
     boost::thread m_worker_thread;
     HANDLE m_hExitEvent;

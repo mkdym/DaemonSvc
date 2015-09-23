@@ -5,14 +5,14 @@
 #include "time_point_task.h"
 
 
-CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DIFF_TYPE& diff_type, const DWORD diff_seconds)
+CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DWORD deviation_minutes)
     : m_started(false)
     , m_f(f)
     , m_period(period)
-    , m_diff_type(diff_type)
-    , m_diff_seconds(diff_seconds)
+    , m_deviation_minutes(deviation_minutes)
     , m_hExitEvent(NULL)
 {
+    memset(&m_last_execute_time, 0, sizeof(m_last_execute_time));
 }
 
 CTimePointTask::~CTimePointTask(void)
@@ -81,11 +81,19 @@ void CTimePointTask::stop()
 void CTimePointTask::worker_func()
 {
     InfoLogA("time point task worker thread func begin");
+    ErrorLogA("time point task not implemented");
 
     while (true)
     {
         SYSTEMTIME systime = {0};
         GetLocalTime(&systime);
+
+        //计算上一次应执行的时间
+        //看当前时间和上一次应执行时间之间有没有被执行过，即上次执行时间是否在上一次应执行时间之后
+        //若有，则进行下一次等待
+        //若没有，则判断是否在误差范围内，即当前时间-上一次应执行时间 是否 <= 误差
+        //若在，则执行，并更新上一次执行时间
+        //若不在，则进行下一次等待
 
         //todo
         const DWORD wait_result = WaitForSingleObject(m_hExitEvent, INFINITE);

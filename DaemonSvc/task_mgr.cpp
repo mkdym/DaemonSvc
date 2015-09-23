@@ -14,16 +14,21 @@ CTaskMgr::~CTaskMgr(void)
 
 }
 
-CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTime& period, const CTimePointTask::DIFF_TYPE& diff_type, const DWORD diff_seconds)
+CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTime& period, const DWORD deviation_minutes)
 {
     assert(!(0 == period.dayofmonth
         && 0 == period.dayofweek
         && 0 == period.hour
         && 0 == period.minute
-        && 0 == period.second));
+        //&& 0 == period.second
+        ));
+    //todo: 在每种定时下，限制误差大小
+    //每月任务：必须小于28天
+    //每周任务：必须小于7天
+    //每天任务：必须小于24小时
 
     const TaskId id = alloc_task_num_id();
-    m_tasks[id] = TaskBasePtr(new CTimePointTask(f, period, diff_type, diff_seconds));
+    m_tasks[id] = TaskBasePtr(new CTimePointTask(f, period, deviation_minutes));
     InfoLogA("added a time point task, id: %d", id);
     return id;
 }

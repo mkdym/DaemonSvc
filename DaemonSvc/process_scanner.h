@@ -57,7 +57,8 @@ private:
 // param:    const bool exactly_match           if exactly_match is false, use iends_with to match path, otherwise, use iequals to match path
 //                                              when path does not contain '\' or '/', ignore exactly_match, always treated with true
 // return:   void
-// remarks:
+// remarks:  if path contains '\' or '/', you should call CProcessPathQuery::init() first
+//           typically after logger module init at process start
 //************************************
 void find_pids_by_path(const tstring& path,
                        std::vector<DWORD>& pids,

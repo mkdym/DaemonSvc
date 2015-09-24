@@ -30,7 +30,7 @@ bool starting(const CWin32Service::ArgList& args)
             break;
         }
 
-        CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(task_func, TSTR("proc_non_exist_task")), TSTR("test.exe"), 5);
+        CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(CTaskMgr::exec, TSTR("cmd.exe"), CTaskMgr::AS_ALL_LOGON_USERS, true), TSTR("test.exe"), 5);
         CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(task_func, TSTR("time_interval_task")), 5);
 
         std::vector<CTaskMgr::TaskId> failed_ids;

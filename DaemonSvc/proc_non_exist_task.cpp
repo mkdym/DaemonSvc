@@ -103,7 +103,7 @@ void CProcNonExistTask::worker_func()
     {
         std::vector<DWORD> pids;
         //@@@@@ is exactly_match=false correct ?????
-        find_pids_by_path(m_proc_path, pids, true, false);
+        CProcessScanner::find_pids_by_path(m_proc_path, pids, true, false);
 
         if (pids.empty())//non exist
         {

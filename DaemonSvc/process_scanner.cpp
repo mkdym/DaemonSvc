@@ -104,10 +104,10 @@ bool CProcessScanner::init()
 }
 
 
-void find_pids_by_path(const tstring& path,
-                       std::vector<DWORD>& pids,
-                       const bool only_first /*= false*/,
-                       const bool exactly_match /*= true*/)
+void CProcessScanner::find_pids_by_path(const tstring& path,
+                                        std::vector<DWORD>& pids,
+                                        const bool only_first /*= false*/,
+                                        const bool exactly_match /*= true*/)
 {
     bool need_query_full_path = false;
     if (tstring::npos != path.find_first_of(TSTR("\\/")))

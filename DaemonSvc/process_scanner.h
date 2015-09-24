@@ -36,6 +36,25 @@ public:
 private:
     bool init();
 
+public:
+    //************************************
+    // brief:    find process id on the system which matched the process path
+    // name:     find_pids_by_path
+    // param:    const tstring & path               process name or relative/full path
+    // param:    std::vector<DWORD> & pids          found pid list
+    // param:    const bool only_first              only return the first matched process if true, otherwise return all
+    //                                              will scan all processes on the system when false
+    // param:    const bool exactly_match           if exactly_match is false, use iends_with to match path, otherwise, use iequals to match path
+    //                                              when path does not contain '\' or '/', ignore exactly_match, always treated with true
+    // return:   void
+    // remarks:  if path contains '\' or '/', you should call CProcessPathQuery::init() first
+    //           typically after logger module init at process start
+    //************************************
+    static void find_pids_by_path(const tstring& path,
+        std::vector<DWORD>& pids,
+        const bool only_first = false,
+        const bool exactly_match = true);
+
 private:
     HANDLE m_hSnapshot;
     bool m_first_enum;
@@ -46,23 +65,5 @@ private:
 };
 
 
-
-//************************************
-// brief:    find process id on the system which matched the process path
-// name:     find_pids_by_path
-// param:    const tstring & path               process name or relative/full path
-// param:    std::vector<DWORD> & pids          found pid list
-// param:    const bool only_first              only return the first matched process if true, otherwise return all
-//                                              will scan all processes on the system when false
-// param:    const bool exactly_match           if exactly_match is false, use iends_with to match path, otherwise, use iequals to match path
-//                                              when path does not contain '\' or '/', ignore exactly_match, always treated with true
-// return:   void
-// remarks:  if path contains '\' or '/', you should call CProcessPathQuery::init() first
-//           typically after logger module init at process start
-//************************************
-void find_pids_by_path(const tstring& path,
-                       std::vector<DWORD>& pids,
-                       const bool only_first = false,
-                       const bool exactly_match = true);
 
 

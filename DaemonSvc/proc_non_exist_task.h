@@ -19,8 +19,6 @@ public:
 
 private:
     void worker_func();
-    //if can not find, return 0
-    DWORD find_process_id();
 
 private:
     bool m_started;

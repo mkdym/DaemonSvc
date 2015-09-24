@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <Tlhelp32.h>
+#include <boost/algorithm/string.hpp>
 #include "logger.h"
 #include "process_scanner.h"
 
@@ -101,3 +102,59 @@ bool CProcessScanner::init()
 
     return bReturn;
 }
+
+
+void find_pids_by_path(const tstring& path,
+                       std::vector<DWORD>& pids,
+                       const bool only_first /*= false*/,
+                       const bool exactly_match /*= true*/)
+{
+    bool need_query_full_path = false;
+    if (tstring::npos != path.find_first_of(TSTR("\\/")))
+    {
+        need_query_full_path = true;
+    }
+
+    ProcessInfo pi;
+    CProcessScanner ps(need_query_full_path);
+    while (ps.next(pi))
+    {
+        if (need_query_full_path)
+        {
+            if (exactly_match)
+            {
+                if (boost::algorithm::iequals(pi.full_path, path))
+                {
+                    pids.push_back(pi.pid);
+                    if (only_first)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (boost::algorithm::iends_with(pi.full_path, path))
+                {
+                    pids.push_back(pi.pid);
+                    if (only_first)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (boost::algorithm::iequals(pi.exe_name, path))
+            {
+                pids.push_back(pi.pid);
+                if (only_first)
+                {
+                    break;
+                }
+            }
+        }
+    }
+}
+

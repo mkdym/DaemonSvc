@@ -1,7 +1,6 @@
 #include <cassert>
 #include <Windows.h>
 #include <boost/bind.hpp>
-#include <boost/algorithm/string.hpp>
 #include "logger.h"
 #include "process_path_query.h"
 #include "process_scanner.h"
@@ -102,8 +101,11 @@ void CProcNonExistTask::worker_func()
 
     while (true)
     {
-        const DWORD pid = find_process_id();
-        if (0 == pid)//non exist
+        std::vector<DWORD> pids;
+        //@@@@@ is exactly_match=false correct ?????
+        find_pids_by_path(m_proc_path, pids, true, false);
+
+        if (pids.empty())//non exist
         {
             InfoLog(TSTR("can not find process[%s], try to execute function if has"), m_proc_path.c_str());
             if (m_f)
@@ -127,6 +129,7 @@ void CProcNonExistTask::worker_func()
         }
         else//exist
         {
+            const DWORD pid = pids.at(0);
             HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
             if (NULL == hProcess)
             {
@@ -190,34 +193,5 @@ void CProcNonExistTask::worker_func()
     }
 
     InfoLogA("proc non exist task worker thread func end");
-}
-
-DWORD CProcNonExistTask::find_process_id()
-{
-    DWORD pid = 0;
-
-    ProcessInfo pi;
-    CProcessScanner ps(m_need_query_full_path);
-    while (ps.next(pi))
-    {
-        if (m_need_query_full_path)
-        {
-            if (boost::algorithm::iends_with(pi.full_path, m_proc_path))
-            {
-                pid = pi.pid;
-                break;
-            }
-        }
-        else
-        {
-            if (boost::algorithm::iequals(pi.exe_name, m_proc_path))
-            {
-                pid = pi.pid;
-                break;
-            }
-        }
-    }
-
-    return pid;
 }
 

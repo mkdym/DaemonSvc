@@ -351,10 +351,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\rapidxml-1.13\manual.html"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

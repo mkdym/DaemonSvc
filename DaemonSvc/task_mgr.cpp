@@ -190,7 +190,7 @@ CTaskMgr::TaskId CTaskMgr::alloc_task_num_id()
 }
 
 bool CTaskMgr::exec(const tstring& command,
-                    const RUN_AS_TYPE& run_as,
+                    const CMD_RUN_AS_TYPE& run_as,
                     const bool show_window /*= true*/)
 {
     InfoLogA("begin exec");

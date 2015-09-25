@@ -1,8 +1,10 @@
 #include <boost/bind.hpp>
+#include "self_path.h"
 #include "logger.h"
 #include "single_checker.h"
 #include "win32_service.h"
 #include "task_mgr.h"
+#include "config_mgr.h"
 
 
 
@@ -30,8 +32,48 @@ bool starting(const CWin32Service::ArgList& args)
             break;
         }
 
-        CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(CTaskMgr::exec, TSTR("cmd.exe"), CTaskMgr::AS_ALL_LOGON_USERS, true), TSTR("test.exe"), 5);
-        CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(task_func, TSTR("time_interval_task")), 5);
+        CConfigMgr cfg;
+        cfg.load(TSTR(""));
+
+        {
+            CConfigMgr::time_interval_task_info_list infos;
+            cfg.get(infos);
+
+            for (CConfigMgr::time_interval_task_info_list::const_iterator iter_info = infos.begin();
+                iter_info != infos.end();
+                ++iter_info)
+            {
+                CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(CTaskMgr::exec,
+                    iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                    iter_info->interval_seconds);
+            }
+        }
+
+        {
+            CConfigMgr::time_point_task_info_list infos;
+            cfg.get(infos);
+
+            for (CConfigMgr::time_point_task_info_list::const_iterator iter_info = infos.begin();
+                iter_info != infos.end();
+                ++iter_info)
+            {
+                //todo
+            }
+        }
+
+        {
+            CConfigMgr::proc_non_exist_task_info_list infos;
+            cfg.get(infos);
+
+            for (CConfigMgr::proc_non_exist_task_info_list::const_iterator iter_info = infos.begin();
+                iter_info != infos.end();
+                ++iter_info)
+            {
+                CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(CTaskMgr::exec,
+                    iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                    iter_info->proc_path, iter_info->interval_seconds);
+            }
+        }
 
         std::vector<CTaskMgr::TaskId> failed_ids;
         CTaskMgr::GetInstanceRef().start_all(failed_ids);

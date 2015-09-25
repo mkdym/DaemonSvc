@@ -9,6 +9,7 @@
 #include "time_point_task.h"
 #include "time_interval_task.h"
 #include "proc_non_exist_task.h"
+#include "config_mgr.h"
 
 
 class CTaskMgr : public boost::noncopyable
@@ -46,24 +47,17 @@ private:
     TaskId alloc_task_num_id();
 
 public:
-    enum RUN_AS_TYPE
-    {
-        AS_LOCAL,                   //run in local context
-        AS_LOGON_USER,              //run as one logon user
-        AS_ALL_LOGON_USERS,         //run as all logon users
-    };
-
     //************************************
     // brief:    execute command
     // name:     CTaskMgr::exec
     // param:    const tstring & command            command line
-    // param:    const RUN_AS_TYPE & run_as         run_as type
+    // param:    const CMD_RUN_AS_TYPE & run_as     run_as type
     // param:    const bool show_window             SW_SHOWNORMAL if true, otherwise SW_HIDE. see ShowWindow in MSDN
     // return:   bool                               return true if has created any process successfully
     // remarks:  if AS_LOGON_USER, exec in all logon users context(one-by-one) until one is successful
     //           if AS_ALL_LOGON_USERS, exec in all logon users context whether or not successful
     //************************************
-    static bool exec(const tstring& command, const RUN_AS_TYPE& run_as, const bool show_window = true);
+    static bool exec(const tstring& command, const CMD_RUN_AS_TYPE& run_as, const bool show_window = true);
 
 private:
     typedef boost::shared_ptr<CTaskBase> TaskBasePtr;

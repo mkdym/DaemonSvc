@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iterator> //for std::back_inserter
 #include <boost/algorithm/string.hpp>
+#include <boost/smart_ptr.hpp>
 #include "../rapidxml-1.13/rapidxml.hpp"
 #include "../rapidxml-1.13/rapidxml_utils.hpp"
 #include "../rapidxml-1.13/rapidxml_print.hpp"
@@ -70,8 +71,27 @@ void xml::close_xml(xml_doc_ptr pdoc)
 
 xml_doc_ptr xml::load_xml_file(const std::string& file_path)
 {
-    ErrorLogA("not implemented");
-    return NULL;
+    //todo: wow64
+    bool has_error = true;
+    boost::scoped_ptr<rapidxml::file<char> > pf;
+    try
+    {
+        pf.reset(new rapidxml::file<char>(file_path.c_str()));
+        has_error = false;
+    }
+    catch (std::runtime_error&)
+    {
+        ErrorLogA("can not open file: %s", file_path.c_str());
+    }
+
+    if (has_error)
+    {
+        return NULL;
+    }
+    else
+    {
+        return load_xml_string(pf->data());
+    }
 }
 
 bool xml::save_xml_to_file(xml_doc_ptr pdoc, const std::string& file_path)

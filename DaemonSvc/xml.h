@@ -44,7 +44,7 @@ namespace xml
         {
             value = boost::lexical_cast<Target>(src);
         }
-        catch (boost::bad_lexical_cast& e)
+        catch (boost::bad_lexical_cast&)
         {
             value = fail_value;
         }

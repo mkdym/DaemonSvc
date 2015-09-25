@@ -173,6 +173,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\config_mgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\last_error.cpp"
 				>
 			</File>
@@ -242,6 +246,14 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\config_info.h"
+				>
+			</File>
+			<File
+				RelativePath=".\config_mgr.h"
+				>
+			</File>
 			<File
 				RelativePath=".\last_error.h"
 				>

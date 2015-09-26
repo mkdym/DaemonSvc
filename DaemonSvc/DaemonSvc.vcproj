@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\period_time.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\proc_non_exist_task.cpp"
 				>
 			</File>

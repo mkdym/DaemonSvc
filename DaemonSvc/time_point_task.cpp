@@ -5,11 +5,10 @@
 #include "time_point_task.h"
 
 
-CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DWORD deviation_minutes)
+CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& period)
     : m_started(false)
     , m_f(f)
     , m_period(period)
-    , m_deviation_minutes(deviation_minutes)
     , m_hExitEvent(NULL)
 {
     memset(&m_last_execute_time, 0, sizeof(m_last_execute_time));

@@ -5,10 +5,10 @@
 
 enum RUN_AS_TYPE
 {
+    AS_UNKNOWN = 0,             //error
     AS_LOCAL,                   //run in local context
     AS_LOGON_USER,              //run as one logon user
     AS_ALL_LOGON_USERS,         //run as all logon users
-    AS_UNKNOWN,                 //error
 };
 
 

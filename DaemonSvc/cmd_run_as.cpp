@@ -26,6 +26,7 @@ RUN_AS_TYPE cast_run_as_from_string(const std::string& s)
     }
     else
     {
+        ErrorLogA("can not cast string[%s] to RUN_AS_TYPE", s_lower.c_str());
         return AS_UNKNOWN;
     }
 }
@@ -48,6 +49,7 @@ std::string cast_run_as_to_string(const RUN_AS_TYPE& run_as)
         break;
 
     default:
+        ErrorLogA("unknown RUN_AS_TYPE: %d", run_as);
         s = "unknown";
         break;
     }

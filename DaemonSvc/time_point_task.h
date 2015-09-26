@@ -11,7 +11,7 @@ class CTimePointTask : public CTaskBase
 {
 public:
     //deviation_minutes «ŒÛ≤Ó
-    CTimePointTask(const TaskFunc& f, const PeriodTime& period, const DWORD deviation_minutes);
+    CTimePointTask(const TaskFunc& f, const PeriodTime& period);
     ~CTimePointTask(void);
 
 public:
@@ -28,7 +28,6 @@ private:
 
     TaskFunc m_f;
     const PeriodTime m_period;
-    const DWORD m_deviation_minutes;
 
     boost::thread m_worker_thread;
     HANDLE m_hExitEvent;

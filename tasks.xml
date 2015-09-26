@@ -2,22 +2,22 @@
 <root>
     <tasks>
         <time_interval_tasks>
-            <task interval_seconds="30" run_as_logon_users="all" show_window="0">
+            <task interval_seconds="30" run_as_logon_users="all" show_window="false">
                 <![CDATA[ping www.bailing.co >> {VAR{INSTALL_PATH}}\ping.log]]>
             </task>
         </time_interval_tasks>
         
         <time_point_tasks>
-            <task type="daily" dayofmonth="1" dayofweek="1" hour="1" minute="1" deviation_minutes="30" run_as_logon_users="local" show_window="0">
+            <task type="daily" dayofmonth="1" dayofweek="1" hour="1" minute="1" deviation_minutes="30" run_as_logon_users="local" show_window="false">
                 <![CDATA[sc query bailingservice >> {VAR{INSTALL_PATH}}\service_status.log]]>
             </task>
         </time_point_tasks>
         
         <proc_non_exist_tasks>
-            <task proc_path="bailingsvc.exe" interval_seconds="3" run_as_logon_users="local" show_window="0">
+            <task proc_path="bailingsvc.exe" interval_seconds="3" run_as_logon_users="local" show_window="false">
                 <![CDATA[net start bailingservice]]>
             </task>
-            <task proc_path="bailing.exe" interval_seconds="3" run_as_logon_users="first" show_window="1">
+            <task proc_path="bailing.exe" interval_seconds="3" run_as_logon_users="first" show_window="true">
                 <![CDATA[{VAR{INSTALL_PATH}}\bailing.exe]]>
             </task>
         </proc_non_exist_tasks>

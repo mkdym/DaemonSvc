@@ -206,6 +206,7 @@ bool CWin32Service::ReportStatus(const DWORD nState, const DWORD nWaitHintMS)
 {
     if (SERVICE_START_PENDING == nState)
     {
+        //todo: 应该是忙的时候不允许其他动作，不止于“启动中”
         m_service_status.dwControlsAccepted = 0;
     }
     else

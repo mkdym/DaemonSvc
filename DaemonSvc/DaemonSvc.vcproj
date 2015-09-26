@@ -185,11 +185,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\daemon.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\last_error.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\logger.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
@@ -233,10 +241,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\test.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\time_interval_task.cpp"
 				>
 			</File>
@@ -272,6 +276,10 @@
 			</File>
 			<File
 				RelativePath=".\config_loader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\daemon.h"
 				>
 			</File>
 			<File

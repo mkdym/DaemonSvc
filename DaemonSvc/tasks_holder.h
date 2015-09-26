@@ -8,16 +8,16 @@
 #include "task_base.h"
 
 
-class CTaskMgr : public boost::noncopyable
+class CTasksHolder : public boost::noncopyable
 {
 private:
-    CTaskMgr(void);
-    ~CTaskMgr(void);
+    CTasksHolder(void);
+    ~CTasksHolder(void);
 
 public:
-    static CTaskMgr& GetInstanceRef()
+    static CTasksHolder& GetInstanceRef()
     {
-        static CTaskMgr instance;
+        static CTasksHolder instance;
         return instance;
     }
 

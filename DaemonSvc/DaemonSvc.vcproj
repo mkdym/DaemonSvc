@@ -229,7 +229,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\task_mgr.cpp"
+				RelativePath=".\tasks_holder.cpp"
 				>
 			</File>
 			<File
@@ -327,7 +327,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\task_mgr.h"
+				RelativePath=".\tasks_holder.h"
 				>
 			</File>
 			<File

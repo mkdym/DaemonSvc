@@ -3,7 +3,7 @@
 #include "logger.h"
 #include "single_checker.h"
 #include "win32_service.h"
-#include "task_mgr.h"
+#include "tasks_holder.h"
 #include "config_loader.h"
 
 
@@ -23,7 +23,7 @@ bool prepare_tasks()
             iter_info != infos.end();
             ++iter_info)
         {
-            CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(cmd_run_as,
+            CTasksHolder::GetInstanceRef().add_time_interval_task(boost::bind(cmd_run_as,
                 iter_info->cmd, iter_info->run_as, iter_info->show_window),
                 iter_info->interval_seconds);
         }
@@ -37,7 +37,7 @@ bool prepare_tasks()
             iter_info != infos.end();
             ++iter_info)
         {
-            CTaskMgr::GetInstanceRef().add_time_point_task(boost::bind(cmd_run_as,
+            CTasksHolder::GetInstanceRef().add_time_point_task(boost::bind(cmd_run_as,
                 iter_info->cmd, iter_info->run_as, iter_info->show_window),
                 iter_info->pt);
         }
@@ -51,14 +51,14 @@ bool prepare_tasks()
             iter_info != infos.end();
             ++iter_info)
         {
-            CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(cmd_run_as,
+            CTasksHolder::GetInstanceRef().add_proc_non_exist_task(boost::bind(cmd_run_as,
                 iter_info->cmd, iter_info->run_as, iter_info->show_window),
                 iter_info->proc_path, iter_info->interval_seconds);
         }
     }
 
-    std::vector<CTaskMgr::TaskId> failed_ids;
-    CTaskMgr::GetInstanceRef().start_all(failed_ids);
+    std::vector<CTasksHolder::TaskId> failed_ids;
+    CTasksHolder::GetInstanceRef().start_all(failed_ids);
     if (!failed_ids.empty())
     {
         ErrorLogA("start tasks fail");

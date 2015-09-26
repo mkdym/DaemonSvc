@@ -4,20 +4,20 @@
 #include "time_point_task.h"
 #include "time_interval_task.h"
 #include "proc_non_exist_task.h"
-#include "task_mgr.h"
+#include "tasks_holder.h"
 
 
-CTaskMgr::CTaskMgr(void)
+CTasksHolder::CTasksHolder(void)
 {
 
 }
 
-CTaskMgr::~CTaskMgr(void)
+CTasksHolder::~CTasksHolder(void)
 {
 
 }
 
-CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTime& period)
+CTasksHolder::TaskId CTasksHolder::add_time_point_task(const TaskFunc& f, const PeriodTime& period)
 {
     assert(period.valid());
 
@@ -27,7 +27,7 @@ CTaskMgr::TaskId CTaskMgr::add_time_point_task(const TaskFunc& f, const PeriodTi
     return id;
 }
 
-CTaskMgr::TaskId CTaskMgr::add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds)
+CTasksHolder::TaskId CTasksHolder::add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds)
 {
     assert(interval_seconds);
 
@@ -37,7 +37,7 @@ CTaskMgr::TaskId CTaskMgr::add_time_interval_task(const TaskFunc& f, const DWORD
     return id;
 }
 
-CTaskMgr::TaskId CTaskMgr::add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
+CTasksHolder::TaskId CTasksHolder::add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
 {
     assert(!proc_path.empty());
     assert(interval_seconds);
@@ -48,7 +48,7 @@ CTaskMgr::TaskId CTaskMgr::add_proc_non_exist_task(const TaskFunc& f, const tstr
     return id;
 }
 
-bool CTaskMgr::start_one(const TaskId id)
+bool CTasksHolder::start_one(const TaskId id)
 {
     TaskBasePtr ptask;
     {
@@ -78,7 +78,7 @@ bool CTaskMgr::start_one(const TaskId id)
     }
 }
 
-void CTaskMgr::start_all(std::vector<TaskId>& failed_ids)
+void CTasksHolder::start_all(std::vector<TaskId>& failed_ids)
 {
     TaskMap tasks;
     {
@@ -101,7 +101,7 @@ void CTaskMgr::start_all(std::vector<TaskId>& failed_ids)
     }
 }
 
-void CTaskMgr::stop_one(const TaskId id)
+void CTasksHolder::stop_one(const TaskId id)
 {
     TaskBasePtr ptask;
     {
@@ -126,7 +126,7 @@ void CTaskMgr::stop_one(const TaskId id)
     }
 }
 
-void CTaskMgr::stop_all()
+void CTasksHolder::stop_all()
 {
     TaskMap tasks;
     {
@@ -146,7 +146,7 @@ void CTaskMgr::stop_all()
     }
 }
 
-void CTaskMgr::delete_one(const TaskId id)
+void CTasksHolder::delete_one(const TaskId id)
 {
     boost::lock_guard<boost::mutex> locker(m_tasks_lock);
     TaskMap::const_iterator it_task = m_tasks.find(id);
@@ -156,13 +156,13 @@ void CTaskMgr::delete_one(const TaskId id)
     }
 }
 
-void CTaskMgr::delete_all()
+void CTasksHolder::delete_all()
 {
     boost::lock_guard<boost::mutex> locker(m_tasks_lock);
     m_tasks.clear();
 }
 
-CTaskMgr::TaskId CTaskMgr::alloc_task_num_id()
+CTasksHolder::TaskId CTasksHolder::alloc_task_num_id()
 {
     static TaskId id = 0;
     static boost::mutex id_lock;

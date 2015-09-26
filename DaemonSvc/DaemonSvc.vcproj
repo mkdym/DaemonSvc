@@ -173,6 +173,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\cmd_run_as.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\config_mgr.cpp"
 				>
 			</File>
@@ -247,6 +251,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\cmd_run_as.h"
+				>
+			</File>
+			<File
 				RelativePath=".\config_info.h"
 				>
 			</File>
@@ -260,6 +268,10 @@
 			</File>
 			<File
 				RelativePath=".\logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\period_time.h"
 				>
 			</File>
 			<File
@@ -300,10 +312,6 @@
 			</File>
 			<File
 				RelativePath=".\task_base.h"
-				>
-			</File>
-			<File
-				RelativePath=".\task_common.h"
 				>
 			</File>
 			<File

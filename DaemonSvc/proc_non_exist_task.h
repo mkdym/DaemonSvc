@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include <boost/thread.hpp>
-#include "task_common.h"
 #include "task_base.h"
 
 
@@ -9,7 +8,9 @@
 class CProcNonExistTask : public CTaskBase
 {
 public:
-    CProcNonExistTask(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds);
+    CProcNonExistTask(const TaskFunc& f,
+        const tstring& proc_path,
+        const DWORD interval_seconds);
     ~CProcNonExistTask(void);
 
 public:

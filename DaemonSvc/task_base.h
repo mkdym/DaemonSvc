@@ -1,5 +1,11 @@
 #pragma once
+#include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
+
+
+
+typedef boost::function<void()> TaskFunc;
+
 
 
 class CTaskBase : public boost::noncopyable

@@ -11,7 +11,9 @@ static bool g_s_has_init_process_path_query = false;
 static boost::mutex g_s_lock_process_path_query;
 
 
-CProcNonExistTask::CProcNonExistTask(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
+CProcNonExistTask::CProcNonExistTask(const TaskFunc& f,
+                                     const tstring& proc_path,
+                                     const DWORD interval_seconds)
     : m_started(false)
     , m_f(f)
     , m_proc_path(proc_path)
@@ -120,7 +122,8 @@ void CProcNonExistTask::worker_func()
                 }
             }
 
-            const DWORD wait_result = WaitForSingleObject(m_hExitEvent, 1000);//sleep some while if function has done something which will effect later on
+            //sleep some while if function has done something which will effect later on
+            const DWORD wait_result = WaitForSingleObject(m_hExitEvent, 1000);
             if (WAIT_OBJECT_0 == wait_result)
             {
                 InfoLogA("got exit notify");
@@ -147,7 +150,8 @@ void CProcNonExistTask::worker_func()
                 bool should_break = false;
 
                 HANDLE pHandles[2] = {m_hExitEvent, hProcess};
-                const DWORD wait_result = WaitForMultipleObjects(sizeof(pHandles) / sizeof(pHandles[0]), pHandles, FALSE, INFINITE);
+                const DWORD wait_result = WaitForMultipleObjects(sizeof(pHandles) / sizeof(pHandles[0]),
+                    pHandles, FALSE, INFINITE);
                 switch (wait_result)
                 {
                 case WAIT_OBJECT_0:

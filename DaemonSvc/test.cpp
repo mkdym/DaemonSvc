@@ -4,6 +4,7 @@
 #include "single_checker.h"
 #include "win32_service.h"
 #include "task_mgr.h"
+#include "cmd_run_as.h"
 #include "config_mgr.h"
 
 
@@ -43,7 +44,7 @@ bool starting(const CWin32Service::ArgList& args)
                 iter_info != infos.end();
                 ++iter_info)
             {
-                CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(CTaskMgr::exec,
+                CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(cmd_run_as,
                     iter_info->cmd, iter_info->run_as, iter_info->show_window),
                     iter_info->interval_seconds);
             }
@@ -69,7 +70,7 @@ bool starting(const CWin32Service::ArgList& args)
                 iter_info != infos.end();
                 ++iter_info)
             {
-                CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(CTaskMgr::exec,
+                CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(cmd_run_as,
                     iter_info->cmd, iter_info->run_as, iter_info->show_window),
                     iter_info->proc_path, iter_info->interval_seconds);
             }

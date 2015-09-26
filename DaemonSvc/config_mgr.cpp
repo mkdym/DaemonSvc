@@ -53,7 +53,7 @@ void CConfigMgr::load(const tstring& file_path)
                 ErrorLogA("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
                 continue;
             }
-            info.interval_seconds = string_lexical_cast<DWORD>(s, 0);
+            info.interval_seconds = any_lexical_cast(s, 0);
 
             attr_name = "run_as_logon_users";
             if (!get_node_attr(*iter_node, attr_name, s))
@@ -69,7 +69,7 @@ void CConfigMgr::load(const tstring& file_path)
                 ErrorLogA("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
                 continue;
             }
-            info.show_window = string_lexical_cast<bool>(s, true);
+            info.show_window = any_lexical_cast(s, true);
 
             info.cmd = ansistr2tstr(get_node_value(*iter_node));
 
@@ -109,7 +109,7 @@ void CConfigMgr::load(const tstring& file_path)
                 ErrorLogA("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
                 continue;
             }
-            info.show_window = string_lexical_cast<bool>(s, true);
+            info.show_window = any_lexical_cast(s, true);
 
             info.cmd = ansistr2tstr(get_node_value(*iter_node));
 
@@ -141,7 +141,7 @@ void CConfigMgr::load(const tstring& file_path)
                 ErrorLogA("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
                 continue;
             }
-            info.interval_seconds = string_lexical_cast<DWORD>(s, 0);
+            info.interval_seconds = any_lexical_cast(s, 0);
 
             attr_name = "run_as_logon_users";
             if (!get_node_attr(*iter_node, attr_name, s))
@@ -157,7 +157,7 @@ void CConfigMgr::load(const tstring& file_path)
                 ErrorLogA("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
                 continue;
             }
-            info.show_window = string_lexical_cast<bool>(s, true);
+            info.show_window = any_lexical_cast(s, true);
 
             info.cmd = ansistr2tstr(get_node_value(*iter_node));
 

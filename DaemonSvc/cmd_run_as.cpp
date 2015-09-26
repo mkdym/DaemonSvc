@@ -12,15 +12,15 @@ RUN_AS_TYPE cast_run_as_from_string(const std::string& s)
     std::string s_lower = boost::algorithm::to_lower_copy(s);
     boost::algorithm::trim(s_lower);
 
-    if (boost::algorithm::equals("all", s_lower))
+    if (s_lower == "all")
     {
         return AS_ALL_LOGON_USERS;
     }
-    else if (boost::algorithm::equals("first", s_lower))
+    else if (s_lower == "first")
     {
         return AS_LOGON_USER;
     }
-    else if (boost::algorithm::equals("local", s_lower))
+    else if (s_lower == "local")
     {
         return AS_LOCAL;
     }

@@ -10,15 +10,15 @@ PeriodTime::PERIOD_TYPE PeriodTime::cast_period_type_from_string(const std::stri
     std::string s_lower = boost::algorithm::to_lower_copy(s);
     boost::algorithm::trim(s_lower);
 
-    if (boost::algorithm::equals("daily", s_lower))
+    if (s_lower == "daily")
     {
         return DAILY;
     }
-    else if (boost::algorithm::equals("weekly", s_lower))
+    else if (s_lower == "weekly")
     {
         return WEEKLY;
     }
-    else if (boost::algorithm::equals("monthly", s_lower))
+    else if (s_lower == "monthly")
     {
         return MONTHLY;
     }

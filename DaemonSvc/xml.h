@@ -51,11 +51,17 @@ namespace xml
         return value;
     }
 
-    template<typename Target, typename CharType>
-    Target string_lexical_cast(const std::basic_string<CharType>& s, const Target& fail_value)
-    {
-        return any_lexical_cast<Target, std::basic_string<CharType> >(s, fail_value);
-    }
+    template<>
+    bool any_lexical_cast<bool, std::string>(const std::string& src, const bool& fail_value);
+
+    template<>
+    bool any_lexical_cast<bool, std::wstring>(const std::wstring& src, const bool& fail_value);
+
+    template<>
+    std::string any_lexical_cast<std::string, bool>(const bool& src, const std::string& fail_value);
+
+    template<>
+    std::wstring any_lexical_cast<std::wstring, bool>(const bool& src, const std::wstring& fail_value);
 }
 
 

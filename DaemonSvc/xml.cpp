@@ -224,4 +224,76 @@ bool xml::remove_node_attr(xml_node_ptr pnode, const std::string& attr_name)
     return false;
 }
 
+template<>
+bool xml::any_lexical_cast(const std::string& src, const bool& fail_value)
+{
+    std::string src_lower = boost::algorithm::to_lower_copy(src);
+    boost::algorithm::trim(src_lower);
+    if (src_lower == "true")
+    {
+        return true;
+    }
+    else if (src_lower == "false")
+    {
+        return false;
+    }
+    else
+    {
+        return fail_value;
+    }
+}
+
+template<>
+bool xml::any_lexical_cast(const std::wstring& src, const bool& fail_value)
+{
+    std::wstring src_lower = boost::algorithm::to_lower_copy(src);
+    boost::algorithm::trim(src_lower);
+    if (src_lower == L"true")
+    {
+        return true;
+    }
+    else if (src_lower == L"false")
+    {
+        return false;
+    }
+    else
+    {
+        return fail_value;
+    }
+}
+
+template<>
+std::string xml::any_lexical_cast(const bool& src, const std::string& fail_value)
+{
+    std::string s;
+
+    if (src)
+    {
+        s = "true";
+    }
+    else
+    {
+        s = "false";
+    }
+
+    return s;
+}
+
+template<>
+std::wstring xml::any_lexical_cast(const bool& src, const std::wstring& fail_value)
+{
+    std::wstring s;
+
+    if (src)
+    {
+        s = L"true";
+    }
+    else
+    {
+        s = L"false";
+    }
+
+    return s;
+}
+
 

@@ -1,6 +1,9 @@
 #include <cassert>
 #include <limits>
 #include "logger.h"
+#include "time_point_task.h"
+#include "time_interval_task.h"
+#include "proc_non_exist_task.h"
 #include "task_mgr.h"
 
 

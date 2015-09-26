@@ -4,10 +4,8 @@
 #include <boost/smart_ptr.hpp>
 #include <boost/thread.hpp>
 #include "tdef.h"
+#include "period_time.h"
 #include "task_base.h"
-#include "time_point_task.h"
-#include "time_interval_task.h"
-#include "proc_non_exist_task.h"
 
 
 class CTaskMgr : public boost::noncopyable

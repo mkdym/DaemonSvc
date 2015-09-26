@@ -4,7 +4,6 @@
 #include "single_checker.h"
 #include "win32_service.h"
 #include "task_mgr.h"
-#include "cmd_run_as.h"
 #include "config_mgr.h"
 
 
@@ -12,13 +11,10 @@
 HANDLE g_exit_event = NULL;
 
 
-
-void task_func(const tstring& hint)
+void test_task_func(const tstring& hint)
 {
     InfoLog(TSTR("task function: %s"), hint.c_str());
 }
-
-
 
 
 bool starting(const CWin32Service::ArgList& args)
@@ -58,7 +54,9 @@ bool starting(const CWin32Service::ArgList& args)
                 iter_info != infos.end();
                 ++iter_info)
             {
-                //todo
+                CTaskMgr::GetInstanceRef().add_time_point_task(boost::bind(cmd_run_as,
+                    iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                    iter_info->pt);
             }
         }
 
@@ -110,7 +108,7 @@ void running(const CWin32Service::ArgList& args)
         break;
 
     default:
-        ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %d"), r);
+        ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %lu"), r);
         break;
     }
     InfoLogA("running end");

@@ -3,6 +3,7 @@
 #include <boost/noncopyable.hpp>
 #include "tdef.h"
 #include "config_info.h"
+#include "xml.h"
 
 
 class CConfigMgr : public boost::noncopyable
@@ -21,6 +22,11 @@ public:
     void get(time_interval_task_info_list& infos) const;
     void get(time_point_task_info_list& infos) const;
     void get(proc_non_exist_task_info_list& infos) const;
+
+private:
+    void load_time_interval_tasks_info(xml_doc_ptr pdoc);
+    void load_time_point_tasks_info(xml_doc_ptr pdoc);
+    void load_proc_non_exist_tasks_info(xml_doc_ptr pdoc);
 
 private:
     time_interval_task_info_list m_time_interval_tasks_info;

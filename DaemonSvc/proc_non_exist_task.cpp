@@ -136,7 +136,7 @@ void CProcNonExistTask::worker_func()
             HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
             if (NULL == hProcess)
             {
-                ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%d] fail"), pid);
+                ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%lu] fail"), pid);
 
                 const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
                 if (WAIT_OBJECT_0 == wait_result)
@@ -175,7 +175,7 @@ void CProcNonExistTask::worker_func()
                     break;
 
                 default:
-                    ErrorLogLastErr(CLastError(), TSTR("WaitForMultipleObjects fail, return code: %d"), wait_result);
+                    ErrorLogLastErr(CLastError(), TSTR("WaitForMultipleObjects fail, return code: %lu"), wait_result);
                     //sleep some while for recover from error state
                     if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
                     {

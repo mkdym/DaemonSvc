@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <boost/lexical_cast.hpp>
 
 
 //only support utf-8
@@ -35,33 +34,6 @@ namespace xml
     bool set_node_value(xml_node_ptr pnode, const std::string& value);
     bool set_node_attr(xml_node_ptr pnode, const std::string& attr_name, const std::string& attr_value);
     bool remove_node_attr(xml_node_ptr pnode, const std::string& attr_name);
-
-    template<typename Target, typename Source>
-    Target any_lexical_cast(const Source& src, const Target& fail_value)
-    {
-        Target value = fail_value;
-        try
-        {
-            value = boost::lexical_cast<Target>(src);
-        }
-        catch (boost::bad_lexical_cast&)
-        {
-            value = fail_value;
-        }
-        return value;
-    }
-
-    template<>
-    bool any_lexical_cast<bool, std::string>(const std::string& src, const bool& fail_value);
-
-    template<>
-    bool any_lexical_cast<bool, std::wstring>(const std::wstring& src, const bool& fail_value);
-
-    template<>
-    std::string any_lexical_cast<std::string, bool>(const bool& src, const std::string& fail_value);
-
-    template<>
-    std::wstring any_lexical_cast<std::wstring, bool>(const bool& src, const std::wstring& fail_value);
 }
 
 

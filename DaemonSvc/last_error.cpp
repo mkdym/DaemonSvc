@@ -19,7 +19,7 @@ void CLastError::translate()
     if (0 == count)
     {
         const DWORD e = GetLastError();
-        printf_s("FormatMessage fail, error code: %d\r\n", e);
+        printf_s("FormatMessage fail, error code: %lu\r\n", e);
     }
     else
     {
@@ -46,7 +46,7 @@ void print_last_err(const CLastError& e, const tchar* prefix, ...)
     tstring s;
     s.append(buf, count);
 
-    _tprintf_s(TSTR("%s, error code: %d, error msg: %s\r\n"), s.c_str(), e.code(), e.str().c_str());
+    _tprintf_s(TSTR("%s, error code: %lu, error msg: %s\r\n"), s.c_str(), e.code(), e.str().c_str());
 }
 
 

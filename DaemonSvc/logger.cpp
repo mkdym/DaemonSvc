@@ -3,10 +3,10 @@
 #include <time.h>
 #include <Windows.h>
 #include <boost/noncopyable.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/smart_ptr.hpp>
 #include "str_encode.h"
 #include "self_path.h"
+#include "any_lexical_cast.h"
 #include "logger.h"
 
 
@@ -95,7 +95,7 @@ public:
                 {
                     const DWORD pid = GetCurrentProcessId();
                     file_path += TSTR(".");
-                    file_path += boost::lexical_cast<tstring>(pid);
+                    file_path += string_lexical_cast<tchar>(pid);
                 }
 
                 file_path += TSTR(".log");
@@ -169,7 +169,7 @@ static std::string BuildPrefixA(const __LOG_LEVEL level, const char *file, const
     s += time_buffer;
 
     static const DWORD pid = GetCurrentProcessId();
-    s += "[" + boost::lexical_cast<std::string>(pid) + ":" + boost::lexical_cast<std::string>(GetCurrentThreadId()) + "] ";
+    s += "[" + string_lexical_cast<char>(pid) + ":" + string_lexical_cast<char>(GetCurrentThreadId()) + "] ";
 
     switch (level)
     {
@@ -192,7 +192,7 @@ static std::string BuildPrefixA(const __LOG_LEVEL level, const char *file, const
 
     s += " [";
     s += file;
-    s += ":" + boost::lexical_cast<std::string>(line) + "] ";
+    s += ":" + string_lexical_cast<char>(line) + "] ";
     return s;
 }
 
@@ -212,11 +212,11 @@ bool __LogBytes(const __LOG_LEVEL level, const char *file, const int line,
     std::string s = BuildPrefixA(level, file, line)
         + tstr2ansistr(prefix) + "\r\n"
         + "@@@@@begin, buffer size = "
-        + boost::lexical_cast<std::string>(len)
+        + string_lexical_cast<char>(len)
         + "@@@@@\r\n";
     s.append(reinterpret_cast<const char *>(buf), len);
     s += "\r\n";
-    s += "@@@@@end, buffer size = " + boost::lexical_cast<std::string>(len) + "@@@@@\r\n";
+    s += "@@@@@end, buffer size = " + string_lexical_cast<char>(len) + "@@@@@\r\n";
 
     return __LogFile::GetInstanceRef().write(s.c_str(), s.size());
 }
@@ -281,7 +281,7 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
     s += tstr2ansistr(tstring(buf, count));
 
     s += ", error code: ";
-    s += boost::lexical_cast<std::string>(e.code());
+    s += string_lexical_cast<char>(e.code());
     s += ", error msg: ";
     s += tstr2ansistr(e.str());
     s += "\r\n";

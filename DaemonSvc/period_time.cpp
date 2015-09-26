@@ -103,17 +103,17 @@ std::string PeriodTime::str() const
     switch (type)
     {
     case DAILY:
-        format_ret = sprintf_s(buf, buf_size, "%s period, hour[%d], minute[%d], deviation_minutes[%d]",
+        format_ret = sprintf_s(buf, buf_size, "%s period, hour[%lu], minute[%lu], deviation_minutes[%lu]",
             str_type.c_str(), hour, minute, deviation_minutes);
         break;
 
     case WEEKLY:
-        format_ret = sprintf_s(buf, buf_size, "%s period, dayofweek[%d], hour[%d], minute[%d], deviation_minutes[%d]",
+        format_ret = sprintf_s(buf, buf_size, "%s period, dayofweek[%lu], hour[%lu], minute[%lu], deviation_minutes[%lu]",
             str_type.c_str(), dayofweek, hour, minute, deviation_minutes);
         break;
 
     case MONTHLY:
-        format_ret = sprintf_s(buf, buf_size, "%s period, dayofmonth[%d], hour[%d], minute[%d], deviation_minutes[%d]",
+        format_ret = sprintf_s(buf, buf_size, "%s period, dayofmonth[%lu], hour[%lu], minute[%lu], deviation_minutes[%lu]",
             str_type.c_str(), dayofmonth, hour, minute, deviation_minutes);
         break;
 
@@ -143,7 +143,7 @@ bool PeriodTime::valid_minute(const bool log) const
     {
         if (log)
         {
-            ErrorLogA("invalid minute: %d", minute);
+            ErrorLogA("invalid minute: %lu", minute);
         }
         return false;
     }
@@ -159,7 +159,7 @@ bool PeriodTime::valid_hour(const bool log) const
     {
         if (log)
         {
-            ErrorLogA("invalid hour: %d", hour);
+            ErrorLogA("invalid hour: %lu", hour);
         }
         return false;
     }
@@ -175,7 +175,7 @@ bool PeriodTime::valid_dayofweek(const bool log) const
     {
         if (log)
         {
-            ErrorLogA("invalid dayofweek: %d", dayofweek);
+            ErrorLogA("invalid dayofweek: %lu", dayofweek);
         }
         return false;
     }
@@ -191,7 +191,7 @@ bool PeriodTime::valid_dayofmonth(const bool log) const
     {
         if (log)
         {
-            ErrorLogA("invalid dayofmonth: %d", dayofmonth);
+            ErrorLogA("invalid dayofmonth: %lu", dayofmonth);
         }
         return false;
     }
@@ -219,10 +219,10 @@ bool PeriodTime::valid_deviation_minutes(const bool log) const
         break;
     }
 
-    if (log)
+    if (log && !bReturn)
     {
-        ErrorLogA("%s deviation_minutes[%d] is too large",
-            cast_period_type_to_string(type), deviation_minutes);
+        ErrorLogA("%s deviation_minutes[%lu] is too large",
+            cast_period_type_to_string(type).c_str(), deviation_minutes);
     }
 
     return bReturn;

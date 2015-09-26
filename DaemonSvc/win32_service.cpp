@@ -127,7 +127,7 @@ bool CWin32Service::Init(const ServiceInfo& info)
             break;
 
         default:
-            ErrorLogA("invalid argc: %d", m_args.size());
+            ErrorLogA("invalid argc: %lu", m_args.size());
             bValid = false;
             break;
         }
@@ -274,7 +274,7 @@ void CWin32Service::ServiceCtrl(const DWORD code)
         }
         else
         {
-            ErrorLogA("unsupported service control code: %d", code);
+            ErrorLogA("unsupported service control code: %lu", code);
         }
     }
 }
@@ -311,7 +311,7 @@ BOOL CWin32Service::ConsoleCtrl(DWORD code)
     case CTRL_C_EVENT:
     case CTRL_CLOSE_EVENT:
     case CTRL_SHUTDOWN_EVENT:
-        InfoLog(TSTR("got console stop event: %d, %s"), code, console_event_str(code));
+        InfoLog(TSTR("got console stop event: %lu, %s"), code, console_event_str(code));
         {
             CtrlFuncs::const_iterator it_func = m_ctrlfuncs.find(SERVICE_CONTROL_STOP);
             if (it_func != m_ctrlfuncs.end())

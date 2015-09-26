@@ -77,7 +77,7 @@ bool cmd_run_as(const tstring& command,
                 created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
             if (hProcess)
             {
-                InfoLogA("create_process_in_local_context success, pid=%d", created_pid);
+                InfoLogA("create_process_in_local_context success, pid=%lu", created_pid);
                 processes.push_back(hProcess);
             }
             else
@@ -96,13 +96,13 @@ bool cmd_run_as(const tstring& command,
                 iter_pid != pids.end();
                 ++iter_pid)
             {
-                InfoLogA("explorer.exe pid=%d", *iter_pid);
+                InfoLogA("explorer.exe pid=%lu", *iter_pid);
                 DWORD created_pid = 0;
                 HANDLE hProcess = ProcessCreator::create_process_as_same_token(*iter_pid,
                     command, created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
                 if (hProcess)
                 {
-                    InfoLogA("create_process_as_same_token success, pid=%d", created_pid);
+                    InfoLogA("create_process_as_same_token success, pid=%lu", created_pid);
                     processes.push_back(hProcess);
                     if (run_as == AS_LOGON_USER)
                     {
@@ -111,7 +111,7 @@ bool cmd_run_as(const tstring& command,
                 }
                 else
                 {
-                    ErrorLog(TSTR("create_process_as_same_token fail, pid=%d, cmd=[%s]"),
+                    ErrorLog(TSTR("create_process_as_same_token fail, pid=%lu, cmd=[%s]"),
                         *iter_pid, command.c_str());
                 }
             }
@@ -124,7 +124,7 @@ bool cmd_run_as(const tstring& command,
                     created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
                 if (hProcess)
                 {
-                    InfoLogA("create_process_in_local_context success, pid=%d", created_pid);
+                    InfoLogA("create_process_in_local_context success, pid=%lu", created_pid);
                     processes.push_back(hProcess);
                 }
                 else

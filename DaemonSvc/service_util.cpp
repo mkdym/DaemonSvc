@@ -199,7 +199,7 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
 
         if (SERVICE_RUNNING != status.dwCurrentState)
         {
-            DebugLog(TSTR("service[%s] is not running. status: %d, %s"),
+            DebugLog(TSTR("service[%s] is not running. status: %lu, %s"),
                 name.c_str(), status.dwCurrentState, service_status_str(status.dwCurrentState));
             break;
         }
@@ -346,7 +346,7 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
 
         if (SERVICE_RUNNING != status.dwCurrentState)
         {
-            ErrorLog(TSTR("start service[%s] fail, current status: %d, %s"),
+            ErrorLog(TSTR("start service[%s] fail, current status: %lu, %s"),
                 name.c_str(), status.dwCurrentState, service_status_str(status.dwCurrentState));
             break;
         }
@@ -423,7 +423,7 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
 
         if (SERVICE_STOPPED != status.dwCurrentState)
         {
-            ErrorLog(TSTR("stop service[%s] fail, current status: %d, %s"),
+            ErrorLog(TSTR("stop service[%s] fail, current status: %lu, %s"),
                 name.c_str(), status.dwCurrentState, service_status_str(status.dwCurrentState));
             break;
         }
@@ -451,7 +451,7 @@ bool ServiceUtil::SendControlCode2Service(const tstring& name, const DWORD code)
         SERVICE_STATUS status = {0};
         if (!ControlService(hService.get(), code, &status))
         {
-            ErrorLogLastErr(CLastError(), TSTR("ControlService[%s:%d] fail"), name.c_str(), code);
+            ErrorLogLastErr(CLastError(), TSTR("ControlService[%s:%lu] fail"), name.c_str(), code);
             break;
         }
 

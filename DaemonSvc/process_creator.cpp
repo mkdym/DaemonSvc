@@ -95,7 +95,7 @@ HANDLE ProcessCreator::create_process_as_same_token(const DWORD pid,
     HANDLE hSourceProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
     if (NULL == hSourceProcess)
     {
-        ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%d] fail"), pid);
+        ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%lu] fail"), pid);
     }
     else
     {

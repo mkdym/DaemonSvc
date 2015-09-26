@@ -105,7 +105,7 @@ void CTimeIntervalTask::worker_func()
         }
         else
         {
-            ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %d"), wait_result);
+            ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %lu"), wait_result);
             //sleep some while for recover from error state
             if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
             {

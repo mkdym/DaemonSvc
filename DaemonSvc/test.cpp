@@ -4,21 +4,76 @@
 #include "single_checker.h"
 #include "win32_service.h"
 #include "task_mgr.h"
-#include "config_mgr.h"
+#include "config_loader.h"
 
 
 
 HANDLE g_exit_event = NULL;
 
 
-void test_task_func(const tstring& hint)
+bool prepare_tasks()
 {
-    InfoLog(TSTR("task function: %s"), hint.c_str());
+    CConfigLoader cfg(TSTR(""));
+
+    {
+        CConfigLoader::time_interval_task_info_list infos;
+        cfg.get(infos);
+
+        for (CConfigLoader::time_interval_task_info_list::const_iterator iter_info = infos.begin();
+            iter_info != infos.end();
+            ++iter_info)
+        {
+            CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(cmd_run_as,
+                iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                iter_info->interval_seconds);
+        }
+    }
+
+    {
+        CConfigLoader::time_point_task_info_list infos;
+        cfg.get(infos);
+
+        for (CConfigLoader::time_point_task_info_list::const_iterator iter_info = infos.begin();
+            iter_info != infos.end();
+            ++iter_info)
+        {
+            CTaskMgr::GetInstanceRef().add_time_point_task(boost::bind(cmd_run_as,
+                iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                iter_info->pt);
+        }
+    }
+
+    {
+        CConfigLoader::proc_non_exist_task_info_list infos;
+        cfg.get(infos);
+
+        for (CConfigLoader::proc_non_exist_task_info_list::const_iterator iter_info = infos.begin();
+            iter_info != infos.end();
+            ++iter_info)
+        {
+            CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(cmd_run_as,
+                iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                iter_info->proc_path, iter_info->interval_seconds);
+        }
+    }
+
+    std::vector<CTaskMgr::TaskId> failed_ids;
+    CTaskMgr::GetInstanceRef().start_all(failed_ids);
+    if (!failed_ids.empty())
+    {
+        ErrorLogA("start tasks fail");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 
 bool starting(const CWin32Service::ArgList& args)
 {
+    InfoLogA("starting begin");
     bool bReturn = false;
 
     do 
@@ -29,56 +84,8 @@ bool starting(const CWin32Service::ArgList& args)
             break;
         }
 
-        CConfigMgr cfg;
-        cfg.load(TSTR(""));
-
+        if (!prepare_tasks())
         {
-            CConfigMgr::time_interval_task_info_list infos;
-            cfg.get(infos);
-
-            for (CConfigMgr::time_interval_task_info_list::const_iterator iter_info = infos.begin();
-                iter_info != infos.end();
-                ++iter_info)
-            {
-                CTaskMgr::GetInstanceRef().add_time_interval_task(boost::bind(cmd_run_as,
-                    iter_info->cmd, iter_info->run_as, iter_info->show_window),
-                    iter_info->interval_seconds);
-            }
-        }
-
-        {
-            CConfigMgr::time_point_task_info_list infos;
-            cfg.get(infos);
-
-            for (CConfigMgr::time_point_task_info_list::const_iterator iter_info = infos.begin();
-                iter_info != infos.end();
-                ++iter_info)
-            {
-                CTaskMgr::GetInstanceRef().add_time_point_task(boost::bind(cmd_run_as,
-                    iter_info->cmd, iter_info->run_as, iter_info->show_window),
-                    iter_info->pt);
-            }
-        }
-
-        {
-            CConfigMgr::proc_non_exist_task_info_list infos;
-            cfg.get(infos);
-
-            for (CConfigMgr::proc_non_exist_task_info_list::const_iterator iter_info = infos.begin();
-                iter_info != infos.end();
-                ++iter_info)
-            {
-                CTaskMgr::GetInstanceRef().add_proc_non_exist_task(boost::bind(cmd_run_as,
-                    iter_info->cmd, iter_info->run_as, iter_info->show_window),
-                    iter_info->proc_path, iter_info->interval_seconds);
-            }
-        }
-
-        std::vector<CTaskMgr::TaskId> failed_ids;
-        CTaskMgr::GetInstanceRef().start_all(failed_ids);
-        if (!failed_ids.empty())
-        {
-            ErrorLogA("start all tasks fail");
             break;
         }
 
@@ -89,11 +96,11 @@ bool starting(const CWin32Service::ArgList& args)
             break;
         }
 
-        InfoLogA("starting OK");
         bReturn = true;
 
     } while (false);
 
+    InfoLogA("starting end");
     return bReturn;
 }
 

@@ -6,14 +6,11 @@
 #include "xml.h"
 
 
-class CConfigMgr : public boost::noncopyable
+class CConfigLoader : public boost::noncopyable
 {
 public:
-    CConfigMgr(void);
-    ~CConfigMgr(void);
-
-public:
-    void load(const tstring& file_path);
+    CConfigLoader(const tstring& file_path);
+    ~CConfigLoader(void);
 
     typedef std::vector<TimeIntervalTaskInfo> time_interval_task_info_list;
     typedef std::vector<TimePointTaskInfo> time_point_task_info_list;
@@ -24,6 +21,8 @@ public:
     void get(proc_non_exist_task_info_list& infos) const;
 
 private:
+    void load(const tstring& file_path);
+
     void load_time_interval_tasks_info(xml_doc_ptr pdoc);
     void load_time_point_tasks_info(xml_doc_ptr pdoc);
     void load_proc_non_exist_tasks_info(xml_doc_ptr pdoc);

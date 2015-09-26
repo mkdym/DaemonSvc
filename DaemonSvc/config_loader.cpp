@@ -2,7 +2,7 @@
 #include "str_encode.h"
 #include "any_lexical_cast.h"
 #include "logger.h"
-#include "config_mgr.h"
+#include "config_loader.h"
 
 
 using namespace xml;
@@ -15,15 +15,31 @@ static void LogNoAttrErrA(const std::string& node_path, const std::string& attr_
 }
 
 
-CConfigMgr::CConfigMgr(void)
+CConfigLoader::CConfigLoader(const tstring& file_path)
+{
+    load(file_path);
+}
+
+CConfigLoader::~CConfigLoader(void)
 {
 }
 
-CConfigMgr::~CConfigMgr(void)
+void CConfigLoader::get(time_interval_task_info_list& infos) const
 {
+    infos = m_time_interval_tasks_info;
 }
 
-void CConfigMgr::load(const tstring& file_path)
+void CConfigLoader::get(time_point_task_info_list& infos) const
+{
+    infos = m_time_point_tasks_info;
+}
+
+void CConfigLoader::get(proc_non_exist_task_info_list& infos) const
+{
+    infos = m_proc_non_exist_tasks_info;
+}
+
+void CConfigLoader::load(const tstring& file_path)
 {
     tstring config_file = file_path;
     if (config_file.empty())
@@ -45,22 +61,7 @@ void CConfigMgr::load(const tstring& file_path)
     }
 }
 
-void CConfigMgr::get(time_interval_task_info_list& infos) const
-{
-    infos = m_time_interval_tasks_info;
-}
-
-void CConfigMgr::get(time_point_task_info_list& infos) const
-{
-    infos = m_time_point_tasks_info;
-}
-
-void CConfigMgr::get(proc_non_exist_task_info_list& infos) const
-{
-    infos = m_proc_non_exist_tasks_info;
-}
-
-void CConfigMgr::load_time_interval_tasks_info(xml_doc_ptr pdoc)
+void CConfigLoader::load_time_interval_tasks_info(xml_doc_ptr pdoc)
 {
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/time_interval_tasks/task";
@@ -104,7 +105,7 @@ void CConfigMgr::load_time_interval_tasks_info(xml_doc_ptr pdoc)
     }
 }
 
-void CConfigMgr::load_time_point_tasks_info(xml_doc_ptr pdoc)
+void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
 {
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/time_point_tasks/task";
@@ -194,7 +195,7 @@ void CConfigMgr::load_time_point_tasks_info(xml_doc_ptr pdoc)
     }
 }
 
-void CConfigMgr::load_proc_non_exist_tasks_info(xml_doc_ptr pdoc)
+void CConfigLoader::load_proc_non_exist_tasks_info(xml_doc_ptr pdoc)
 {
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/proc_non_exist_tasks/task";

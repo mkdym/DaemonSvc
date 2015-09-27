@@ -25,10 +25,10 @@ template<>
 bool any_lexical_cast<bool, std::wstring>(const std::wstring& src, const bool& fail_value);
 
 template<>
-std::string any_lexical_cast<std::string, bool>(const bool& src, const std::string& fail_value);
+std::string any_lexical_cast<std::string, bool>(const bool& src, const std::string&);
 
 template<>
-std::wstring any_lexical_cast<std::wstring, bool>(const bool& src, const std::wstring& fail_value);
+std::wstring any_lexical_cast<std::wstring, bool>(const bool& src, const std::wstring&);
 
 
 template<typename CharType, typename Source>

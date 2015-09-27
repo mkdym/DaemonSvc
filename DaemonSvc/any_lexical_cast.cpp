@@ -41,7 +41,7 @@ bool any_lexical_cast(const std::wstring& src, const bool& fail_value)
 }
 
 template<>
-std::string any_lexical_cast(const bool& src, const std::string& fail_value)
+std::string any_lexical_cast(const bool& src, const std::string&)
 {
     std::string s;
 
@@ -58,7 +58,7 @@ std::string any_lexical_cast(const bool& src, const std::string& fail_value)
 }
 
 template<>
-std::wstring any_lexical_cast(const bool& src, const std::wstring& fail_value)
+std::wstring any_lexical_cast(const bool& src, const std::wstring&)
 {
     std::wstring s;
 

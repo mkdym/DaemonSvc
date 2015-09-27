@@ -132,7 +132,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.pt.dayofmonth = any_lexical_cast(s, 0);
+        info.pt.dayofmonth = any_lexical_cast<unsigned short>(s, 0);
 
         attr_name = "dayofweek";
         if (!get_node_attr(*iter_node, attr_name, s))
@@ -140,7 +140,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.pt.dayofweek = any_lexical_cast(s, 0);
+        info.pt.dayofweek = any_lexical_cast<unsigned short>(s, 0);
 
         attr_name = "hour";
         if (!get_node_attr(*iter_node, attr_name, s))
@@ -148,7 +148,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.pt.hour = any_lexical_cast(s, 0);
+        info.pt.hour = any_lexical_cast<unsigned short>(s, 0);
 
         attr_name = "minute";
         if (!get_node_attr(*iter_node, attr_name, s))
@@ -156,7 +156,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.pt.minute = any_lexical_cast(s, 0);
+        info.pt.minute = any_lexical_cast<unsigned short>(s, 0);
 
         attr_name = "deviation_minutes";
         if (!get_node_attr(*iter_node, attr_name, s))

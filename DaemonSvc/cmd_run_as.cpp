@@ -64,7 +64,7 @@ bool cmd_run_as(const tstring& command,
     InfoLogA("begin exec");
 
     bool execute_success = false;
-    const DWORD sw_flag = show_window ? SW_SHOWNORMAL : SW_HIDE;
+    const unsigned short sw_flag = show_window ? SW_SHOWNORMAL : SW_HIDE;
 
     std::vector<HANDLE> processes;
 

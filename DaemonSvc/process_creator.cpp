@@ -9,7 +9,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
                                     DWORD& created_pid,
                                     const DWORD creation_flags/* = CREATE_NEW_CONSOLE*/,
                                     const tstring& work_dir/* = TSTR("")*/,
-                                    const int show_window_flag/* = SW_SHOWNORMAL*/)
+                                    const unsigned short show_window_flag/* = SW_SHOWNORMAL*/)
 {
     HANDLE hTargetProcess = NULL;
 
@@ -44,7 +44,8 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
 
         boost::scoped_array<tchar> cmd_array(new tchar[command.size() + 1]);
         memset(cmd_array.get(), 0, (command.size() + 1) * sizeof(tchar));
-        memcpy_s(cmd_array.get(), command.size() * sizeof(tchar), command.c_str(), command.size() * sizeof(tchar));
+        memcpy_s(cmd_array.get(), command.size() * sizeof(tchar),
+            command.c_str(), command.size() * sizeof(tchar));
 
         if (!CreateProcessAsUser(hTargetToken,
             NULL,
@@ -88,7 +89,7 @@ HANDLE ProcessCreator::create_process_as_same_token(const DWORD pid,
                                     DWORD& created_pid,
                                     const DWORD creation_flags/* = CREATE_NEW_CONSOLE*/,
                                     const tstring& work_dir/* = TSTR("")*/,
-                                    const int show_window_flag/* = SW_SHOWNORMAL*/)
+                                    const unsigned short show_window_flag/* = SW_SHOWNORMAL*/)
 {
     HANDLE hTargetProcess = NULL;
 
@@ -117,7 +118,7 @@ HANDLE ProcessCreator::create_process_in_local_context(const tstring& command,
                                        DWORD& created_pid,
                                        const DWORD creation_flags/* = CREATE_NEW_CONSOLE*/,
                                        const tstring& work_dir/* = TSTR("")*/,
-                                       const int show_window_flag/* = SW_SHOWNORMAL*/)
+                                       const unsigned short show_window_flag/* = SW_SHOWNORMAL*/)
 {
     HANDLE hTargetProcess = NULL;
 
@@ -132,7 +133,8 @@ HANDLE ProcessCreator::create_process_in_local_context(const tstring& command,
 
         boost::scoped_array<tchar> cmd_array(new tchar[command.size() + 1]);
         memset(cmd_array.get(), 0, (command.size() + 1) * sizeof(tchar));
-        memcpy_s(cmd_array.get(), command.size() * sizeof(tchar), command.c_str(), command.size() * sizeof(tchar));
+        memcpy_s(cmd_array.get(), command.size() * sizeof(tchar),
+            command.c_str(), command.size() * sizeof(tchar));
 
         if (!CreateProcess(NULL,
             cmd_array.get(),

@@ -8,22 +8,22 @@
 
 bool starting(const CWin32Service::ArgList& args)
 {
-    return CDaemon::GetInstanceRef().start();
+    return CDaemon::get_instance_ref().start();
 }
 
 void running(const CWin32Service::ArgList& args)
 {
-    CDaemon::GetInstanceRef().keep_running();
+    CDaemon::get_instance_ref().keep_running();
 }
 
 void stopping(const CWin32Service::ArgList& args)
 {
-    CDaemon::GetInstanceRef().notify_stop();
+    CDaemon::get_instance_ref().notify_stop();
 }
 
 void restart(const CWin32Service::ArgList& args)
 {
-    CDaemon::GetInstanceRef().restart();
+    CDaemon::get_instance_ref().restart();
 }
 
 
@@ -37,7 +37,7 @@ int main(int argc, char * argv[])
     si.name = TSTR("DaemonSvc");
     si.display_name = si.name;
 
-    if (!CWin32Service::GetInstanceRef().Init(si))
+    if (!CWin32Service::get_instance_ref().Init(si))
     {
         ErrorLogA("init service fail");
     }
@@ -45,12 +45,12 @@ int main(int argc, char * argv[])
     {
         InfoLogA("init service success");
 
-        CWin32Service::GetInstanceRef().RegisterStartingFunction(starting);
-        CWin32Service::GetInstanceRef().RegisterRunningFunction(running);
-        CWin32Service::GetInstanceRef().RegisterControlCodeFunction(SERVICE_CONTROL_STOP, stopping);
-        CWin32Service::GetInstanceRef().RegisterControlCodeFunction(200, restart);
+        CWin32Service::get_instance_ref().RegisterStartingFunction(starting);
+        CWin32Service::get_instance_ref().RegisterRunningFunction(running);
+        CWin32Service::get_instance_ref().RegisterControlCodeFunction(SERVICE_CONTROL_STOP, stopping);
+        CWin32Service::get_instance_ref().RegisterControlCodeFunction(200, restart);
 
-        if (!CWin32Service::GetInstanceRef().Go())
+        if (!CWin32Service::get_instance_ref().Go())
         {
             ErrorLogA("make service go fail");
         }
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
     }
 
 #if defined(DEBUG) || defined(_DEBUG)
-    if (CWin32Service::GetInstanceRef().GetMode() != CWin32Service::S_DISPATCH)
+    if (CWin32Service::get_instance_ref().GetMode() != CWin32Service::S_DISPATCH)
     {
         system("pause");
     }

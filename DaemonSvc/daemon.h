@@ -1,21 +1,18 @@
 #pragma once
 #include <Windows.h>
-#include <boost/noncopyable.hpp>
+#include "singleton.h"
 #include "tdef.h"
 
 
-class CDaemon : public boost::noncopyable
+class CDaemon : public Singleton<CDaemon>
 {
+    friend class Singleton<CDaemon>;
+
 private:
     CDaemon(void);
-    ~CDaemon(void);
 
 public:
-    static CDaemon& GetInstanceRef()
-    {
-        static CDaemon instance;
-        return instance;
-    }
+    ~CDaemon(void);
 
 public:
     bool start();

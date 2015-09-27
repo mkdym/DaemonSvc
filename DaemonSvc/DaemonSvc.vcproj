@@ -335,6 +335,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\singleton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\str_encode.h"
 				>
 			</File>

@@ -1,21 +1,18 @@
 #pragma once
 #include <Windows.h>
-#include <boost/noncopyable.hpp>
+#include "singleton.h"
 #include "tdef.h"
 
 
-class CSingleChecker : public boost::noncopyable
+class CSingleChecker : public Singleton<CSingleChecker>
 {
+    friend class Singleton<CSingleChecker>;
+
 private:
     CSingleChecker(void);
-    ~CSingleChecker(void);
 
 public:
-    static CSingleChecker& GetInstanceRef()
-    {
-        static CSingleChecker instance;
-        return instance;
-    }
+    ~CSingleChecker(void);
 
 public:
     bool single(const tstring& mutex_name);

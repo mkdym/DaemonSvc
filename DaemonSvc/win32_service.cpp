@@ -164,7 +164,7 @@ bool CWin32Service::Go()
 
     case S_INSTALL:
         {
-            tstring command = CSelfPath::GetInstanceRef().get_full();
+            tstring command = CSelfPath::get_instance_ref().get_full();
             if (command.empty())
             {
                 ErrorLogA("can not get full path name");
@@ -395,17 +395,17 @@ bool CWin32Service::ServiceMain()
 
 void WINAPI CWin32Service::s_ServiceCtrl(DWORD code)
 {
-    CWin32Service::GetInstanceRef().ServiceCtrl(code);
+    CWin32Service::get_instance_ref().ServiceCtrl(code);
 }
 
 BOOL WINAPI CWin32Service::s_ConsoleCtrl(DWORD code)
 {
-    return CWin32Service::GetInstanceRef().ConsoleCtrl(code);
+    return CWin32Service::get_instance_ref().ConsoleCtrl(code);
 }
 
 void WINAPI CWin32Service::s_ServiceMain(int argc, tchar * argv[])
 {
-    CWin32Service::GetInstanceRef().ServiceMain();
+    CWin32Service::get_instance_ref().ServiceMain();
 }
 
 

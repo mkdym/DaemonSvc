@@ -44,7 +44,7 @@ void CConfigLoader::load(const tstring& file_path)
     tstring config_file = file_path;
     if (config_file.empty())
     {
-        config_file = CSelfPath::GetInstanceRef().get_dir() + TSTR("\\tasks.xml");
+        config_file = CSelfPath::get_instance_ref().get_dir() + TSTR("\\tasks.xml");
     }
     InfoLog(TSTR("config file: %s"), config_file.c_str());
 

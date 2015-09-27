@@ -2,8 +2,8 @@
 #include <string>
 #include <time.h>
 #include <Windows.h>
-#include <boost/noncopyable.hpp>
 #include <boost/smart_ptr.hpp>
+#include "singleton.h"
 #include "str_encode.h"
 #include "self_path.h"
 #include "any_lexical_cast.h"
@@ -11,14 +11,10 @@
 
 
 
-class __LogFile : public boost::noncopyable
+//加双下划线以示本文件自用类，不导出
+class __LogFile : public Singleton<__LogFile>
 {
-public:
-    static __LogFile& GetInstanceRef()
-    {
-        static __LogFile instance;
-        return instance;
-    }
+    friend class Singleton<__LogFile>;
 
 private:
     __LogFile()
@@ -27,6 +23,7 @@ private:
     {
     }
 
+public:
     ~__LogFile()
     {
         if (m_hFile != INVALID_HANDLE_VALUE)
@@ -56,7 +53,7 @@ public:
 
             do 
             {
-                if (!CSelfPath::GetInstanceRef().init())
+                if (!CSelfPath::get_instance_ref().init())
                 {
                     std::cout << "can not get self path" << std::endl;
                     break;
@@ -65,7 +62,7 @@ public:
                 tstring file_path = dir;
                 if (file_path.empty())
                 {
-                    file_path = CSelfPath::GetInstanceRef().get_dir() + TSTR("\\log");
+                    file_path = CSelfPath::get_instance_ref().get_dir() + TSTR("\\log");
                     //file_path size limit 248, see MSDN CreateDirectory
                     if (!CreateDirectory(file_path.c_str(), NULL))
                     {
@@ -77,7 +74,7 @@ public:
                         }
                     }
                 }
-                file_path += TSTR("\\") + CSelfPath::GetInstanceRef().get_name();
+                file_path += TSTR("\\") + CSelfPath::get_instance_ref().get_name();
 
                 {
                     SYSTEMTIME systime = {0};
@@ -203,7 +200,7 @@ functions below are exported functions
 
 bool InitLog(const tstring& dir)
 {
-    return __LogFile::GetInstanceRef().init(dir);
+    return __LogFile::get_instance_ref().init(dir);
 }
 
 bool __LogBytes(const __LOG_LEVEL level, const char *file, const int line,
@@ -218,7 +215,7 @@ bool __LogBytes(const __LOG_LEVEL level, const char *file, const int line,
     s += "\r\n";
     s += "@@@@@end, buffer size = " + string_lexical_cast<char>(len) + "@@@@@\r\n";
 
-    return __LogFile::GetInstanceRef().write(s.c_str(), s.size());
+    return __LogFile::get_instance_ref().write(s.c_str(), s.size());
 }
 
 void __LogA(const __LOG_LEVEL level, const char *file, const int line, const char *format, ...)
@@ -240,7 +237,7 @@ void __LogA(const __LOG_LEVEL level, const char *file, const int line, const cha
     std::cout << s.c_str();
     OutputDebugStringA(s.c_str());
 
-    __LogFile::GetInstanceRef().write(s.c_str(), s.size());
+    __LogFile::get_instance_ref().write(s.c_str(), s.size());
 }
 
 void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wchar_t *format, ...)
@@ -262,7 +259,7 @@ void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wch
     std::cout << s.c_str();
     OutputDebugStringA(s.c_str());
 
-    __LogFile::GetInstanceRef().write(s.c_str(), s.size());
+    __LogFile::get_instance_ref().write(s.c_str(), s.size());
 }
 
 void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, const CLastError& e, const tchar* prefix, ...)
@@ -289,7 +286,7 @@ void __LogLastErr(const __LOG_LEVEL level, const char *file, const int line, con
     std::cout << s.c_str();
     OutputDebugStringA(s.c_str());
 
-    __LogFile::GetInstanceRef().write(s.c_str(), s.size());
+    __LogFile::get_instance_ref().write(s.c_str(), s.size());
 }
 
 

@@ -2,23 +2,20 @@
 #include <vector>
 #include <map>
 #include <Windows.h>
-#include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
+#include "singleton.h"
 #include "service_info.h"
 
 
-class CWin32Service : public boost::noncopyable
+class CWin32Service : public Singleton<CWin32Service>
 {
+    friend class Singleton<CWin32Service>;
+
 private:
     CWin32Service(void);
-    ~CWin32Service(void);
 
 public:
-    static CWin32Service& GetInstanceRef()
-    {
-        static CWin32Service instance;
-        return instance;
-    }
+    ~CWin32Service(void);
 
 public:
     enum S_MODE

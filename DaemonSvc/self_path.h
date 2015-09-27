@@ -1,25 +1,22 @@
 #pragma once
-#include <boost/noncopyable.hpp>
+#include "singleton.h"
 #include "tdef.h"
 
 
 //do not use log, because we use this class to init log module
-class CSelfPath : public boost::noncopyable
+class CSelfPath : public Singleton<CSelfPath>
 {
+    friend class Singleton<CSelfPath>;
+
 private:
     CSelfPath(void)
         : m_has_init(false)
     {
     }
-    ~CSelfPath(void)
-    {
-    }
 
 public:
-    static CSelfPath& GetInstanceRef()
+    ~CSelfPath(void)
     {
-        static CSelfPath instance;
-        return instance;
     }
 
 public:

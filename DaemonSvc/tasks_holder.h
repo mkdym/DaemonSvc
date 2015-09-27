@@ -1,25 +1,22 @@
 #pragma once
 #include <map>
-#include <boost/noncopyable.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread.hpp>
+#include "singleton.h"
 #include "tdef.h"
 #include "period_time.h"
 #include "task_base.h"
 
 
-class CTasksHolder : public boost::noncopyable
+class CTasksHolder : public Singleton<CTasksHolder>
 {
+    friend class Singleton<CTasksHolder>;
+
 private:
     CTasksHolder(void);
-    ~CTasksHolder(void);
 
 public:
-    static CTasksHolder& GetInstanceRef()
-    {
-        static CTasksHolder instance;
-        return instance;
-    }
+    ~CTasksHolder(void);
 
 public:
     typedef unsigned int TaskId;

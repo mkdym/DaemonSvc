@@ -267,6 +267,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\boost_algorithm_string.h"
+				>
+			</File>
+			<File
 				RelativePath=".\cmd_run_as.h"
 				>
 			</File>

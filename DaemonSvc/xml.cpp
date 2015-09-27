@@ -1,10 +1,10 @@
 #include <cassert>
 #include <iterator> //for std::back_inserter
-#include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
 #include "../rapidxml-1.13/rapidxml.hpp"
 #include "../rapidxml-1.13/rapidxml_utils.hpp"
 #include "../rapidxml-1.13/rapidxml_print.hpp"
+#include "boost_algorithm_string.h"
 #include "logger.h"
 #include "xml.h"
 

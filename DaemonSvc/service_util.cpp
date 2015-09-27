@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
-#include <boost/algorithm/string.hpp>
 #include <boost/smart_ptr.hpp>
+#include "boost_algorithm_string.h"
 #include "logger.h"
 #include "service_util.h"
 

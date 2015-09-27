@@ -1,6 +1,6 @@
 #include <vector>
 #include <Windows.h>
-#include <boost/algorithm/string.hpp>
+#include "boost_algorithm_string.h"
 #include "process_creator.h"
 #include "process_scanner.h"
 #include "logger.h"

@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include <Tlhelp32.h>
-#include <boost/algorithm/string.hpp>
+#include "boost_algorithm_string.h"
 #include "logger.h"
 #include "process_scanner.h"
 

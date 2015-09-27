@@ -1,11 +1,12 @@
 #pragma once
 #include <Windows.h>
+#include <boost/noncopyable.hpp>
 #include "tdef.h"
 
 
 //do not use any other user-defined function or class
 //this is a base class
-class CLastError
+class CLastError : public boost::noncopyable
 {
 public:
     CLastError()

@@ -6,11 +6,14 @@
 
 
 CProcessScanner::CProcessScanner(const bool query_full_path)
-    : m_hSnapshot(INVALID_HANDLE_VALUE)
-    , m_first_enum(true)
+    : m_first_enum(true)
     , m_query_full_path(query_full_path)
 {
-    m_init_success = init();
+    m_hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (INVALID_HANDLE_VALUE == m_hSnapshot)
+    {
+        ErrorLogLastErr(CLastError(), TSTR("CreateToolhelp32Snapshot fail"));
+    }
 }
 
 CProcessScanner::~CProcessScanner(void)
@@ -24,7 +27,7 @@ CProcessScanner::~CProcessScanner(void)
 
 bool CProcessScanner::next(ProcessInfo& info)
 {
-    if (!m_init_success)
+    if (INVALID_HANDLE_VALUE == m_hSnapshot)
     {
         ErrorLogA("process scanner init fail");
         return false;
@@ -83,31 +86,11 @@ bool CProcessScanner::next(ProcessInfo& info)
     return bReturn;
 }
 
-bool CProcessScanner::init()
-{
-    bool bReturn = false;
 
-    do 
-    {
-        m_hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-        if (INVALID_HANDLE_VALUE == m_hSnapshot)
-        {
-            ErrorLogLastErr(CLastError(), TSTR("CreateToolhelp32Snapshot fail"));
-            break;
-        }
-
-        bReturn = true;
-
-    } while (false);
-
-    return bReturn;
-}
-
-
-void CProcessScanner::find_pids_by_path(const tstring& path,
-                                        std::vector<DWORD>& pids,
-                                        const bool only_first /*= false*/,
-                                        const bool exactly_match /*= true*/)
+void find_pids_by_path(const tstring& path,
+                       std::vector<DWORD>& pids,
+                       const bool only_first /*= false*/,
+                       const bool exactly_match /*= true*/)
 {
     bool need_query_full_path = false;
     if (tstring::npos != path.find_first_of(TSTR("\\/")))

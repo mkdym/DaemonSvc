@@ -91,7 +91,7 @@ bool cmd_run_as(const tstring& command,
     case AS_ALL_LOGON_USERS:
         {
             std::vector<DWORD> pids;
-            CProcessScanner::find_pids_by_path(TSTR("explorer.exe"), pids);
+            find_pids_by_path(TSTR("explorer.exe"), pids);
             for (std::vector<DWORD>::const_iterator iter_pid = pids.begin();
                 iter_pid != pids.end();
                 ++iter_pid)

@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "daemon.h"
 #include "win32_service.h"
+#include "windows_util.h"
 
 
 
@@ -30,6 +31,7 @@ void restart(const CWin32Service::ArgList& args)
 int main(int argc, char * argv[])
 {
     InitLog(TSTR(""));
+    WindowsUtil::set_privilege(SE_DEBUG_NAME, true);
 
     ServiceInfo si;
     si.name = TSTR("DaemonSvc");

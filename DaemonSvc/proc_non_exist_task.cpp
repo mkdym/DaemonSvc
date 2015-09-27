@@ -7,10 +7,6 @@
 #include "proc_non_exist_task.h"
 
 
-static bool g_s_has_init_process_path_query = false;
-static boost::mutex g_s_lock_process_path_query;
-
-
 CProcNonExistTask::CProcNonExistTask(const TaskFunc& f,
                                      const tstring& proc_path,
                                      const DWORD interval_seconds)
@@ -24,13 +20,6 @@ CProcNonExistTask::CProcNonExistTask(const TaskFunc& f,
     if (tstring::npos != m_proc_path.find_first_of(TSTR("\\/")))
     {
         m_need_query_full_path = true;
-
-        boost::lock_guard<boost::mutex> locker(g_s_lock_process_path_query);
-        if (!g_s_has_init_process_path_query)
-        {
-            CProcessPathQuery::init();
-            g_s_has_init_process_path_query = true;
-        }
     }
 }
 
@@ -104,8 +93,8 @@ void CProcNonExistTask::worker_func()
     while (true)
     {
         std::vector<DWORD> pids;
-        //@@@@@ is exactly_match=false correct ?????
-        CProcessScanner::find_pids_by_path(m_proc_path, pids, true, false);
+        //todo: is exactly_match=false correct ?????
+        find_pids_by_path(m_proc_path, pids, true, false);
 
         if (pids.empty())//non exist
         {

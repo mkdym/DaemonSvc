@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows_util.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\xml.cpp"
 				>
 			</File>
@@ -356,6 +360,10 @@
 			</File>
 			<File
 				RelativePath=".\win32_service.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows_util.h"
 				>
 			</File>
 			<File

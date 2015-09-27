@@ -4,8 +4,8 @@
 #include "tdef.h"
 
 
-//you should call CProcessPathQuery::init() first
-//typically after logger module init at process start
+//you should enable debug privilege if you want query other user's process
+//typically, you can call WindowsUtil::set_privilege(SE_DEBUG_NAME, true)
 class CProcessPathQuery : public boost::noncopyable
 {
 public:
@@ -13,12 +13,6 @@ public:
     ~CProcessPathQuery(void);
 
 public:
-    static FARPROC load_function(const tstring& module_name, const tstring& func_name);
-    static bool set_privilege(const tstring& privilege_name, const bool enable);
-
-    //not thread-safe
-    static bool init();
-
     tstring query(const DWORD pid);
     tstring query(HANDLE hProcess);
 
@@ -26,6 +20,6 @@ private:
     typedef BOOL (WINAPI *fnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD dwFlags, LPTSTR lpExeName, PDWORD lpdwSize);
     typedef DWORD (WINAPI *fnGetProcessImageFileNameW)(HANDLE hProcess, LPTSTR lpImageFileName, DWORD nSize);
 
-    static fnQueryFullProcessImageNameW m_s_fnQueryFullProcessImageNameW;
-    static fnGetProcessImageFileNameW m_s_fnGetProcessImageFileNameW;
+    fnQueryFullProcessImageNameW m_fnQueryFullProcessImageNameW;
+    fnGetProcessImageFileNameW m_fnGetProcessImageFileNameW;
 };

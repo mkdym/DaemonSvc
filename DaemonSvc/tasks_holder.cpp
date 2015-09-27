@@ -164,6 +164,7 @@ void CTasksHolder::delete_all()
 
 CTasksHolder::TaskId CTasksHolder::alloc_task_num_id()
 {
+    //todo: are these two static vars have thread-safety problem???
     static TaskId id = 0;
     static boost::mutex id_lock;
 

@@ -15,11 +15,4 @@ public:
 public:
     tstring query(const DWORD pid);
     tstring query(HANDLE hProcess);
-
-private:
-    typedef BOOL (WINAPI *fnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD dwFlags, LPTSTR lpExeName, PDWORD lpdwSize);
-    typedef DWORD (WINAPI *fnGetProcessImageFileNameW)(HANDLE hProcess, LPTSTR lpImageFileName, DWORD nSize);
-
-    fnQueryFullProcessImageNameW m_fnQueryFullProcessImageNameW;
-    fnGetProcessImageFileNameW m_fnGetProcessImageFileNameW;
 };

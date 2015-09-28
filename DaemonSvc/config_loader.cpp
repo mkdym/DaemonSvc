@@ -88,7 +88,7 @@ void CConfigLoader::load_time_interval_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.run_as = cast_run_as_from_string(s);
+        info.run_as = cast_run_as_type_from_string(s);
 
         attr_name = "show_window";
         if (!get_node_attr(*iter_node, attr_name, s))
@@ -178,7 +178,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.run_as = cast_run_as_from_string(s);
+        info.run_as = cast_run_as_type_from_string(s);
 
         attr_name = "show_window";
         if (!get_node_attr(*iter_node, attr_name, s))
@@ -230,7 +230,7 @@ void CConfigLoader::load_proc_non_exist_tasks_info(xml_doc_ptr pdoc)
             LogNoAttrErrA(node_path, attr_name);
             continue;
         }
-        info.run_as = cast_run_as_from_string(s);
+        info.run_as = cast_run_as_type_from_string(s);
 
         attr_name = "show_window";
         if (!get_node_attr(*iter_node, attr_name, s))

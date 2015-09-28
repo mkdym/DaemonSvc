@@ -53,7 +53,7 @@ public:
 
             do 
             {
-                if (!CSelfPath::get_instance_ref().init())
+                if (!CSelfPath::get_instance_ref().valid())
                 {
                     std::cout << "can not get self path" << std::endl;
                     break;
@@ -253,7 +253,7 @@ void __LogW(const __LOG_LEVEL level, const char *file, const int line, const wch
     va_end(args);
 
     std::string s = BuildPrefixA(level, file, line);
-    s += WideStr2ANSIStr(std::wstring(buf, count));
+    s += widestr2ansistr(std::wstring(buf, count));
     s += "\r\n";
 
     std::cout << s.c_str();

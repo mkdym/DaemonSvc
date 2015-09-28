@@ -9,9 +9,11 @@ class CSelfPath : public Singleton<CSelfPath>
     friend class Singleton<CSelfPath>;
 
 private:
+    //do not need consider multi-thread problem
+    //because Singleton<CSelfPath> ensures it
     CSelfPath(void)
-        : m_has_init(false)
     {
+        m_init_success = init();
     }
 
 public:
@@ -19,8 +21,14 @@ public:
     {
     }
 
-public:
+private:
     bool init();
+
+public:
+    bool valid() const
+    {
+        return m_init_success;
+    }
 
 public:
     const tstring& get_full() const
@@ -44,7 +52,7 @@ public:
     }
 
 private:
-    bool m_has_init;
+    bool m_init_success;
 
     tstring m_full;
     tstring m_dir;

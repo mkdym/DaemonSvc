@@ -27,7 +27,7 @@ struct TaskInfoBase
 
     virtual std::string str()
     {
-        std::string s = "run_as[" + cast_run_as_to_string(run_as)
+        std::string s = "run_as[" + cast_run_as_type_to_string(run_as)
             + "], show_window[" + string_lexical_cast<char>(show_window)
             + "], cmd[" + tstr2ansistr(cmd)
             + "]";

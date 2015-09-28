@@ -8,7 +8,7 @@
 
 //do not use log
 //because we use this function to log
-std::wstring ANSIStr2WideStr(const std::string& s)
+std::wstring ansistr2widestr(const std::string& s)
 {
     assert(!s.empty());
     std::wstring ws;
@@ -41,7 +41,7 @@ std::wstring ANSIStr2WideStr(const std::string& s)
 
 //do not use log
 //because we use this function to log
-std::string WideStr2ANSIStr(const std::wstring& ws)
+std::string widestr2ansistr(const std::wstring& ws)
 {
     assert(!ws.empty());
     std::string s;

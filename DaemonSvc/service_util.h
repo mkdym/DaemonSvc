@@ -5,14 +5,14 @@
 
 namespace ServiceUtil
 {
-    bool IsServiceExist(const tstring& name);
-    bool IsServiceRunning(const tstring& name);
+    bool is_exist(const tstring& name);
+    bool is_running(const tstring& name);
 
-    bool InstallService(const ServiceInfo& info, const tstring& binary_file);
-    bool RemoveService(const tstring& name);
+    bool install(const ServiceInfo& info, const tstring& binary_file);
+    bool remove(const tstring& name);
 
-    bool StartupService(const tstring& name, const DWORD timeout_ms);
-    bool StopService(const tstring& name, const DWORD timeout_ms);
+    bool startup(const tstring& name, const DWORD timeout_ms);
+    bool stop(const tstring& name, const DWORD timeout_ms);
 
-    bool SendControlCode2Service(const tstring& name, const DWORD code);
+    bool send_control_code(const tstring& name, const DWORD code);
 }

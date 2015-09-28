@@ -52,10 +52,10 @@ static const tchar* service_status_str(const DWORD status)
 }
 
 
-class CScopedSCHandle
+class scoped_scmgr_handle
 {
 public:
-    CScopedSCHandle(const DWORD access)
+    scoped_scmgr_handle(const DWORD access)
         : m_h(NULL)
     {
         m_h = OpenSCManager(NULL, NULL, access);
@@ -65,7 +65,7 @@ public:
         }
     }
 
-    ~CScopedSCHandle()
+    ~scoped_scmgr_handle()
     {
         if (m_h)
         {
@@ -85,10 +85,10 @@ private:
 };
 
 
-class CScopedSvcHandle
+class scoped_svc_handle
 {
 public:
-    CScopedSvcHandle(const tstring& name, const DWORD sc_access, const DWORD svc_access)
+    scoped_svc_handle(const tstring& name, const DWORD sc_access, const DWORD svc_access)
         : m_sc(sc_access)
         , m_h(NULL)
     {
@@ -102,7 +102,7 @@ public:
         }
     }
 
-    ~CScopedSvcHandle()
+    ~scoped_svc_handle()
     {
         if (m_h)
         {
@@ -118,19 +118,19 @@ public:
     }
 
 private:
-    CScopedSCHandle m_sc;
+    scoped_scmgr_handle m_sc;
     SC_HANDLE m_h;
 };
 
 
 
-bool ServiceUtil::IsServiceExist(const tstring& name)
+bool ServiceUtil::is_exist(const tstring& name)
 {
     bool bReturn = false;
 
     do 
     {
-        CScopedSCHandle hSCMgr(GENERIC_READ);
+        scoped_scmgr_handle hSCMgr(GENERIC_READ);
         if (NULL == hSCMgr.get())
         {
             break;
@@ -178,13 +178,13 @@ bool ServiceUtil::IsServiceExist(const tstring& name)
     return bReturn;
 }
 
-bool ServiceUtil::IsServiceRunning(const tstring& name)
+bool ServiceUtil::is_running(const tstring& name)
 {
     bool bReturn = false;
 
     do 
     {
-        CScopedSvcHandle hService(name, GENERIC_READ, GENERIC_READ);
+        scoped_svc_handle hService(name, GENERIC_READ, GENERIC_READ);
         if (NULL == hService.get())
         {
             break;
@@ -211,13 +211,13 @@ bool ServiceUtil::IsServiceRunning(const tstring& name)
     return bReturn;
 }
 
-bool ServiceUtil::InstallService(const ServiceInfo& info, const tstring& binary_file)
+bool ServiceUtil::install(const ServiceInfo& info, const tstring& binary_file)
 {
     bool bReturn = false;
 
     do 
     {
-        CScopedSCHandle hSCMgr(GENERIC_ALL);
+        scoped_scmgr_handle hSCMgr(GENERIC_ALL);
         if (NULL == hSCMgr.get())
         {
             break;
@@ -253,13 +253,13 @@ bool ServiceUtil::InstallService(const ServiceInfo& info, const tstring& binary_
     return bReturn;
 }
 
-bool ServiceUtil::RemoveService(const tstring& name)
+bool ServiceUtil::remove(const tstring& name)
 {
     bool bReturn = false;
 
     do 
     {
-        CScopedSvcHandle hService(name, GENERIC_ALL, SERVICE_ALL_ACCESS);
+        scoped_svc_handle hService(name, GENERIC_ALL, SERVICE_ALL_ACCESS);
         if (NULL == hService.get())
         {
             break;
@@ -278,14 +278,14 @@ bool ServiceUtil::RemoveService(const tstring& name)
     return bReturn;
 }
 
-bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
+bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
 {
     InfoLog(TSTR("StartupService[%s] begin"), name.c_str());
     bool bReturn = false;
 
     do 
     {
-        CScopedSvcHandle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
+        scoped_svc_handle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
         if (NULL == hService.get())
         {
             break;
@@ -359,14 +359,14 @@ bool ServiceUtil::StartupService(const tstring& name, const DWORD timeout_ms)
     return bReturn;
 }
 
-bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
+bool ServiceUtil::stop(const tstring& name, const DWORD timeout_ms)
 {
     InfoLog(TSTR("StopService[%s] begin"), name.c_str());
     bool bReturn = false;
 
     do 
     {
-        CScopedSvcHandle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
+        scoped_svc_handle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
         if (NULL == hService.get())
         {
             break;
@@ -436,13 +436,13 @@ bool ServiceUtil::StopService(const tstring& name, const DWORD timeout_ms)
     return bReturn;
 }
 
-bool ServiceUtil::SendControlCode2Service(const tstring& name, const DWORD code)
+bool ServiceUtil::send_control_code(const tstring& name, const DWORD code)
 {
     bool bReturn = false;
 
     do 
     {
-        CScopedSvcHandle hService(name, GENERIC_WRITE | GENERIC_EXECUTE, GENERIC_WRITE | GENERIC_EXECUTE);
+        scoped_svc_handle hService(name, GENERIC_WRITE | GENERIC_EXECUTE, GENERIC_WRITE | GENERIC_EXECUTE);
         if (NULL == hService.get())
         {
             break;

@@ -37,7 +37,7 @@ int main(int argc, char * argv[])
     si.name = TSTR("DaemonSvc");
     si.display_name = si.name;
 
-    if (!CWin32Service::get_instance_ref().Init(si))
+    if (!CWin32Service::get_instance_ref().init(si))
     {
         ErrorLogA("init service fail");
     }
@@ -45,12 +45,12 @@ int main(int argc, char * argv[])
     {
         InfoLogA("init service success");
 
-        CWin32Service::get_instance_ref().RegisterStartingFunction(starting);
-        CWin32Service::get_instance_ref().RegisterRunningFunction(running);
-        CWin32Service::get_instance_ref().RegisterControlCodeFunction(SERVICE_CONTROL_STOP, stopping);
-        CWin32Service::get_instance_ref().RegisterControlCodeFunction(200, restart);
+        CWin32Service::get_instance_ref().register_starting_function(starting);
+        CWin32Service::get_instance_ref().register_running_function(running);
+        CWin32Service::get_instance_ref().register_control_code_function(SERVICE_CONTROL_STOP, stopping);
+        CWin32Service::get_instance_ref().register_control_code_function(200, restart);
 
-        if (!CWin32Service::get_instance_ref().Go())
+        if (!CWin32Service::get_instance_ref().go())
         {
             ErrorLogA("make service go fail");
         }
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
     }
 
 #if defined(DEBUG) || defined(_DEBUG)
-    if (CWin32Service::get_instance_ref().GetMode() != CWin32Service::S_DISPATCH)
+    if (CWin32Service::get_instance_ref().get_mode() != CWin32Service::S_DISPATCH)
     {
         system("pause");
     }

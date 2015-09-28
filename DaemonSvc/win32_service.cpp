@@ -56,7 +56,7 @@ CWin32Service::~CWin32Service(void)
 {
 }
 
-bool CWin32Service::Init(const ServiceInfo& info)
+bool CWin32Service::init(const ServiceInfo& info)
 {
     assert(!info.name.empty());
 
@@ -78,7 +78,7 @@ bool CWin32Service::Init(const ServiceInfo& info)
         }
         LocalFree(arg_str_list);
 
-        //parse commandline
+        //parse command line
         bool bValid = true;
         switch (m_args.size())
         {
@@ -134,7 +134,7 @@ bool CWin32Service::Init(const ServiceInfo& info)
 
         if (bValid)
         {
-            if (!SetConsoleCtrlHandler(s_ConsoleCtrl, TRUE))
+            if (!SetConsoleCtrlHandler(s_console_ctrl, TRUE))
             {
                 ErrorLogLastErr(CLastError(), TSTR("SetConsoleCtrlHandler fail"));
             }
@@ -146,7 +146,7 @@ bool CWin32Service::Init(const ServiceInfo& info)
     return m_init_success;
 }
 
-bool CWin32Service::Go()
+bool CWin32Service::go()
 {
     if (!m_init_success)
     {
@@ -159,7 +159,7 @@ bool CWin32Service::Go()
     switch (m_mode)
     {
     case S_DISPATCH:
-        bReturn = StartDispatcher();
+        bReturn = start_dispatcher();
         break;
 
     case S_INSTALL:
@@ -174,25 +174,25 @@ bool CWin32Service::Go()
             {
                 command += TSTR(" -svc");
                 InfoLog(TSTR("install command: %s"), command.c_str());
-                bReturn = ServiceUtil::InstallService(m_info, command);
+                bReturn = ServiceUtil::install(m_info, command);
             }
         }
         break;
 
     case S_REMOVE:
-        bReturn = ServiceUtil::RemoveService(m_info.name);
+        bReturn = ServiceUtil::remove(m_info.name);
         break;
 
     case S_START:
-        bReturn = ServiceUtil::StartupService(m_info.name, WAIT_HINT_MS);
+        bReturn = ServiceUtil::startup(m_info.name, WAIT_HINT_MS);
         break;
 
     case S_STOP:
-        bReturn = ServiceUtil::StopService(m_info.name, WAIT_HINT_MS);
+        bReturn = ServiceUtil::stop(m_info.name, WAIT_HINT_MS);
         break;
 
     case S_NORMAL_APP:
-        bReturn = ServiceMain();
+        bReturn = service_main();
         break;
 
     default:
@@ -202,7 +202,7 @@ bool CWin32Service::Go()
     return bReturn;
 }
 
-bool CWin32Service::ReportStatus(const DWORD nState, const DWORD nWaitHintMS)
+bool CWin32Service::report_status(const DWORD nState, const DWORD nWaitHintMS)
 {
     if (SERVICE_START_PENDING == nState)
     {
@@ -241,12 +241,12 @@ bool CWin32Service::ReportStatus(const DWORD nState, const DWORD nWaitHintMS)
     return (TRUE == bReturn);
 }
 
-void CWin32Service::ServiceCtrl(const DWORD code)
+void CWin32Service::service_ctrl(const DWORD code)
 {
     if (SERVICE_CONTROL_INTERROGATE == code)
     {
         //更新服务状态
-        ReportStatus(m_service_status.dwCurrentState, WAIT_HINT_MS);
+        report_status(m_service_status.dwCurrentState, WAIT_HINT_MS);
     }
     else
     {
@@ -280,7 +280,7 @@ void CWin32Service::ServiceCtrl(const DWORD code)
     }
 }
 
-bool CWin32Service::StartDispatcher()
+bool CWin32Service::start_dispatcher()
 {
     const DWORD name_len = m_info.name.size();
     boost::scoped_array<tchar> name(new tchar[name_len + 1]);
@@ -289,7 +289,7 @@ bool CWin32Service::StartDispatcher()
 
     const SERVICE_TABLE_ENTRY dispatchTable[] =
     {
-        {name.get(), (LPSERVICE_MAIN_FUNCTION)s_ServiceMain},
+        {name.get(), (LPSERVICE_MAIN_FUNCTION)s_service_main},
         {0, 0}
     };
 
@@ -302,7 +302,7 @@ bool CWin32Service::StartDispatcher()
     return (TRUE == bReturn);
 }
 
-BOOL CWin32Service::ConsoleCtrl(DWORD code)
+BOOL CWin32Service::console_ctrl(DWORD code)
 {
     BOOL bProcessed;
 
@@ -331,7 +331,7 @@ BOOL CWin32Service::ConsoleCtrl(DWORD code)
     return bProcessed;
 }
 
-bool CWin32Service::ServiceMain()
+bool CWin32Service::service_main()
 {
     bool bReturn = false;
 
@@ -339,14 +339,14 @@ bool CWin32Service::ServiceMain()
     {
         if (S_DISPATCH == m_mode)
         {
-            m_service_status_handle = RegisterServiceCtrlHandler(m_info.name.c_str(), s_ServiceCtrl);
+            m_service_status_handle = RegisterServiceCtrlHandler(m_info.name.c_str(), s_service_ctrl);
             if (NULL == m_service_status_handle)
             {
                 ErrorLogLastErr(CLastError(), TSTR("RegisterServiceCtrlHandler fail"));
                 break;
             }
 
-            if (!ReportStatus(SERVICE_START_PENDING, WAIT_HINT_MS))
+            if (!report_status(SERVICE_START_PENDING, WAIT_HINT_MS))
             {
                 ErrorLogA("report start_pending status fail");
                 break;
@@ -364,7 +364,7 @@ bool CWin32Service::ServiceMain()
 
         if (S_DISPATCH == m_mode)
         {
-            if (!ReportStatus(SERVICE_RUNNING, WAIT_HINT_MS))
+            if (!report_status(SERVICE_RUNNING, WAIT_HINT_MS))
             {
                 ErrorLogA("report running status fail");
                 break;
@@ -378,7 +378,7 @@ bool CWin32Service::ServiceMain()
 
         if (S_DISPATCH == m_mode)
         {
-            if (!ReportStatus(SERVICE_STOPPED, WAIT_HINT_MS))
+            if (!report_status(SERVICE_STOPPED, WAIT_HINT_MS))
             {
                 ErrorLogA("report running status fail");
                 break;
@@ -393,19 +393,19 @@ bool CWin32Service::ServiceMain()
 }
 
 
-void WINAPI CWin32Service::s_ServiceCtrl(DWORD code)
+void WINAPI CWin32Service::s_service_ctrl(DWORD code)
 {
-    CWin32Service::get_instance_ref().ServiceCtrl(code);
+    CWin32Service::get_instance_ref().service_ctrl(code);
 }
 
-BOOL WINAPI CWin32Service::s_ConsoleCtrl(DWORD code)
+BOOL WINAPI CWin32Service::s_console_ctrl(DWORD code)
 {
-    return CWin32Service::get_instance_ref().ConsoleCtrl(code);
+    return CWin32Service::get_instance_ref().console_ctrl(code);
 }
 
-void WINAPI CWin32Service::s_ServiceMain(int argc, tchar * argv[])
+void WINAPI CWin32Service::s_service_main(int argc, tchar * argv[])
 {
-    CWin32Service::get_instance_ref().ServiceMain();
+    CWin32Service::get_instance_ref().service_main();
 }
 
 

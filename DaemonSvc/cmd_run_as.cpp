@@ -7,7 +7,7 @@
 #include "cmd_run_as.h"
 
 
-RUN_AS_TYPE cast_run_as_from_string(const std::string& s)
+RUN_AS_TYPE cast_run_as_type_from_string(const std::string& s)
 {
     std::string s_lower = boost::algorithm::to_lower_copy(s);
     boost::algorithm::trim(s_lower);
@@ -31,7 +31,7 @@ RUN_AS_TYPE cast_run_as_from_string(const std::string& s)
     }
 }
 
-std::string cast_run_as_to_string(const RUN_AS_TYPE& run_as)
+std::string cast_run_as_type_to_string(const RUN_AS_TYPE& run_as)
 {
     std::string s;
     switch (run_as)
@@ -56,9 +56,8 @@ std::string cast_run_as_to_string(const RUN_AS_TYPE& run_as)
     return s;
 }
 
-
 bool cmd_run_as(const tstring& command,
-                const RUN_AS_TYPE& run_as,
+                const RUN_AS_TYPE& as_type,
                 const bool show_window /*= true*/)
 {
     InfoLogA("begin exec");
@@ -68,7 +67,7 @@ bool cmd_run_as(const tstring& command,
 
     std::vector<HANDLE> processes;
 
-    switch (run_as)
+    switch (as_type)
     {
     case AS_LOCAL:
         {
@@ -104,7 +103,7 @@ bool cmd_run_as(const tstring& command,
                 {
                     InfoLogA("create_process_as_same_token success, pid=%lu", created_pid);
                     processes.push_back(hProcess);
-                    if (run_as == AS_LOGON_USER)
+                    if (as_type == AS_LOGON_USER)
                     {
                         break;
                     }
@@ -136,7 +135,7 @@ bool cmd_run_as(const tstring& command,
         break;
 
     default:
-        ErrorLogA("unknown run_as type: %d", run_as);
+        ErrorLogA("unknown run_as type: %d", as_type);
         break;
     }
 

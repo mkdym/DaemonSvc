@@ -28,9 +28,9 @@ public:
         S_NORMAL_APP,
     };
 
-    bool Init(const ServiceInfo& info);
+    bool init(const ServiceInfo& info);
 
-    const S_MODE& GetMode() const
+    const S_MODE& get_mode() const
     {
         return m_mode;
     }
@@ -39,34 +39,34 @@ public:
     typedef boost::function<bool(const ArgList&)> StartingFunction;//ArgList是应用程序的命令行参数
     typedef boost::function<void(const ArgList&)> ServiceFunction;
 
-    void RegisterStartingFunction(const StartingFunction& f)
+    void register_starting_function(const StartingFunction& f)
     {
         m_startingfunc = f;
     }
 
-    void RegisterRunningFunction(const ServiceFunction& f)
+    void register_running_function(const ServiceFunction& f)
     {
         m_runningfunc = f;
     }
 
-    void RegisterControlCodeFunction(const DWORD c, const ServiceFunction& f)
+    void register_control_code_function(const DWORD c, const ServiceFunction& f)
     {
         assert(SERVICE_CONTROL_INTERROGATE != c);
         m_ctrlfuncs[c] = f;
     }
 
-    bool Go();
+    bool go();
 
 private:
-    bool ReportStatus(const DWORD nState, const DWORD nWaitHintMS);
-    void ServiceCtrl(const DWORD code);
-    bool StartDispatcher();
-    BOOL ConsoleCtrl(DWORD code);
-    bool ServiceMain();
+    bool report_status(const DWORD nState, const DWORD nWaitHintMS);
+    void service_ctrl(const DWORD code);
+    bool start_dispatcher();
+    BOOL console_ctrl(DWORD code);
+    bool service_main();
 
-    static void WINAPI s_ServiceCtrl(DWORD code);
-    static BOOL WINAPI s_ConsoleCtrl(DWORD code);
-    static void WINAPI s_ServiceMain(int argc, tchar * argv[]);
+    static void WINAPI s_service_ctrl(DWORD code);
+    static BOOL WINAPI s_console_ctrl(DWORD code);
+    static void WINAPI s_service_main(int argc, tchar * argv[]);
 
 private:
     bool m_init_success;

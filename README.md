@@ -1,1 +1,2 @@
-#DaemonSvc
+# DaemonSvc
+daemon service on windows

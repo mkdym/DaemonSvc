@@ -30,21 +30,6 @@ CConfigLoader::~CConfigLoader(void)
 {
 }
 
-void CConfigLoader::get(ti_info_list& infos) const
-{
-    infos = m_ti_infos;
-}
-
-void CConfigLoader::get(tp_info_list& infos) const
-{
-    infos = m_tp_infos;
-}
-
-void CConfigLoader::get(pne_info_list& infos) const
-{
-    infos = m_pne_infos;
-}
-
 void CConfigLoader::load(const tstring& file_path)
 {
     std::string config_file = tstr2ansistr(file_path);
@@ -237,6 +222,8 @@ bool CConfigLoader::parse_one_info(xml_node_ptr pnode, pne_info& info)
 
 void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos)
 {
+    InfoLog("parse time_interval_tasks begin");
+
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/time_interval_tasks/task";
     get_node_list(pdoc, NULL, node_path, nodes);
@@ -251,10 +238,14 @@ void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos)
             infos.push_back(info);
         }
     }
+
+    InfoLog("parse time_interval_tasks end");
 }
 
 void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos)
 {
+    InfoLog("parse time_point_tasks begin");
+
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/time_point_tasks/task";
     get_node_list(pdoc, NULL, node_path, nodes);
@@ -269,10 +260,14 @@ void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos)
             infos.push_back(info);
         }
     }
+
+    InfoLog("parse time_point_tasks end");
 }
 
 void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, pne_info_list& infos)
 {
+    InfoLog("parse proc_non_exist_tasks begin");
+
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/proc_non_exist_tasks/task";
     get_node_list(pdoc, NULL, node_path, nodes);
@@ -287,5 +282,7 @@ void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, pne_info_list& infos)
             infos.push_back(info);
         }
     }
+
+    InfoLog("parse proc_non_exist_tasks end");
 }
 

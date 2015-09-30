@@ -86,9 +86,7 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
     CConfigLoader cfg(config_file);
 
     {
-        CConfigLoader::ti_info_list infos;
-        cfg.get(infos);
-
+        CConfigLoader::ti_info_list infos = cfg.get_ti_infos();
         for (CConfigLoader::ti_info_list::const_iterator iter_info = infos.begin();
             iter_info != infos.end();
             ++iter_info)
@@ -100,9 +98,7 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
     }
 
     {
-        CConfigLoader::tp_info_list infos;
-        cfg.get(infos);
-
+        CConfigLoader::tp_info_list infos = cfg.get_tp_infos();
         for (CConfigLoader::tp_info_list::const_iterator iter_info = infos.begin();
             iter_info != infos.end();
             ++iter_info)
@@ -114,9 +110,7 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
     }
 
     {
-        CConfigLoader::pne_info_list infos;
-        cfg.get(infos);
-
+        CConfigLoader::pne_info_list infos = cfg.get_pne_infos();
         for (CConfigLoader::pne_info_list::const_iterator iter_info = infos.begin();
             iter_info != infos.end();
             ++iter_info)

@@ -20,9 +20,20 @@ public:
     typedef std::vector<tp_info> tp_info_list;
     typedef std::vector<pne_info> pne_info_list;
 
-    void get(ti_info_list& infos) const;
-    void get(tp_info_list& infos) const;
-    void get(pne_info_list& infos) const;
+    const ti_info_list& get_ti_infos() const
+    {
+        return m_ti_infos;
+    }
+
+    const tp_info_list& get_tp_infos() const
+    {
+        return m_tp_infos;
+    }
+
+    const pne_info_list& get_pne_infos() const
+    {
+        return m_pne_infos;
+    }
 
 private:
     void load(const tstring& file_path);

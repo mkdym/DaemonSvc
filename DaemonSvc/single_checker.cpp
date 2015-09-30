@@ -4,22 +4,16 @@
 
 
 CSingleChecker::CSingleChecker(void)
-    : m_mutex(NULL)
 {
 }
 
 CSingleChecker::~CSingleChecker(void)
 {
-    if (m_mutex)
-    {
-        CloseHandle(m_mutex);
-        m_mutex = NULL;
-    }
 }
 
 bool CSingleChecker::single(const tstring& mutex_name)
 {
-    if (m_mutex)//we created the mutex before
+    if (m_mutex.valid())//we created the mutex before
     {
         return true;
     }
@@ -47,10 +41,10 @@ bool CSingleChecker::single(const tstring& mutex_name)
 
             tstring mutex_global_name(TSTR("Global\\"));
             mutex_global_name += mutex_name;
-            m_mutex = CreateMutex(&sa, FALSE, mutex_global_name.c_str());
+            m_mutex.reset(CreateMutex(&sa, FALSE, mutex_global_name.c_str()));
 
             CLastErrorFormat e;
-            if (m_mutex)
+            if (m_mutex.valid())
             {
                 //创建成功且错误不是“已存在”，即确确实实是自己创建的，那么认为只有一个实例在运行，保留此句柄
                 if (e.code() != ERROR_ALREADY_EXISTS)
@@ -59,8 +53,7 @@ bool CSingleChecker::single(const tstring& mutex_name)
                 }
                 else
                 {
-                    CloseHandle(m_mutex);
-                    m_mutex = NULL;
+                    m_mutex.destory();
                 }
             }
             else

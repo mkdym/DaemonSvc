@@ -9,7 +9,6 @@ CTimePointTask::CTimePointTask(const TaskFunc& f, const PeriodTime& period)
     : m_started(false)
     , m_f(f)
     , m_period(period)
-    , m_hExitEvent(NULL)
 {
     memset(&m_last_execute_time, 0, sizeof(m_last_execute_time));
 }
@@ -35,10 +34,8 @@ bool CTimePointTask::start()
     }
     else
     {
-        assert(NULL == m_hExitEvent);
-
-        m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (NULL == m_hExitEvent)
+        m_exit_event.reset(CreateEvent(NULL, TRUE, FALSE, NULL));
+        if (!m_exit_event.valid())
         {
             ErrorLogLastErr(CLastErrorFormat(), "CreateEvent for notify time point task thread exit fail");
         }
@@ -63,15 +60,13 @@ void CTimePointTask::stop()
 {
     if (m_started)
     {
-        assert(m_hExitEvent);
+        assert(m_exit_event.valid());
 
-        SetEvent(m_hExitEvent);
+        SetEvent(m_exit_event.get());
         if (m_worker_thread.joinable())
         {
             m_worker_thread.join();
         }
-        CloseHandle(m_hExitEvent);
-        m_hExitEvent = NULL;
 
         m_started = false;
     }
@@ -95,7 +90,7 @@ void CTimePointTask::worker_func()
         //若不在，则进行下一次等待
 
         //todo
-        const DWORD wait_result = WaitForSingleObject(m_hExitEvent, INFINITE);
+        const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), INFINITE);
         if (WAIT_OBJECT_0 == wait_result)
         {
             InfoLog("got exit notify");

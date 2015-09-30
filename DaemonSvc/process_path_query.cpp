@@ -2,6 +2,7 @@
 #include <Psapi.h>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/once.hpp>
+#include "scoped_handle.h"
 #include "str_encode.h"
 #include "logger.h"
 #include "windows_util.h"
@@ -52,17 +53,14 @@ tstring CProcessPathQuery::query(const DWORD pid)
 {
     tstring s;
 
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
-    if (NULL == hProcess)
+    scoped_handle<false> hProcess(OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
+    if (!hProcess.valid())
     {
         ErrorLogLastErr(CLastErrorFormat(), "OpenProcess[%lu] fail", pid);
     }
     else
     {
-        s = query(hProcess);
-
-        CloseHandle(hProcess);
-        hProcess = NULL;
+        s = query(hProcess.get());
     }
 
     return s;

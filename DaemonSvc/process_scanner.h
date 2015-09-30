@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <Windows.h>
+#include "scoped_handle.h"
 #include "tdef.h"
 #include "process_path_query.h"
 
@@ -32,7 +33,7 @@ public:
     bool next(ProcessInfo& info);
 
 private:
-    HANDLE m_hSnapshot;
+    scoped_handle<true> m_hSnapshot;
     bool m_first_enum;
     bool m_query_full_path;
 

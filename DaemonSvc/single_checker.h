@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "scoped_handle.h"
 #include "singleton.h"
 #include "tdef.h"
 
@@ -18,7 +19,7 @@ public:
     bool single(const tstring& mutex_name);
 
 private:
-    HANDLE m_mutex;
+    scoped_handle<false> m_mutex;
 };
 
 

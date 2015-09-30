@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <boost/thread.hpp>
+#include "scoped_handle.h"
 #include "task_base.h"
 
 
@@ -26,5 +27,5 @@ private:
     const DWORD m_interval_seconds;
 
     boost::thread m_worker_thread;
-    HANDLE m_hExitEvent;
+    scoped_handle<false> m_exit_event;
 };

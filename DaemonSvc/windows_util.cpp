@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "str_encode.h"
+#include "scoped_handle.h"
 #include "logger.h"
 #include "windows_util.h"
 
@@ -39,13 +40,17 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
 {
     bool bReturn = false;
 
-    HANDLE hToken = NULL;
     do 
     {
-        if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
+        scoped_handle<false> hToken;
         {
-            ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
-            break;
+            HANDLE hToken_ = NULL;
+            if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken_))
+            {
+                ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
+                break;
+            }
+            hToken.reset(hToken_);
         }
 
         LUID luid = {0};
@@ -71,7 +76,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
         }
 
         // Enable the privilege or disable all privileges.
-        BOOL adjust_success = AdjustTokenPrivileges(hToken, FALSE, &tp,
+        BOOL adjust_success = AdjustTokenPrivileges(hToken.get(), FALSE, &tp,
             sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL);
         CLastErrorFormat e;
         if (!adjust_success)
@@ -91,12 +96,6 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
         bReturn = true;
 
     } while (false);
-
-    if (hToken)
-    {
-        CloseHandle(hToken);
-        hToken = NULL;
-    }
 
     return bReturn;
 }

@@ -9,7 +9,6 @@ CTimeIntervalTask::CTimeIntervalTask(const TaskFunc& f, const DWORD interval_sec
     : m_started(false)
     , m_f(f)
     , m_interval_seconds(interval_seconds)
-    , m_hExitEvent(NULL)
 {
 }
 
@@ -34,10 +33,8 @@ bool CTimeIntervalTask::start()
     }
     else
     {
-        assert(NULL == m_hExitEvent);
-
-        m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (NULL == m_hExitEvent)
+        m_exit_event.reset(CreateEvent(NULL, TRUE, FALSE, NULL));
+        if (!m_exit_event.valid())
         {
             ErrorLogLastErr(CLastErrorFormat(), "CreateEvent for notify time interval task thread exit fail");
         }
@@ -62,15 +59,13 @@ void CTimeIntervalTask::stop()
 {
     if (m_started)
     {
-        assert(m_hExitEvent);
+        assert(m_exit_event.valid());
 
-        SetEvent(m_hExitEvent);
+        SetEvent(m_exit_event.get());
         if (m_worker_thread.joinable())
         {
             m_worker_thread.join();
         }
-        CloseHandle(m_hExitEvent);
-        m_hExitEvent = NULL;
 
         m_started = false;
     }
@@ -82,7 +77,7 @@ void CTimeIntervalTask::worker_func()
 
     while (true)
     {
-        const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
+        const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), m_interval_seconds * 1000);
         if (WAIT_OBJECT_0 == wait_result)
         {
             InfoLog("got exit notify");
@@ -107,7 +102,7 @@ void CTimeIntervalTask::worker_func()
         {
             ErrorLogLastErr(CLastErrorFormat(), "WaitForSingleObject fail, return code: %lu", wait_result);
             //sleep some while for recover from error state
-            if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
+            if (WAIT_OBJECT_0 == WaitForSingleObject(m_exit_event.get(), 1000))
             {
                 InfoLog("got exit notify");
                 break;

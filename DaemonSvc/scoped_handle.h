@@ -44,17 +44,6 @@ public:
         h_ = h;
     }
 
-    bool valid() const
-    {
-        return h_invalid_ != h_;
-    }
-
-    HANDLE get() const
-    {
-        return h_;
-    }
-
-private:
     void destory()
     {
         if (h_invalid_ != h_)
@@ -67,6 +56,16 @@ private:
             CloseHandle(h_);
             h_ = h_invalid_;
         }
+    }
+
+    bool valid() const
+    {
+        return h_invalid_ != h_;
+    }
+
+    HANDLE get() const
+    {
+        return h_;
     }
 
 private:

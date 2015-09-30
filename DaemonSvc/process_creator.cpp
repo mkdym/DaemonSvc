@@ -1,4 +1,5 @@
 #include <boost/smart_ptr.hpp>
+#include "scoped_handle.h"
 #include "logger.h"
 #include "process_creator.h"
 
@@ -13,26 +14,34 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
 {
     HANDLE hTargetProcess = NULL;
 
-    HANDLE hSourceToken = NULL;
-    HANDLE hTargetToken = NULL;
     do 
     {
-        //if (!OpenProcessToken(hSourceProcess, TOKEN_QUERY | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY, &hToken))
-        if (!OpenProcessToken(hSourceProcess, TOKEN_DUPLICATE, &hSourceToken))
+        scoped_handle<false> hSourceToken;
         {
-            ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
-            break;
+            HANDLE hSourceToken_ = NULL;
+            //if (!OpenProcessToken(hSourceProcess, TOKEN_QUERY | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY, &hToken))
+            if (!OpenProcessToken(hSourceProcess, TOKEN_DUPLICATE, &hSourceToken_))
+            {
+                ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
+                break;
+            }
+            hSourceToken.reset(hSourceToken_);
         }
 
-        if (!DuplicateTokenEx(hSourceToken,
-            MAXIMUM_ALLOWED,
-            NULL,
-            SecurityDelegation,
-            TokenPrimary,
-            &hTargetToken))
+        scoped_handle<false> hTargetToken;
         {
-            ErrorLogLastErr(CLastErrorFormat(), "DuplicateTokenEx fail");
-            break;
+            HANDLE hTargetToken_ = NULL;
+            if (!DuplicateTokenEx(hSourceToken.get(),
+                MAXIMUM_ALLOWED,
+                NULL,
+                SecurityDelegation,
+                TokenPrimary,
+                &hTargetToken_))
+            {
+                ErrorLogLastErr(CLastErrorFormat(), "DuplicateTokenEx fail");
+                break;
+            }
+            hTargetToken.reset(hTargetToken_);
         }
 
         STARTUPINFO si = {0};
@@ -47,7 +56,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
         memcpy_s(cmd_array.get(), command.size() * sizeof(tchar),
             command.c_str(), command.size() * sizeof(tchar));
 
-        if (!CreateProcessAsUser(hTargetToken,
+        if (!CreateProcessAsUser(hTargetToken.get(),
             NULL,
             cmd_array.get(),
             NULL,
@@ -68,17 +77,6 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
         created_pid = pi.dwProcessId;
 
     } while (false);
-
-    if (hTargetToken)
-    {
-        CloseHandle(hTargetToken);
-        hTargetToken = NULL;
-    }
-    if (hSourceToken)
-    {
-        CloseHandle(hSourceToken);
-        hSourceToken = NULL;
-    }
 
     return hTargetProcess;
 }

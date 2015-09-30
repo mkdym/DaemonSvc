@@ -9,8 +9,8 @@ CProcessScanner::CProcessScanner(const bool query_full_path)
     : m_first_enum(true)
     , m_query_full_path(query_full_path)
 {
-    m_hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (INVALID_HANDLE_VALUE == m_hSnapshot)
+    m_hSnapshot.reset(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
+    if (!m_hSnapshot.valid())
     {
         ErrorLogLastErr(CLastErrorFormat(), "CreateToolhelp32Snapshot fail");
     }
@@ -18,16 +18,11 @@ CProcessScanner::CProcessScanner(const bool query_full_path)
 
 CProcessScanner::~CProcessScanner(void)
 {
-    if (m_hSnapshot != INVALID_HANDLE_VALUE)
-    {
-        CloseHandle(m_hSnapshot);
-        m_hSnapshot = INVALID_HANDLE_VALUE;
-    }
 }
 
 bool CProcessScanner::next(ProcessInfo& info)
 {
-    if (INVALID_HANDLE_VALUE == m_hSnapshot)
+    if (!m_hSnapshot.valid())
     {
         ErrorLog("process scanner init fail");
         return false;
@@ -41,7 +36,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         pe32.dwSize = sizeof(pe32);
         if (m_first_enum)
         {
-            if (!Process32First(m_hSnapshot, &pe32))
+            if (!Process32First(m_hSnapshot.get(), &pe32))
             {
                 ErrorLogLastErr(CLastErrorFormat(), "Process32First fail");
                 break;
@@ -50,7 +45,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         }
         else
         {
-            if (!Process32Next(m_hSnapshot, &pe32))
+            if (!Process32Next(m_hSnapshot.get(), &pe32))
             {
                 CLastErrorFormat e;
                 if (e.code() != ERROR_NO_MORE_FILES)

@@ -5,16 +5,11 @@
 #include "daemon.h"
 
 CDaemon::CDaemon(void)
-    : m_exit_event(NULL)
 {
 }
 
 CDaemon::~CDaemon(void)
 {
-    if (m_exit_event)
-    {
-        CloseHandle(m_exit_event);
-    }
 }
 
 bool CDaemon::start()
@@ -35,13 +30,8 @@ bool CDaemon::start()
             break;
         }
 
-        if (m_exit_event)
-        {
-            CloseHandle(m_exit_event);
-        }
-
-        m_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (NULL == m_exit_event)
+        m_exit_event.reset(CreateEvent(NULL, TRUE, FALSE, NULL));
+        if (!m_exit_event.valid())
         {
             ErrorLogLastErr(CLastErrorFormat(), "CreateEvent fail");
             break;
@@ -58,7 +48,7 @@ bool CDaemon::start()
 void CDaemon::keep_running()
 {
     InfoLog("keep_running begin");
-    const DWORD r = WaitForSingleObject(m_exit_event, INFINITE);
+    const DWORD r = WaitForSingleObject(m_exit_event.get(), INFINITE);
     switch (r)
     {
     case WAIT_OBJECT_0:
@@ -78,7 +68,7 @@ void CDaemon::stop()
     //和start保持一致，都是remove_all
     CTasksHolder::get_instance_ref().stop_all();
     CTasksHolder::get_instance_ref().delete_all();
-    SetEvent(m_exit_event);
+    SetEvent(m_exit_event.get());
     InfoLog("stop end");
 }
 

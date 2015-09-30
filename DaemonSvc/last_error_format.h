@@ -57,8 +57,6 @@ private:
 
 private:
     const DWORD m_code;
-    std::string m_code_str;
-    std::string m_code_wstr;
     std::string m_str;
     std::wstring m_wstr;
 };

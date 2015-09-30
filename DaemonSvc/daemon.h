@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "scoped_handle.h"
 #include "singleton.h"
 #include "tdef.h"
 
@@ -24,5 +25,5 @@ private:
     bool start_tasks_by_config(const tstring& config_file);
 
 private:
-    HANDLE m_exit_event;
+    scoped_handle<false> m_exit_event;
 };

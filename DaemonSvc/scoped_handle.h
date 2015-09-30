@@ -27,8 +27,9 @@ public:
     //HANDLE is a ptr, so do not need HANDLE* or HANDLE&
     //just assign by value
     scoped_handle(HANDLE h)
-        : h_(h)
+        : h_invalid_(is_file_handle ? INVALID_HANDLE_VALUE : NULL)
     {
+        h_ = h;
     }
 
     ~scoped_handle()
@@ -69,8 +70,8 @@ private:
     }
 
 private:
-    HANDLE h_;
     const HANDLE h_invalid_;
+    HANDLE h_;
 };
 
 

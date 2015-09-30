@@ -15,7 +15,6 @@ CProcNonExistTask::CProcNonExistTask(const TaskFunc& f,
     , m_proc_path(proc_path)
     , m_interval_seconds(interval_seconds)
     , m_need_query_full_path(false)
-    , m_hExitEvent(NULL)
 {
     if (tstring::npos != m_proc_path.find_first_of(TSTR("\\/")))
     {
@@ -44,10 +43,8 @@ bool CProcNonExistTask::start()
     }
     else
     {
-        assert(NULL == m_hExitEvent);
-
-        m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (NULL == m_hExitEvent)
+        m_exit_event.reset(CreateEvent(NULL, TRUE, FALSE, NULL));
+        if (!m_exit_event.valid())
         {
             ErrorLogLastErr(CLastErrorFormat(), "CreateEvent for notify proc non exist task thread exit fail");
         }
@@ -72,15 +69,13 @@ void CProcNonExistTask::stop()
 {
     if (m_started)
     {
-        assert(m_hExitEvent);
+        assert(m_exit_event.valid());
 
-        SetEvent(m_hExitEvent);
+        SetEvent(m_exit_event.get());
         if (m_worker_thread.joinable())
         {
             m_worker_thread.join();
         }
-        CloseHandle(m_hExitEvent);
-        m_hExitEvent = NULL;
 
         m_started = false;
     }
@@ -112,7 +107,7 @@ void CProcNonExistTask::worker_func()
             }
 
             //sleep some while if function has done something which will effect later on
-            const DWORD wait_result = WaitForSingleObject(m_hExitEvent, 1000);
+            const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), 1000);
             if (WAIT_OBJECT_0 == wait_result)
             {
                 InfoLog("got exit notify");
@@ -122,12 +117,12 @@ void CProcNonExistTask::worker_func()
         else//exist
         {
             const DWORD pid = pids.at(0);
-            HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
-            if (NULL == hProcess)
+            scoped_handle<false> hProcess(OpenProcess(SYNCHRONIZE, FALSE, pid));
+            if (!hProcess.valid())
             {
                 ErrorLogLastErr(CLastErrorFormat(), "OpenProcess[%lu] fail", pid);
 
-                const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
+                const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), m_interval_seconds * 1000);
                 if (WAIT_OBJECT_0 == wait_result)
                 {
                     InfoLog("got exit notify");
@@ -138,7 +133,7 @@ void CProcNonExistTask::worker_func()
             {
                 bool should_break = false;
 
-                HANDLE pHandles[2] = {m_hExitEvent, hProcess};
+                HANDLE pHandles[2] = {m_exit_event.get(), hProcess.get()};
                 const DWORD wait_result = WaitForMultipleObjects(sizeof(pHandles) / sizeof(pHandles[0]),
                     pHandles, FALSE, INFINITE);
                 switch (wait_result)
@@ -166,16 +161,13 @@ void CProcNonExistTask::worker_func()
                 default:
                     ErrorLogLastErr(CLastErrorFormat(), "WaitForMultipleObjects fail, return code: %lu", wait_result);
                     //sleep some while for recover from error state
-                    if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
+                    if (WAIT_OBJECT_0 == WaitForSingleObject(m_exit_event.get(), 1000))
                     {
                         InfoLog("got exit notify");
                         should_break = true;
                     }
                     break;
                 }
-
-                CloseHandle(hProcess);
-                hProcess = NULL;
 
                 if (should_break)
                 {

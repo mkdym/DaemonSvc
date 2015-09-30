@@ -19,14 +19,14 @@ CDaemon::~CDaemon(void)
 
 bool CDaemon::start()
 {
-    InfoLogA("start begin");
+    InfoLog("start begin");
     bool bReturn = false;
 
     do 
     {
         if (!CSingleChecker::get_instance_ref().single(TSTR("{3387415F-A686-4692-AA54-3A16AAEF9D5C}")))
         {
-            ErrorLogA("app already running");
+            ErrorLog("app already running");
             break;
         }
 
@@ -43,7 +43,7 @@ bool CDaemon::start()
         m_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_exit_event)
         {
-            ErrorLogLastErr(CLastError(), TSTR("CreateEvent fail"));
+            ErrorLogLastErr(CLastError(), "CreateEvent fail");
             break;
         }
 
@@ -51,38 +51,42 @@ bool CDaemon::start()
 
     } while (false);
 
-    InfoLogA("start end");
+    InfoLog("start end");
     return bReturn;
 }
 
 void CDaemon::keep_running()
 {
-    InfoLogA("keep_running begin");
+    InfoLog("keep_running begin");
     const DWORD r = WaitForSingleObject(m_exit_event, INFINITE);
     switch (r)
     {
     case WAIT_OBJECT_0:
-        InfoLogA("got exit notify");
+        InfoLog("got exit notify");
         break;
 
     default:
-        ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %lu"), r);
+        ErrorLogLastErr(CLastError(), "WaitForSingleObject fail, return code: %lu", r);
         break;
     }
-    InfoLogA("keep_running end");
+    InfoLog("keep_running end");
 }
 
-void CDaemon::notify_stop()
+void CDaemon::stop()
 {
-    InfoLogA("notify_stop");
+    InfoLog("stop begin");
+    //和start保持一致，都是remove_all
+    CTasksHolder::get_instance_ref().stop_all();
+    CTasksHolder::get_instance_ref().delete_all();
     SetEvent(m_exit_event);
+    InfoLog("stop end");
 }
 
 void CDaemon::restart()
 {
-    InfoLogA("restart begin");
+    InfoLog("restart begin");
     start_tasks_by_config(TSTR(""));
-    InfoLogA("restart end");
+    InfoLog("restart end");
 }
 
 bool CDaemon::start_tasks_by_config(const tstring& config_file)
@@ -137,7 +141,7 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
     CTasksHolder::get_instance_ref().start_all(failed_ids);
     if (!failed_ids.empty())
     {
-        ErrorLogA("start tasks fail");
+        ErrorLog("start tasks fail");
         return false;
     }
     else

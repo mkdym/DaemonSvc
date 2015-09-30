@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\logger_impl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -249,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\vaformat.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\win32_service.cpp"
 				>
 			</File>
@@ -295,7 +303,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\log_level.h"
+				>
+			</File>
+			<File
 				RelativePath=".\logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\logger_impl.h"
 				>
 			</File>
 			<File
@@ -316,6 +332,10 @@
 			</File>
 			<File
 				RelativePath=".\process_scanner.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scoped_handle.h"
 				>
 			</File>
 			<File
@@ -360,6 +380,10 @@
 			</File>
 			<File
 				RelativePath=".\time_point_task.h"
+				>
+			</File>
+			<File
+				RelativePath=".\vaformat.h"
 				>
 			</File>
 			<File

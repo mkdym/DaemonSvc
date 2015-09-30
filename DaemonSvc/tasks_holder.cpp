@@ -23,7 +23,7 @@ CTasksHolder::TaskId CTasksHolder::add_time_point_task(const TaskFunc& f, const 
 
     const TaskId id = alloc_task_num_id();
     m_tasks[id] = TaskBasePtr(new CTimePointTask(f, period));
-    InfoLogA("added a time point task, id: %lu", id);
+    InfoLog("added a time point task, id: %lu", id);
     return id;
 }
 
@@ -33,7 +33,7 @@ CTasksHolder::TaskId CTasksHolder::add_time_interval_task(const TaskFunc& f, con
 
     const TaskId id = alloc_task_num_id();
     m_tasks[id] = TaskBasePtr(new CTimeIntervalTask(f, interval_seconds));
-    InfoLogA("added a time interval task, id: %lu", id);
+    InfoLog("added a time interval task, id: %lu", id);
     return id;
 }
 
@@ -44,7 +44,7 @@ CTasksHolder::TaskId CTasksHolder::add_proc_non_exist_task(const TaskFunc& f, co
 
     const TaskId id = alloc_task_num_id();
     m_tasks[id] = TaskBasePtr(new CProcNonExistTask(f, proc_path, interval_seconds));
-    InfoLogA("added a proc non exist task, id: %lu", id);
+    InfoLog("added a proc non exist task, id: %lu", id);
     return id;
 }
 
@@ -73,7 +73,7 @@ bool CTasksHolder::start_one(const TaskId id)
     }
     else
     {
-        ErrorLogA("can not find task, id: %lu", id);
+        ErrorLog("can not find task, id: %lu", id);
         return false;
     }
 }
@@ -122,7 +122,7 @@ void CTasksHolder::stop_one(const TaskId id)
     }
     else
     {
-        ErrorLogA("can not find task, id: %lu", id);
+        ErrorLog("can not find task, id: %lu", id);
     }
 }
 
@@ -171,7 +171,7 @@ CTasksHolder::TaskId CTasksHolder::alloc_task_num_id()
     boost::lock_guard<boost::mutex> locker(id_lock);
     if (id > (std::numeric_limits<TaskId>::max)())
     {
-        ErrorLogA("task id is too large, you may hold too many tasks, id will restart from 0");
+        ErrorLog("task id is too large, you may hold too many tasks, id will restart from 0");
         id = 0;
     }
     else

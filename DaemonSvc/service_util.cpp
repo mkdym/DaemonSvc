@@ -61,7 +61,7 @@ public:
         m_h = OpenSCManager(NULL, NULL, access);
         if (NULL == m_h)
         {
-            ErrorLogLastErr(CLastError(), TSTR("OpenSCManager fail"));
+            ErrorLogLastErr(CLastError(), "OpenSCManager fail");
         }
     }
 
@@ -142,14 +142,14 @@ bool ServiceUtil::is_exist(const tstring& name)
         if (EnumServicesStatusEx(hSCMgr.get(), SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
             SERVICE_STATE_ALL, NULL, 0, &dwNeededBytes, &dwReturnedSerivice, &dwResumeEntryNum, NULL))
         {
-            ErrorLogA("EnumServicesStatusEx success while query needed bytes");
+            ErrorLog("EnumServicesStatusEx success while query needed bytes");
             break;
         }
 
         CLastError e;
         if (ERROR_MORE_DATA != e.code())
         {
-            ErrorLogLastErr(e, TSTR("EnumServicesStatusEx error code is not ERROR_MORE_DATA while query needed bytes"));
+            ErrorLogLastErr(e, "EnumServicesStatusEx error code is not ERROR_MORE_DATA while query needed bytes");
             break;
         }
 
@@ -158,7 +158,7 @@ bool ServiceUtil::is_exist(const tstring& name)
         if (!EnumServicesStatusEx(hSCMgr.get(), SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
             SERVICE_STATE_ALL, lpData.get(), dwNeededBytes, &dwNeededBytes, &dwReturnedSerivice, &dwResumeEntryNum, NULL))
         {
-            ErrorLogLastErr(CLastError(), TSTR("EnumServicesStatusEx fail"));
+            ErrorLogLastErr(CLastError(), "EnumServicesStatusEx fail");
             break;
         }
 
@@ -308,10 +308,10 @@ bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
         {
             if (!StartService(hService.get(), 0, NULL))
             {
-                const CLastError e;
+                CLastError e;
                 if (ERROR_SERVICE_ALREADY_RUNNING == e.code())
                 {
-                    DebugLogA("service is already running");
+                    DebugLog("service is already running");
                     bReturn = true;
                 }
                 else
@@ -335,7 +335,7 @@ bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
 
             if (SERVICE_START_PENDING == status.dwCurrentState)
             {
-                DebugLogA("SERVICE_START_PENDING");
+                DebugLog("SERVICE_START_PENDING");
                 Sleep(interval_ms);
             }
             else
@@ -407,12 +407,12 @@ bool ServiceUtil::stop(const tstring& name, const DWORD timeout_ms)
 
             if (SERVICE_RUNNING == status.dwCurrentState)
             {
-                DebugLogA("SERVICE_RUNNING");
+                DebugLog("SERVICE_RUNNING");
                 Sleep(interval_ms);
             }
             else if (SERVICE_STOP_PENDING == status.dwCurrentState)
             {
-                DebugLogA("SERVICE_STOP_PENDING");
+                DebugLog("SERVICE_STOP_PENDING");
                 Sleep(interval_ms);
             }
             else

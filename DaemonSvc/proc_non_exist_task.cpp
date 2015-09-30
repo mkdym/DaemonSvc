@@ -49,7 +49,7 @@ bool CProcNonExistTask::start()
         m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_hExitEvent)
         {
-            ErrorLogLastErr(CLastError(), TSTR("CreateEvent for notify proc non exist task thread exit fail"));
+            ErrorLogLastErr(CLastError(), "CreateEvent for notify proc non exist task thread exit fail");
         }
         else
         {
@@ -60,7 +60,7 @@ bool CProcNonExistTask::start()
             }
             catch (boost::thread_resource_error& e)
             {
-                ErrorLogA("create proc non exist task worker thread fail, error: %s", e.what());
+                ErrorLog("create proc non exist task worker thread fail, error: %s", e.what());
             }
         }
 
@@ -88,7 +88,7 @@ void CProcNonExistTask::stop()
 
 void CProcNonExistTask::worker_func()
 {
-    InfoLogA("proc non exist task worker thread func begin");
+    InfoLog("proc non exist task worker thread func begin");
 
     while (true)
     {
@@ -107,7 +107,7 @@ void CProcNonExistTask::worker_func()
                 }
                 catch (...)
                 {
-                    ErrorLogA("execute proc non exist task function exception");
+                    ErrorLog("execute proc non exist task function exception");
                 }
             }
 
@@ -115,7 +115,7 @@ void CProcNonExistTask::worker_func()
             const DWORD wait_result = WaitForSingleObject(m_hExitEvent, 1000);
             if (WAIT_OBJECT_0 == wait_result)
             {
-                InfoLogA("got exit notify");
+                InfoLog("got exit notify");
                 break;
             }
         }
@@ -125,12 +125,12 @@ void CProcNonExistTask::worker_func()
             HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
             if (NULL == hProcess)
             {
-                ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%lu] fail"), pid);
+                ErrorLogLastErr(CLastError(), "OpenProcess[%lu] fail", pid);
 
                 const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
                 if (WAIT_OBJECT_0 == wait_result)
                 {
-                    InfoLogA("got exit notify");
+                    InfoLog("got exit notify");
                     break;
                 }
             }
@@ -144,7 +144,7 @@ void CProcNonExistTask::worker_func()
                 switch (wait_result)
                 {
                 case WAIT_OBJECT_0:
-                    InfoLogA("got exit notify");
+                    InfoLog("got exit notify");
                     should_break = true;
                     break;
 
@@ -158,17 +158,17 @@ void CProcNonExistTask::worker_func()
                         }
                         catch (...)
                         {
-                            ErrorLogA("execute proc non exist task function exception");
+                            ErrorLog("execute proc non exist task function exception");
                         }
                     }
                     break;
 
                 default:
-                    ErrorLogLastErr(CLastError(), TSTR("WaitForMultipleObjects fail, return code: %lu"), wait_result);
+                    ErrorLogLastErr(CLastError(), "WaitForMultipleObjects fail, return code: %lu", wait_result);
                     //sleep some while for recover from error state
                     if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
                     {
-                        InfoLogA("got exit notify");
+                        InfoLog("got exit notify");
                         should_break = true;
                     }
                     break;
@@ -185,6 +185,6 @@ void CProcNonExistTask::worker_func()
         }
     }
 
-    InfoLogA("proc non exist task worker thread func end");
+    InfoLog("proc non exist task worker thread func end");
 }
 

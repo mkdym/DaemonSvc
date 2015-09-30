@@ -31,12 +31,12 @@ bool CSingleChecker::single(const tstring& mutex_name)
             SECURITY_DESCRIPTOR sd;
             if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION))
             {
-                ErrorLogLastErr(CLastError(), TSTR("InitializeSecurityDescriptor fail"));
+                ErrorLogLastErr(CLastError(), "InitializeSecurityDescriptor fail");
                 break;
             }
             if (!SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE))
             {
-                ErrorLogLastErr(CLastError(), TSTR("SetSecurityDescriptorDacl fail"));
+                ErrorLogLastErr(CLastError(), "SetSecurityDescriptorDacl fail");
                 break;
             }
 

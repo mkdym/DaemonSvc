@@ -55,7 +55,7 @@ tstring CProcessPathQuery::query(const DWORD pid)
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
     if (NULL == hProcess)
     {
-        ErrorLogLastErr(CLastError(), TSTR("OpenProcess[%lu] fail"), pid);
+        ErrorLogLastErr(CLastError(), "OpenProcess[%lu] fail", pid);
     }
     else
     {

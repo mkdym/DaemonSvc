@@ -39,7 +39,7 @@ xml_doc_ptr xml::load_xml_string(const std::string& s)
     }
     catch (rapidxml::parse_error& e)
     {
-        ErrorLogA("parse xml string fail, error: %s", e.what());
+        ErrorLog("parse xml string fail, error: %s", e.what());
     }
 
     if (has_error)
@@ -93,7 +93,7 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
     }
     catch (std::runtime_error&)
     {
-        ErrorLogA("can not open file: %s", file_path.c_str());
+        ErrorLog("can not open file: %s", file_path.c_str());
     }
 
     if (has_error)
@@ -118,7 +118,7 @@ bool xml::save_xml_to_file(xml_doc_ptr pdoc, const std::string& file_path)
         f.open(file_path.c_str(), std::ofstream::out | std::ofstream::trunc);
         if (!f.is_open())
         {
-            ErrorLogA("can not open file[%s]", file_path.c_str());
+            ErrorLog("can not open file[%s]", file_path.c_str());
         }
         else
         {
@@ -129,7 +129,7 @@ bool xml::save_xml_to_file(xml_doc_ptr pdoc, const std::string& file_path)
     }
     catch (std::ofstream::failure& e)
     {
-        ErrorLogA("can not open or write file[%s], error: %s", file_path.c_str(), e.what());
+        ErrorLog("can not open or write file[%s], error: %s", file_path.c_str(), e.what());
     }
 
     if (has_error)
@@ -167,7 +167,7 @@ xml_node_ptr xml::get_single_node(xml_doc_ptr pdoc, xml_node_ptr pparent_node, c
     }
     else
     {
-        ErrorLogA("can not find node path[%s]", find_path.c_str());
+        ErrorLog("can not find node path[%s]", find_path.c_str());
         return NULL;
     }
 }

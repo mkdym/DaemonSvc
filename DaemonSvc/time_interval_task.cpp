@@ -39,7 +39,7 @@ bool CTimeIntervalTask::start()
         m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_hExitEvent)
         {
-            ErrorLogLastErr(CLastError(), TSTR("CreateEvent for notify time interval task thread exit fail"));
+            ErrorLogLastErr(CLastError(), "CreateEvent for notify time interval task thread exit fail");
         }
         else
         {
@@ -50,7 +50,7 @@ bool CTimeIntervalTask::start()
             }
             catch (boost::thread_resource_error& e)
             {
-                ErrorLogA("create time interval task worker thread fail, error: %s", e.what());
+                ErrorLog("create time interval task worker thread fail, error: %s", e.what());
             }
         }
 
@@ -78,14 +78,14 @@ void CTimeIntervalTask::stop()
 
 void CTimeIntervalTask::worker_func()
 {
-    InfoLogA("time interval task worker thread func begin");
+    InfoLog("time interval task worker thread func begin");
 
     while (true)
     {
         const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
         if (WAIT_OBJECT_0 == wait_result)
         {
-            InfoLogA("got exit notify");
+            InfoLog("got exit notify");
             break;
         }
 
@@ -99,23 +99,23 @@ void CTimeIntervalTask::worker_func()
                 }
                 catch (...)
                 {
-                    ErrorLogA("execute time interval task function exception");
+                    ErrorLog("execute time interval task function exception");
                 }
             }
         }
         else
         {
-            ErrorLogLastErr(CLastError(), TSTR("WaitForSingleObject fail, return code: %lu"), wait_result);
+            ErrorLogLastErr(CLastError(), "WaitForSingleObject fail, return code: %lu", wait_result);
             //sleep some while for recover from error state
             if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
             {
-                InfoLogA("got exit notify");
+                InfoLog("got exit notify");
                 break;
             }
         }
     }
 
-    InfoLogA("time interval task worker thread func end");
+    InfoLog("time interval task worker thread func end");
 }
 
 

@@ -1,63 +1,55 @@
 #pragma once
+#include <string>
 #include "singleton.h"
-#include "tdef.h"
 
 
 //do not use log, because we use this class to init log module
+//only support char version, in order to reduce potential errors
+//if you need wchar_t string, you can use "ansistr2widestr" to do string conversion
 class CSelfPath : public Singleton<CSelfPath>
 {
     friend class Singleton<CSelfPath>;
 
 private:
-    //do not need consider multi-thread problem
-    //because Singleton<CSelfPath> ensures it
-    CSelfPath(void)
-    {
-        m_init_success = init();
-    }
+    CSelfPath(void);
 
 public:
     ~CSelfPath(void)
     {
     }
 
-private:
-    bool init();
-
 public:
     bool valid() const
     {
-        return m_init_success;
+        return !(m_full.empty());
     }
 
 public:
-    const tstring& get_full() const
+    const std::string& get_full() const
     {
         return m_full;
     }
 
-    const tstring& get_dir() const
+    const std::string& get_dir() const
     {
         return m_dir;
     }
 
-    const tstring& get_name() const
+    const std::string& get_name() const
     {
         return m_name;
     }
 
-    const tstring& get_ext() const
+    const std::string& get_ext() const
     {
         return m_ext;
     }
 
 private:
-    bool m_init_success;
-
-    tstring m_full;
-    tstring m_dir;
-    tstring m_name;
-    tstring m_ext;
+    std::string m_full;
+    std::string m_dir;
+    std::string m_name;
+    std::string m_ext;
 };
 
 

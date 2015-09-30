@@ -44,7 +44,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
     {
         if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
         {
-            ErrorLogLastErr(CLastError(), TSTR("OpenProcessToken fail"));
+            ErrorLogLastErr(CLastError(), "OpenProcessToken fail");
             break;
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <boost/thread.hpp>
+#include "tdef.h"
 #include "task_base.h"
 
 

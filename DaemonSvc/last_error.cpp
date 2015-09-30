@@ -2,51 +2,83 @@
 #include "last_error.h"
 
 
-void CLastError::translate()
+bool CLastError::translate_error_code(const DWORD code, std::string& s)
 {
-    tchar *buf = NULL;
+    char* buf = NULL;
 
-    const DWORD count = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+    const DWORD count = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
         | FORMAT_MESSAGE_FROM_SYSTEM
         | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
-        m_code,
+        code,
         0,//MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<tchar *>(&buf),
+        reinterpret_cast<char *>(&buf),
         0,
         NULL);
 
     if (0 == count)
     {
         const DWORD e = GetLastError();
-        printf_s("FormatMessage fail, error code: %lu\r\n", e);
+
+        const size_t error_msg_size = 100;
+        char error_msg[error_msg_size] = {0};
+        memset(error_msg, 0, sizeof(error_msg));
+        sprintf_s(error_msg, "FormatMessageA[%lu] fail, error code: %lu\r\n", code, e);
+        s = error_msg;//error_msg is large enough to hold string and a null-terminated ch
+
+        return false;
     }
     else
     {
-        m_str.append(buf, count);
-        boost::algorithm::trim_right_if(m_str, boost::algorithm::is_any_of(TSTR("\r\n")));
-    }
+        //buf is null-terminated, see MSDN
+        s = buf;
+        LocalFree(buf);
 
-    LocalFree(buf);
+        //buf is always appended by "\r\n"
+        boost::algorithm::trim_right_if(s, boost::algorithm::is_any_of("\r\n"));
+
+        return true;
+    }
 }
 
-
-void print_last_err(const CLastError& e, const tchar* prefix, ...)
+bool CLastError::translate_error_code(const DWORD code, std::wstring& ws)
 {
-    tchar buf[4096] = {0};
-    va_list args;
-    va_start(args, prefix);
-    const int count = _vsntprintf_s(buf, 4096, _TRUNCATE, prefix, args);
-    if (count < 0)
+    wchar_t* buf = NULL;
+
+    const DWORD count = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER
+        | FORMAT_MESSAGE_FROM_SYSTEM
+        | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        code,
+        0,//MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<wchar_t *>(&buf),
+        0,
+        NULL);
+
+    if (0 == count)
     {
-        std::cout << "_vsntprintf_s error" << std::endl;
+        const DWORD e = GetLastError();
+
+        const size_t error_msg_size = 100;
+        wchar_t error_msg[error_msg_size] = {0};
+        memset(error_msg, 0, sizeof(error_msg));
+        swprintf_s(error_msg, L"FormatMessageW[%lu] fail, error code: %lu\r\n", code, e);
+        ws = error_msg;//error_msg is large enough to hold error msg and a null-terminated ch
+
+        return false;
     }
-    va_end(args);
+    else
+    {
+        //buf is null-terminated, see MSDN
+        ws = buf;
+        LocalFree(buf);
 
-    tstring s;
-    s.append(buf, count);
+        //buf is always appended by "\r\n"
+        boost::algorithm::trim_right_if(ws, boost::algorithm::is_any_of(L"\r\n"));
 
-    _tprintf_s(TSTR("%s, error code: %lu, error msg: %s\r\n"), s.c_str(), e.code(), e.str().c_str());
+        return true;
+    }
 }
+
 
 

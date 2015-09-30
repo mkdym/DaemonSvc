@@ -26,7 +26,7 @@ RUN_AS_TYPE cast_run_as_type_from_string(const std::string& s)
     }
     else
     {
-        ErrorLogA("can not cast string[%s] to RUN_AS_TYPE", s_lower.c_str());
+        ErrorLog("can not cast string[%s] to RUN_AS_TYPE", s_lower.c_str());
         return AS_UNKNOWN;
     }
 }
@@ -49,7 +49,7 @@ std::string cast_run_as_type_to_string(const RUN_AS_TYPE& run_as)
         break;
 
     default:
-        ErrorLogA("unknown RUN_AS_TYPE: %d", run_as);
+        ErrorLog("unknown RUN_AS_TYPE: %d", run_as);
         s = "unknown";
         break;
     }
@@ -60,7 +60,7 @@ bool cmd_run_as(const tstring& command,
                 const RUN_AS_TYPE& as_type,
                 const bool show_window /*= true*/)
 {
-    InfoLogA("begin exec");
+    InfoLog("begin exec");
 
     bool execute_success = false;
     const unsigned short sw_flag = show_window ? SW_SHOWNORMAL : SW_HIDE;
@@ -76,12 +76,12 @@ bool cmd_run_as(const tstring& command,
                 created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
             if (hProcess)
             {
-                InfoLogA("create_process_in_local_context success, pid=%lu", created_pid);
+                InfoLog("create_process_in_local_context success, pid=%lu", created_pid);
                 processes.push_back(hProcess);
             }
             else
             {
-                ErrorLogA("create_process_in_local_context fail");
+                ErrorLog("create_process_in_local_context fail");
             }
         }
         break;
@@ -95,13 +95,13 @@ bool cmd_run_as(const tstring& command,
                 iter_pid != pids.end();
                 ++iter_pid)
             {
-                InfoLogA("explorer.exe pid=%lu", *iter_pid);
+                InfoLog("explorer.exe pid=%lu", *iter_pid);
                 DWORD created_pid = 0;
                 HANDLE hProcess = ProcessCreator::create_process_as_same_token(*iter_pid,
                     command, created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
                 if (hProcess)
                 {
-                    InfoLogA("create_process_as_same_token success, pid=%lu", created_pid);
+                    InfoLog("create_process_as_same_token success, pid=%lu", created_pid);
                     processes.push_back(hProcess);
                     if (as_type == AS_LOGON_USER)
                     {
@@ -117,25 +117,25 @@ bool cmd_run_as(const tstring& command,
 
             if (processes.empty())
             {
-                ErrorLogA("no new process in user context was created, all fail, try create in local context");
+                ErrorLog("no new process in user context was created, all fail, try create in local context");
                 DWORD created_pid = 0;
                 HANDLE hProcess = ProcessCreator::create_process_in_local_context(command,
                     created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
                 if (hProcess)
                 {
-                    InfoLogA("create_process_in_local_context success, pid=%lu", created_pid);
+                    InfoLog("create_process_in_local_context success, pid=%lu", created_pid);
                     processes.push_back(hProcess);
                 }
                 else
                 {
-                    ErrorLogA("create_process_in_local_context fail");
+                    ErrorLog("create_process_in_local_context fail");
                 }
             }
         }
         break;
 
     default:
-        ErrorLogA("unknown run_as type: %d", as_type);
+        ErrorLog("unknown run_as type: %d", as_type);
         break;
     }
 
@@ -158,7 +158,7 @@ bool cmd_run_as(const tstring& command,
         execute_success = false;
     }
 
-    InfoLogA("end exec with %s", execute_success ? "success" : "fail");
+    InfoLog("end exec with %s", execute_success ? "success" : "fail");
     return execute_success;
 }
 

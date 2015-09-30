@@ -18,7 +18,7 @@ void running(const CWin32Service::ArgList& args)
 
 void stopping(const CWin32Service::ArgList& args)
 {
-    CDaemon::get_instance_ref().notify_stop();
+    CDaemon::get_instance_ref().stop();
 }
 
 void restart(const CWin32Service::ArgList& args)
@@ -30,7 +30,7 @@ void restart(const CWin32Service::ArgList& args)
 
 int main(int argc, char * argv[])
 {
-    InitLog(TSTR(""));
+    InitLog("", 0);
     WindowsUtil::set_privilege(SE_DEBUG_NAME, true);
 
     ServiceInfo si;
@@ -39,11 +39,11 @@ int main(int argc, char * argv[])
 
     if (!CWin32Service::get_instance_ref().init(si))
     {
-        ErrorLogA("init service fail");
+        ErrorLog("init service fail");
     }
     else
     {
-        InfoLogA("init service success");
+        InfoLog("init service success");
 
         CWin32Service::get_instance_ref().register_starting_function(starting);
         CWin32Service::get_instance_ref().register_running_function(running);
@@ -52,11 +52,11 @@ int main(int argc, char * argv[])
 
         if (!CWin32Service::get_instance_ref().go())
         {
-            ErrorLogA("make service go fail");
+            ErrorLog("make service go fail");
         }
         else
         {
-            InfoLogA("everything is OK");
+            InfoLog("everything is OK");
         }
     }
 

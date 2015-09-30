@@ -11,7 +11,7 @@ using namespace xml;
 
 static void LogNoAttrErrA(const std::string& node_path, const std::string& attr_name)
 {
-    ErrorLogA("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
+    ErrorLog("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
 }
 
 
@@ -41,17 +41,17 @@ void CConfigLoader::get(proc_non_exist_task_info_list& infos) const
 
 void CConfigLoader::load(const tstring& file_path)
 {
-    tstring config_file = file_path;
+    std::string config_file = tstr2ansistr(file_path);
     if (config_file.empty())
     {
-        config_file = CSelfPath::get_instance_ref().get_dir() + TSTR("\\tasks.xml");
+        config_file = CSelfPath::get_instance_ref().get_dir() + "\\tasks.xml";
     }
-    InfoLog(TSTR("config file: %s"), config_file.c_str());
+    InfoLog("config file: %s", config_file.c_str());
 
-    xml_doc_ptr pdoc = load_xml_file(tstr2ansistr(config_file));
+    xml_doc_ptr pdoc = load_xml_file(config_file);
     if (!pdoc)
     {
-        ErrorLogA("load xml fail");
+        ErrorLog("load xml fail");
     }
     else
     {
@@ -100,7 +100,7 @@ void CConfigLoader::load_time_interval_tasks_info(xml_doc_ptr pdoc)
 
         info.cmd = ansistr2tstr(get_node_value(*iter_node));
 
-        InfoLogA("time_interval_task_info: %s", info.str().c_str());
+        InfoLog("time_interval_task_info: %s", info.str().c_str());
         m_time_interval_tasks_info.push_back(info);
     }
 }
@@ -168,7 +168,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
 
         if (!info.pt.valid(true))
         {
-            ErrorLogA("period time[%s] is not valid", info.pt.str());
+            ErrorLog("period time[%s] is not valid", info.pt.str());
             continue;
         }
 
@@ -190,7 +190,7 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
 
         info.cmd = ansistr2tstr(get_node_value(*iter_node));
 
-        InfoLogA("time_point_task_info: %s", info.str().c_str());
+        InfoLog("time_point_task_info: %s", info.str().c_str());
         m_time_point_tasks_info.push_back(info);
     }
 }
@@ -242,7 +242,7 @@ void CConfigLoader::load_proc_non_exist_tasks_info(xml_doc_ptr pdoc)
 
         info.cmd = ansistr2tstr(get_node_value(*iter_node));
 
-        InfoLogA("proc_non_exist_task_info: %s", info.str().c_str());
+        InfoLog("proc_non_exist_task_info: %s", info.str().c_str());
         m_proc_non_exist_tasks_info.push_back(info);
     }
 }

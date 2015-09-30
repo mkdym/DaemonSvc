@@ -40,7 +40,7 @@ bool CTimePointTask::start()
         m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_hExitEvent)
         {
-            ErrorLogLastErr(CLastError(), TSTR("CreateEvent for notify time point task thread exit fail"));
+            ErrorLogLastErr(CLastError(), "CreateEvent for notify time point task thread exit fail");
         }
         else
         {
@@ -51,7 +51,7 @@ bool CTimePointTask::start()
             }
             catch (boost::thread_resource_error& e)
             {
-                ErrorLogA("create time point task worker thread fail, error: %s", e.what());
+                ErrorLog("create time point task worker thread fail, error: %s", e.what());
             }
         }
 
@@ -79,8 +79,8 @@ void CTimePointTask::stop()
 
 void CTimePointTask::worker_func()
 {
-    InfoLogA("time point task worker thread func begin");
-    ErrorLogA("time point task not implemented");
+    InfoLog("time point task worker thread func begin");
+    ErrorLog("time point task not implemented");
 
     while (true)
     {
@@ -98,11 +98,11 @@ void CTimePointTask::worker_func()
         const DWORD wait_result = WaitForSingleObject(m_hExitEvent, INFINITE);
         if (WAIT_OBJECT_0 == wait_result)
         {
-            InfoLogA("got exit notify");
+            InfoLog("got exit notify");
             break;
         }
     }
 
-    InfoLogA("time point task worker thread func end");
+    InfoLog("time point task worker thread func end");
 }
 

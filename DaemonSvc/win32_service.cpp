@@ -1,8 +1,9 @@
 #include <cassert>
 #include <boost/smart_ptr.hpp>
 #include "boost_algorithm_string.h"
-#include "self_path.h"
 #include "logger.h"
+#include "self_path.h"
+#include "str_encode.h"
 #include "service_util.h"
 #include "win32_service.h"
 
@@ -68,7 +69,7 @@ bool CWin32Service::init(const ServiceInfo& info)
     LPWSTR *arg_str_list = CommandLineToArgvW(GetCommandLineW(), &arg_count);
     if (NULL == arg_str_list)
     {
-        ErrorLogLastErr(CLastError(), TSTR("can not get commoand line"));
+        ErrorLogLastErr(CLastError(), "can not get commoand line");
     }
     else
     {
@@ -84,7 +85,7 @@ bool CWin32Service::init(const ServiceInfo& info)
         {
         case 1:
             m_mode = S_NORMAL_APP;
-            InfoLogA("normal app mode");
+            InfoLog("normal app mode");
             break;
 
         case 2:
@@ -96,27 +97,27 @@ bool CWin32Service::init(const ServiceInfo& info)
                 if (boost::algorithm::iequals(arg2, TSTR("install")))
                 {
                     m_mode = S_INSTALL;
-                    InfoLogA("install service");
+                    InfoLog("install service");
                 }
                 else if (boost::algorithm::iequals(arg2, TSTR("remove")))
                 {
                     m_mode = S_REMOVE;
-                    InfoLogA("remove service");
+                    InfoLog("remove service");
                 }
                 else if (boost::algorithm::iequals(arg2, TSTR("start")))
                 {
                     m_mode = S_START;
-                    InfoLogA("start service");
+                    InfoLog("start service");
                 }
                 else if (boost::algorithm::iequals(arg2, TSTR("stop")))
                 {
                     m_mode = S_STOP;
-                    InfoLogA("stop service");
+                    InfoLog("stop service");
                 }
                 else if (boost::algorithm::iequals(arg2, TSTR("svc")))
                 {
                     m_mode = S_DISPATCH;
-                    InfoLogA("service mode");
+                    InfoLog("service mode");
                 }
                 else
                 {
@@ -127,7 +128,7 @@ bool CWin32Service::init(const ServiceInfo& info)
             break;
 
         default:
-            ErrorLogA("invalid argc: %lu", m_args.size());
+            ErrorLog("invalid argc: %lu", m_args.size());
             bValid = false;
             break;
         }
@@ -136,7 +137,7 @@ bool CWin32Service::init(const ServiceInfo& info)
         {
             if (!SetConsoleCtrlHandler(s_console_ctrl, TRUE))
             {
-                ErrorLogLastErr(CLastError(), TSTR("SetConsoleCtrlHandler fail"));
+                ErrorLogLastErr(CLastError(), "SetConsoleCtrlHandler fail");
             }
         }
 
@@ -150,7 +151,7 @@ bool CWin32Service::go()
 {
     if (!m_init_success)
     {
-        ErrorLogA("must call init first");
+        ErrorLog("must call init first");
         return false;
     }
 
@@ -164,10 +165,10 @@ bool CWin32Service::go()
 
     case S_INSTALL:
         {
-            tstring command = CSelfPath::get_instance_ref().get_full();
+            tstring command = ansistr2tstr(CSelfPath::get_instance_ref().get_full());
             if (command.empty())
             {
-                ErrorLogA("can not get full path name");
+                ErrorLog("can not get full path name");
                 bReturn = false;
             }
             else
@@ -236,7 +237,7 @@ bool CWin32Service::report_status(const DWORD nState, const DWORD nWaitHintMS)
     BOOL bReturn = SetServiceStatus(m_service_status_handle, &m_service_status);
     if (!bReturn)
     {
-        ErrorLogLastErr(CLastError(), TSTR("SetServiceStatus fail when ReportStatus"));
+        ErrorLogLastErr(CLastError(), "SetServiceStatus fail when ReportStatus");
     }
     return (TRUE == bReturn);
 }
@@ -275,7 +276,7 @@ void CWin32Service::service_ctrl(const DWORD code)
         }
         else
         {
-            ErrorLogA("unsupported service control code: %lu", code);
+            ErrorLog("unsupported service control code: %lu", code);
         }
     }
 }
@@ -296,7 +297,7 @@ bool CWin32Service::start_dispatcher()
     BOOL bReturn = StartServiceCtrlDispatcher(dispatchTable);
     if (!bReturn)
     {
-        ErrorLogLastErr(CLastError(), TSTR("StartServiceCtrlDispatcher fail"));
+        ErrorLogLastErr(CLastError(), "StartServiceCtrlDispatcher fail");
     }
 
     return (TRUE == bReturn);
@@ -317,6 +318,7 @@ BOOL CWin32Service::console_ctrl(DWORD code)
             CtrlFuncs::const_iterator it_func = m_ctrlfuncs.find(SERVICE_CONTROL_STOP);
             if (it_func != m_ctrlfuncs.end())
             {
+                InfoLog("execute stop function");
                 (it_func->second)(m_args);
             }
         }
@@ -342,13 +344,13 @@ bool CWin32Service::service_main()
             m_service_status_handle = RegisterServiceCtrlHandler(m_info.name.c_str(), s_service_ctrl);
             if (NULL == m_service_status_handle)
             {
-                ErrorLogLastErr(CLastError(), TSTR("RegisterServiceCtrlHandler fail"));
+                ErrorLogLastErr(CLastError(), "RegisterServiceCtrlHandler fail");
                 break;
             }
 
             if (!report_status(SERVICE_START_PENDING, WAIT_HINT_MS))
             {
-                ErrorLogA("report start_pending status fail");
+                ErrorLog("report start_pending status fail");
                 break;
             }
         }
@@ -357,7 +359,7 @@ bool CWin32Service::service_main()
         {
             if (!m_startingfunc(m_args))
             {
-                ErrorLogA("call starting function fail");
+                ErrorLog("call starting function fail");
                 break;
             }
         }
@@ -366,13 +368,14 @@ bool CWin32Service::service_main()
         {
             if (!report_status(SERVICE_RUNNING, WAIT_HINT_MS))
             {
-                ErrorLogA("report running status fail");
+                ErrorLog("report running status fail");
                 break;
             }
         }
 
         if (m_runningfunc)
         {
+            InfoLog("execute running function");
             m_runningfunc(m_args);
         }
 
@@ -380,7 +383,7 @@ bool CWin32Service::service_main()
         {
             if (!report_status(SERVICE_STOPPED, WAIT_HINT_MS))
             {
-                ErrorLogA("report running status fail");
+                ErrorLog("report running status fail");
                 break;
             }
         }

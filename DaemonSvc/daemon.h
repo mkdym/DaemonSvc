@@ -17,7 +17,7 @@ public:
 public:
     bool start();
     void keep_running();
-    void notify_stop();
+    void stop();
     void restart();
 
 private:

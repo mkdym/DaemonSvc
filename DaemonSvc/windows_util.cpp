@@ -18,7 +18,7 @@ FARPROC WindowsUtil::load_function(const tstring& module_name,
     {
         if (log)
         {
-            ErrorLogLastErr(CLastErrorFormat(), TSTR("GetModuleHandle[%s] fail"), module_name.c_str());
+            ErrorLogLastErr(TSTR("GetModuleHandle[%s] fail"), module_name.c_str());
         }
         return NULL;
     }
@@ -29,7 +29,7 @@ FARPROC WindowsUtil::load_function(const tstring& module_name,
         {
             if (log)
             {
-                ErrorLogLastErr(CLastErrorFormat(), TSTR("GetProcAddress[%s:%s] fail"), module_name.c_str(), func_name.c_str());
+                ErrorLogLastErr(TSTR("GetProcAddress[%s:%s] fail"), module_name.c_str(), func_name.c_str());
             }
         }
         return func_addr;
@@ -47,7 +47,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
             HANDLE hToken_ = NULL;
             if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken_))
             {
-                ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
+                ErrorLogLastErr("OpenProcessToken fail");
                 break;
             }
             hToken.reset(hToken_);
@@ -58,7 +58,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
             privilege_name.c_str(),             // privilege to lookup
             &luid))                             // receives LUID of privilege
         {
-            ErrorLogLastErr(CLastErrorFormat(), TSTR("LookupPrivilegeValue[%s] fail"),
+            ErrorLogLastErr(TSTR("LookupPrivilegeValue[%s] fail"),
                 privilege_name.c_str());
             break;
         }
@@ -81,7 +81,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
         CLastErrorFormat e;
         if (!adjust_success)
         {
-            ErrorLogLastErr(e, TSTR("AdjustTokenPrivileges fail when %s [%s]"),
+            ErrorLogLastErrEx(e, TSTR("AdjustTokenPrivileges fail when %s [%s]"),
                 enable ? TSTR("enable") : TSTR("disable"), privilege_name.c_str());
             break;
         }

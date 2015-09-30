@@ -22,7 +22,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
             //if (!OpenProcessToken(hSourceProcess, TOKEN_QUERY | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY, &hToken))
             if (!OpenProcessToken(hSourceProcess, TOKEN_DUPLICATE, &hSourceToken_))
             {
-                ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
+                ErrorLogLastErr("OpenProcessToken fail");
                 break;
             }
             hSourceToken.reset(hSourceToken_);
@@ -38,7 +38,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
                 TokenPrimary,
                 &hTargetToken_))
             {
-                ErrorLogLastErr(CLastErrorFormat(), "DuplicateTokenEx fail");
+                ErrorLogLastErr("DuplicateTokenEx fail");
                 break;
             }
             hTargetToken.reset(hTargetToken_);
@@ -68,7 +68,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
             &si,
             &pi))
         {
-            ErrorLogLastErr(CLastErrorFormat(), TSTR("CreateProcessAsUser fail, cmd=[%s]"), cmd_array.get());
+            ErrorLogLastErr(TSTR("CreateProcessAsUser fail, cmd=[%s]"), cmd_array.get());
             break;
         }
 
@@ -94,7 +94,7 @@ HANDLE ProcessCreator::create_process_as_same_token(const DWORD pid,
     HANDLE hSourceProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
     if (NULL == hSourceProcess)
     {
-        ErrorLogLastErr(CLastErrorFormat(), "OpenProcess[%lu] fail", pid);
+        ErrorLogLastErr("OpenProcess[%lu] fail", pid);
     }
     else
     {
@@ -145,7 +145,7 @@ HANDLE ProcessCreator::create_process_in_local_context(const tstring& command,
             &si,
             &pi))
         {
-            ErrorLogLastErr(CLastErrorFormat(), TSTR("CreateProcess fail, cmd=[%s]"), cmd_array.get());
+            ErrorLogLastErr(TSTR("CreateProcess fail, cmd=[%s]"), cmd_array.get());
             break;
         }
 

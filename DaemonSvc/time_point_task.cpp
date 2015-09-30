@@ -37,7 +37,7 @@ bool CTimePointTask::start()
         m_exit_event.reset(CreateEvent(NULL, TRUE, FALSE, NULL));
         if (!m_exit_event.valid())
         {
-            ErrorLogLastErr(CLastErrorFormat(), "CreateEvent for notify time point task thread exit fail");
+            ErrorLogLastErr("CreateEvent for notify time point task thread exit fail");
         }
         else
         {

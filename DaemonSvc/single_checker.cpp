@@ -25,12 +25,12 @@ bool CSingleChecker::single(const tstring& mutex_name)
             SECURITY_DESCRIPTOR sd;
             if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION))
             {
-                ErrorLogLastErr(CLastErrorFormat(), "InitializeSecurityDescriptor fail");
+                ErrorLogLastErr("InitializeSecurityDescriptor fail");
                 break;
             }
             if (!SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE))
             {
-                ErrorLogLastErr(CLastErrorFormat(), "SetSecurityDescriptorDacl fail");
+                ErrorLogLastErr("SetSecurityDescriptorDacl fail");
                 break;
             }
 
@@ -62,7 +62,7 @@ bool CSingleChecker::single(const tstring& mutex_name)
                 //if (e.code() == ERROR_ACCESS_DENIED)
                 //{
                 //}
-                ErrorLogLastErr(e, TSTR("CreateMutex[%s] fail"), mutex_global_name.c_str());
+                ErrorLogLastErrEx(e, TSTR("CreateMutex[%s] fail"), mutex_global_name.c_str());
             }
 
         } while (false);

@@ -28,12 +28,19 @@ const size_t MAX_LOG_BUFFER = 4096;
 #define DebugLogBytes(buf, len, prefix, ...)         \
     _LogBytes(LOG_DEBUG, __FILE__, __LINE__, buf, len, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
 
-#define ErrorLogLastErr(e, prefix, ...)         \
-    _LogLastErr(LOG_ERROR, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
-#define InfoLogLastErr(e, prefix, ...)          \
-    _LogLastErr(LOG_INFO, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
-#define DebugLogLastErr(e, prefix, ...)         \
-    _LogLastErr(LOG_DEBUG, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
+#define ErrorLogLastErr(prefix, ...)         \
+    _LogLastErr(LOG_ERROR, __FILE__, __LINE__, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
+#define InfoLogLastErr(prefix, ...)          \
+    _LogLastErr(LOG_INFO, __FILE__, __LINE__, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
+#define DebugLogLastErr(prefix, ...)         \
+    _LogLastErr(LOG_DEBUG, __FILE__, __LINE__, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
+
+#define ErrorLogLastErrEx(e, prefix, ...)         \
+    _LogLastErrEx(LOG_ERROR, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
+#define InfoLogLastErrEx(e, prefix, ...)          \
+    _LogLastErrEx(LOG_INFO, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
+#define DebugLogLastErrEx(e, prefix, ...)         \
+    _LogLastErrEx(LOG_DEBUG, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
 
 
 bool InitLog(const std::string& dir, const unsigned long max_size);
@@ -48,11 +55,12 @@ bool _LogBytes(const LOG_LEVEL level, const char *file, const int line,
 bool _LogBytes(const LOG_LEVEL level, const char *file, const int line,
                const void *buf, const unsigned long len, const std::wstring& wprefix);
 
-bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line,
+bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, const std::string& prefix);
+bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, const std::wstring& wprefix);
+
+bool _LogLastErrEx(const LOG_LEVEL level, const char *file, const int line,
                  CLastErrorFormat& e, const std::string& prefix);
-bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line,
+bool _LogLastErrEx(const LOG_LEVEL level, const char *file, const int line,
                  CLastErrorFormat& e, const std::wstring& wprefix);
-
-
 
 

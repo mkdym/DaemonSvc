@@ -8,6 +8,8 @@
 static const size_t MIN_BUF_SIZE = 200;
 
 
+//do not use Windows API, because Windows API will modify last error code
+//while vaformat is always used to build last error log string
 std::string vaformat(const size_t size_hint, const char* msg, ...)
 {
     boost::scoped_array<char> scoped_buf;
@@ -43,6 +45,7 @@ std::string vaformat(const size_t size_hint, const char* msg, ...)
     return s;
 }
 
+//see comments above
 std::wstring vaformat(const size_t size_hint, const wchar_t* wmsg, ...)
 {
     boost::scoped_array<wchar_t> scoped_buf;

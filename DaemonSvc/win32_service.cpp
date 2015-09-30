@@ -69,7 +69,7 @@ bool CWin32Service::init(const ServiceInfo& info)
     LPWSTR *arg_str_list = CommandLineToArgvW(GetCommandLineW(), &arg_count);
     if (NULL == arg_str_list)
     {
-        ErrorLogLastErr(CLastErrorFormat(), "can not get commoand line");
+        ErrorLogLastErr("can not get commoand line");
     }
     else
     {
@@ -137,7 +137,7 @@ bool CWin32Service::init(const ServiceInfo& info)
         {
             if (!SetConsoleCtrlHandler(s_console_ctrl, TRUE))
             {
-                ErrorLogLastErr(CLastErrorFormat(), "SetConsoleCtrlHandler fail");
+                ErrorLogLastErr("SetConsoleCtrlHandler fail");
             }
         }
 
@@ -237,7 +237,7 @@ bool CWin32Service::report_status(const DWORD nState, const DWORD nWaitHintMS)
     BOOL bReturn = SetServiceStatus(m_service_status_handle, &m_service_status);
     if (!bReturn)
     {
-        ErrorLogLastErr(CLastErrorFormat(), "SetServiceStatus fail when ReportStatus");
+        ErrorLogLastErr("SetServiceStatus fail when ReportStatus");
     }
     return (TRUE == bReturn);
 }
@@ -297,7 +297,7 @@ bool CWin32Service::start_dispatcher()
     BOOL bReturn = StartServiceCtrlDispatcher(dispatchTable);
     if (!bReturn)
     {
-        ErrorLogLastErr(CLastErrorFormat(), "StartServiceCtrlDispatcher fail");
+        ErrorLogLastErr("StartServiceCtrlDispatcher fail");
     }
 
     return (TRUE == bReturn);
@@ -344,7 +344,7 @@ bool CWin32Service::service_main()
             m_service_status_handle = RegisterServiceCtrlHandler(m_info.name.c_str(), s_service_ctrl);
             if (NULL == m_service_status_handle)
             {
-                ErrorLogLastErr(CLastErrorFormat(), "RegisterServiceCtrlHandler fail");
+                ErrorLogLastErr("RegisterServiceCtrlHandler fail");
                 break;
             }
 

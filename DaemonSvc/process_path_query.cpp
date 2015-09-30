@@ -56,7 +56,7 @@ tstring CProcessPathQuery::query(const DWORD pid)
     scoped_handle<false> hProcess(OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
     if (!hProcess.valid())
     {
-        ErrorLogLastErr(CLastErrorFormat(), "OpenProcess[%lu] fail", pid);
+        ErrorLogLastErr("OpenProcess[%lu] fail", pid);
     }
     else
     {
@@ -112,7 +112,7 @@ tstring CProcessPathQuery::query(HANDLE hProcess)
 
         if (e->code() != ERROR_INSUFFICIENT_BUFFER)
         {
-            ErrorLogLastErr(*(e.get()), TSTR("%s fail"), func_name.c_str());
+            ErrorLogLastErrEx(*(e.get()), TSTR("%s fail"), func_name.c_str());
             break;
         }
     }

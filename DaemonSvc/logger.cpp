@@ -22,24 +22,42 @@ bool _Log(const LOG_LEVEL level, const char *file, const int line, const std::ws
     return CLoggerImpl::get_instance_ref().log_string(level, file, line, ws);
 }
 
-bool _LogBytes(const LOG_LEVEL level, const char *file, const int line, const void *buf, const unsigned long len, const std::string& prefix)
+bool _LogBytes(const LOG_LEVEL level, const char *file, const int line,
+               const void *buf, const unsigned long len, const std::string& prefix)
 {
     return CLoggerImpl::get_instance_ref().log_bytes(level, file, line, buf, len, prefix);
 }
 
-bool _LogBytes(const LOG_LEVEL level, const char *file, const int line, const void *buf, const unsigned long len, const std::wstring& wprefix)
+bool _LogBytes(const LOG_LEVEL level, const char *file, const int line,
+               const void *buf, const unsigned long len, const std::wstring& wprefix)
 {
     return CLoggerImpl::get_instance_ref().log_bytes(level, file, line, buf, len, wprefix);
 }
 
-bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, CLastErrorFormat& e, const std::string& prefix)
+bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, const std::string& prefix)
+{
+    CLastErrorFormat e;
+    return CLoggerImpl::get_instance_ref().log_last_error(level, file, line, e, prefix);
+}
+
+bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, const std::wstring& wprefix)
+{
+    CLastErrorFormat e;
+    return CLoggerImpl::get_instance_ref().log_last_error(level, file, line, e, wprefix);
+}
+
+bool _LogLastErrEx(const LOG_LEVEL level, const char *file, const int line,
+                 CLastErrorFormat& e, const std::string& prefix)
 {
     return CLoggerImpl::get_instance_ref().log_last_error(level, file, line, e, prefix);
 }
 
-bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, CLastErrorFormat& e, const std::wstring& wprefix)
+bool _LogLastErrEx(const LOG_LEVEL level, const char *file, const int line,
+                 CLastErrorFormat& e, const std::wstring& wprefix)
 {
     return CLoggerImpl::get_instance_ref().log_last_error(level, file, line, e, wprefix);
 }
+
+
 
 

@@ -75,6 +75,11 @@ public:
     }
 
 public:
+    bool valid() const
+    {
+        return m_h != NULL;
+    }
+
     SC_HANDLE& get()
     {
         return m_h;
@@ -92,7 +97,7 @@ public:
         : m_sc(sc_access)
         , m_h(NULL)
     {
-        if (m_sc.get())
+        if (m_sc.valid())
         {
             m_h = OpenService(m_sc.get(), name.c_str(), svc_access);
             if (NULL == m_h)
@@ -112,6 +117,11 @@ public:
     }
 
 public:
+    bool valid() const
+    {
+        return m_h != NULL;
+    }
+
     SC_HANDLE& get()
     {
         return m_h;
@@ -131,7 +141,7 @@ bool ServiceUtil::is_exist(const tstring& name)
     do 
     {
         scoped_scmgr_handle hSCMgr(GENERIC_READ);
-        if (NULL == hSCMgr.get())
+        if (!hSCMgr.valid())
         {
             break;
         }
@@ -185,7 +195,7 @@ bool ServiceUtil::is_running(const tstring& name)
     do 
     {
         scoped_svc_handle hService(name, GENERIC_READ, GENERIC_READ);
-        if (NULL == hService.get())
+        if (!hService.valid())
         {
             break;
         }
@@ -218,7 +228,7 @@ bool ServiceUtil::install(const ServiceInfo& info, const tstring& binary_file)
     do 
     {
         scoped_scmgr_handle hSCMgr(GENERIC_ALL);
-        if (NULL == hSCMgr.get())
+        if (!hSCMgr.valid())
         {
             break;
         }
@@ -260,7 +270,7 @@ bool ServiceUtil::remove(const tstring& name)
     do 
     {
         scoped_svc_handle hService(name, GENERIC_ALL, SERVICE_ALL_ACCESS);
-        if (NULL == hService.get())
+        if (!hService.valid())
         {
             break;
         }
@@ -286,7 +296,7 @@ bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
     do 
     {
         scoped_svc_handle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
-        if (NULL == hService.get())
+        if (!hService.valid())
         {
             break;
         }
@@ -367,7 +377,7 @@ bool ServiceUtil::stop(const tstring& name, const DWORD timeout_ms)
     do 
     {
         scoped_svc_handle hService(name, GENERIC_ALL, GENERIC_EXECUTE | GENERIC_READ);
-        if (NULL == hService.get())
+        if (!hService.valid())
         {
             break;
         }
@@ -443,7 +453,7 @@ bool ServiceUtil::send_control_code(const tstring& name, const DWORD code)
     do 
     {
         scoped_svc_handle hService(name, GENERIC_WRITE | GENERIC_EXECUTE, GENERIC_WRITE | GENERIC_EXECUTE);
-        if (NULL == hService.get())
+        if (!hService.valid())
         {
             break;
         }

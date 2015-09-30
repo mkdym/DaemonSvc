@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <boost/smart_ptr/scoped_array.hpp>
-#include "last_error.h"
+#include "last_error_format.h"
 #include "str_encode.h"
 
 
@@ -21,7 +21,7 @@ std::wstring ansistr2widestr(const std::string& s)
         int need_ch_len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), s.size(), NULL, 0);
         if (0 == need_ch_len)
         {
-            print_last_err(CLastError(), "MultiByteToWideChar fail when query need size");
+            print_last_err(CLastErrorFormat(), "MultiByteToWideChar fail when query need size");
             break;
         }
 
@@ -31,7 +31,7 @@ std::wstring ansistr2widestr(const std::string& s)
         need_ch_len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), s.size(), str_buf.get(), need_ch_len);
         if (0 == need_ch_len)
         {
-            print_last_err(CLastError(), "MultiByteToWideChar fail");
+            print_last_err(CLastErrorFormat(), "MultiByteToWideChar fail");
             break;
         }
 
@@ -58,7 +58,7 @@ std::string widestr2ansistr(const std::wstring& ws)
         int need_ch_len = WideCharToMultiByte(CP_ACP, 0, ws.c_str(), ws.size(), NULL, 0, NULL, NULL);
         if (0 == need_ch_len)
         {
-            print_last_err(CLastError(), "WideCharToMultiByte fail when query need size");
+            print_last_err(CLastErrorFormat(), "WideCharToMultiByte fail when query need size");
             break;
         }
 
@@ -68,7 +68,7 @@ std::string widestr2ansistr(const std::wstring& ws)
         need_ch_len = WideCharToMultiByte(CP_ACP, 0, ws.c_str(), ws.size(), str_buf.get(), need_ch_len, NULL, NULL);
         if (0 == need_ch_len)
         {
-            print_last_err(CLastError(), "WideCharToMultiByte fail");
+            print_last_err(CLastErrorFormat(), "WideCharToMultiByte fail");
             break;
         }
 

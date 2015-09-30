@@ -43,7 +43,7 @@ bool CDaemon::start()
         m_exit_event = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_exit_event)
         {
-            ErrorLogLastErr(CLastError(), "CreateEvent fail");
+            ErrorLogLastErr(CLastErrorFormat(), "CreateEvent fail");
             break;
         }
 
@@ -66,7 +66,7 @@ void CDaemon::keep_running()
         break;
 
     default:
-        ErrorLogLastErr(CLastError(), "WaitForSingleObject fail, return code: %lu", r);
+        ErrorLogLastErr(CLastErrorFormat(), "WaitForSingleObject fail, return code: %lu", r);
         break;
     }
     InfoLog("keep_running end");

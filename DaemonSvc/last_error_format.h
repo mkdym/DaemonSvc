@@ -7,20 +7,20 @@
 
 //do not use any other user-defined function or class
 //this is a base class
-class CLastError : public boost::noncopyable
+class CLastErrorFormat : public boost::noncopyable
 {
 public:
-    CLastError()
+    CLastErrorFormat()
         : m_code(GetLastError())
     {
     }
 
-    CLastError(const DWORD code)
+    CLastErrorFormat(const DWORD code)
         : m_code(code)
     {
     }
 
-    ~CLastError()
+    ~CLastErrorFormat()
     {
     }
 
@@ -72,13 +72,13 @@ const size_t MAX_PRINT_LAST_ERROR_BUFFER = 4096;
 
 
 //do not use the functions which is started with "_", use macros
-inline void _print_last_err(CLastError& e, const std::string& prefix)
+inline void _print_last_err(CLastErrorFormat& e, const std::string& prefix)
 {
     //do not use std::cout, because it's not thread-safe
     printf_s("%s, error code: %lu, error msg: %s\r\n", prefix.c_str(), e.code(), e.str().c_str());
 }
 
-inline void _print_last_err(CLastError& e, const std::wstring& wprefix)
+inline void _print_last_err(CLastErrorFormat& e, const std::wstring& wprefix)
 {
     wprintf_s(L"%s, error code: %lu, error msg: %s\r\n", wprefix.c_str(), e.code(), e.wstr().c_str());
 }

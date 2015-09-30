@@ -32,12 +32,12 @@ bool _LogBytes(const LOG_LEVEL level, const char *file, const int line, const vo
     return CLoggerImpl::get_instance_ref().log_bytes(level, file, line, buf, len, wprefix);
 }
 
-bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, CLastError& e, const std::string& prefix)
+bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, CLastErrorFormat& e, const std::string& prefix)
 {
     return CLoggerImpl::get_instance_ref().log_last_error(level, file, line, e, prefix);
 }
 
-bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, CLastError& e, const std::wstring& wprefix)
+bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line, CLastErrorFormat& e, const std::wstring& wprefix)
 {
     return CLoggerImpl::get_instance_ref().log_last_error(level, file, line, e, wprefix);
 }

@@ -61,7 +61,7 @@ public:
         m_h = OpenSCManager(NULL, NULL, access);
         if (NULL == m_h)
         {
-            ErrorLogLastErr(CLastError(), "OpenSCManager fail");
+            ErrorLogLastErr(CLastErrorFormat(), "OpenSCManager fail");
         }
     }
 
@@ -97,7 +97,7 @@ public:
             m_h = OpenService(m_sc.get(), name.c_str(), svc_access);
             if (NULL == m_h)
             {
-                ErrorLogLastErr(CLastError(), TSTR("OpenService[%s] fail"), name.c_str());
+                ErrorLogLastErr(CLastErrorFormat(), TSTR("OpenService[%s] fail"), name.c_str());
             }
         }
     }
@@ -146,7 +146,7 @@ bool ServiceUtil::is_exist(const tstring& name)
             break;
         }
 
-        CLastError e;
+        CLastErrorFormat e;
         if (ERROR_MORE_DATA != e.code())
         {
             ErrorLogLastErr(e, "EnumServicesStatusEx error code is not ERROR_MORE_DATA while query needed bytes");
@@ -158,7 +158,7 @@ bool ServiceUtil::is_exist(const tstring& name)
         if (!EnumServicesStatusEx(hSCMgr.get(), SC_ENUM_PROCESS_INFO, SERVICE_DRIVER | SERVICE_WIN32, 
             SERVICE_STATE_ALL, lpData.get(), dwNeededBytes, &dwNeededBytes, &dwReturnedSerivice, &dwResumeEntryNum, NULL))
         {
-            ErrorLogLastErr(CLastError(), "EnumServicesStatusEx fail");
+            ErrorLogLastErr(CLastErrorFormat(), "EnumServicesStatusEx fail");
             break;
         }
 
@@ -193,7 +193,7 @@ bool ServiceUtil::is_running(const tstring& name)
         SERVICE_STATUS status = {0};
         if (!QueryServiceStatus(hService.get(), &status))
         {
-            ErrorLogLastErr(CLastError(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
             break;
         }
 
@@ -239,7 +239,7 @@ bool ServiceUtil::install(const ServiceInfo& info, const tstring& binary_file)
             info.use_password ? info.password.c_str() : NULL);
         if (NULL == hService)
         {
-            ErrorLogLastErr(CLastError(), TSTR("CreateService[%s] fail"), info.name.c_str());
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("CreateService[%s] fail"), info.name.c_str());
             break;
         }
 
@@ -267,7 +267,7 @@ bool ServiceUtil::remove(const tstring& name)
 
         if (!DeleteService(hService.get()))
         {
-            ErrorLogLastErr(CLastError(), TSTR("DeleteService[%s] fail"), name.c_str());
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("DeleteService[%s] fail"), name.c_str());
             break;
         }
 
@@ -294,7 +294,7 @@ bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
         SERVICE_STATUS status = {0};
         if (!QueryServiceStatus(hService.get(), &status))
         {
-            ErrorLogLastErr(CLastError(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
             break;
         }
 
@@ -308,7 +308,7 @@ bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
         {
             if (!StartService(hService.get(), 0, NULL))
             {
-                CLastError e;
+                CLastErrorFormat e;
                 if (ERROR_SERVICE_ALREADY_RUNNING == e.code())
                 {
                     DebugLog("service is already running");
@@ -329,7 +329,7 @@ bool ServiceUtil::startup(const tstring& name, const DWORD timeout_ms)
         {
             if (!QueryServiceStatus(hService.get(), &status))
             {
-                ErrorLogLastErr(CLastError(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
+                ErrorLogLastErr(CLastErrorFormat(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
                 break;
             }
 
@@ -375,7 +375,7 @@ bool ServiceUtil::stop(const tstring& name, const DWORD timeout_ms)
         SERVICE_STATUS status = {0};
         if (!QueryServiceStatus(hService.get(), &status))
         {
-            ErrorLogLastErr(CLastError(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
             break;
         }
 
@@ -389,7 +389,7 @@ bool ServiceUtil::stop(const tstring& name, const DWORD timeout_ms)
         {
             if (!ControlService(hService.get(), SERVICE_CONTROL_STOP, &status))
             {
-                ErrorLogLastErr(CLastError(), TSTR("ControlService[%s] for stopping fail"), name.c_str());
+                ErrorLogLastErr(CLastErrorFormat(), TSTR("ControlService[%s] for stopping fail"), name.c_str());
                 break;
             }
         }
@@ -401,7 +401,7 @@ bool ServiceUtil::stop(const tstring& name, const DWORD timeout_ms)
         {
             if (!QueryServiceStatus(hService.get(), &status))
             {
-                ErrorLogLastErr(CLastError(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
+                ErrorLogLastErr(CLastErrorFormat(), TSTR("QueryServiceStatus[%s] fail"), name.c_str());
                 break;
             }
 
@@ -451,7 +451,7 @@ bool ServiceUtil::send_control_code(const tstring& name, const DWORD code)
         SERVICE_STATUS status = {0};
         if (!ControlService(hService.get(), code, &status))
         {
-            ErrorLogLastErr(CLastError(), TSTR("ControlService[%s:%lu] fail"), name.c_str(), code);
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("ControlService[%s:%lu] fail"), name.c_str(), code);
             break;
         }
 

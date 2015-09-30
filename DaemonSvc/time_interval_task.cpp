@@ -39,7 +39,7 @@ bool CTimeIntervalTask::start()
         m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_hExitEvent)
         {
-            ErrorLogLastErr(CLastError(), "CreateEvent for notify time interval task thread exit fail");
+            ErrorLogLastErr(CLastErrorFormat(), "CreateEvent for notify time interval task thread exit fail");
         }
         else
         {
@@ -105,7 +105,7 @@ void CTimeIntervalTask::worker_func()
         }
         else
         {
-            ErrorLogLastErr(CLastError(), "WaitForSingleObject fail, return code: %lu", wait_result);
+            ErrorLogLastErr(CLastErrorFormat(), "WaitForSingleObject fail, return code: %lu", wait_result);
             //sleep some while for recover from error state
             if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
             {

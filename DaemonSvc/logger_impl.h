@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
 #include <boost/thread/mutex.hpp>
-#include "last_error.h"
+#include "last_error_format.h"
 #include "log_level.h"
-#include "singleton.h"
 #include "scoped_handle.h"
+#include "singleton.h"
 #include "str_encode.h"
 
 
@@ -48,8 +48,8 @@ public:
         return log_bytes(level, file, line, buf, len, widestr2ansistr(wprefix));
     }
 
-    bool log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastError& e, const std::string& prefix);
-    bool log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastError& e, const std::wstring& wprefix)
+    bool log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastErrorFormat& e, const std::string& prefix);
+    bool log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastErrorFormat& e, const std::wstring& wprefix)
     {
         return log_last_error(level, file, line, e, widestr2ansistr(wprefix));
     }

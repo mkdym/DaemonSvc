@@ -55,7 +55,7 @@ tstring CProcessPathQuery::query(const DWORD pid)
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
     if (NULL == hProcess)
     {
-        ErrorLogLastErr(CLastError(), "OpenProcess[%lu] fail", pid);
+        ErrorLogLastErr(CLastErrorFormat(), "OpenProcess[%lu] fail", pid);
     }
     else
     {
@@ -82,17 +82,17 @@ tstring CProcessPathQuery::query(HANDLE hProcess)
         DWORD query_size = buf_size;
 
         tstring func_name;
-        boost::scoped_ptr<CLastError> e;
+        boost::scoped_ptr<CLastErrorFormat> e;
         if (g_fnQueryFullProcessImageNameW)
         {
             query_success = g_fnQueryFullProcessImageNameW(hProcess, 0, buf.get(), &query_size);
-            e.reset(new CLastError());
+            e.reset(new CLastErrorFormat());
             func_name = TSTR("QueryFullProcessImageNameW");
         }
         else if (g_fnGetProcessImageFileNameW)
         {
             query_size = g_fnGetProcessImageFileNameW(hProcess, buf.get(), query_size);
-            e.reset(new CLastError());
+            e.reset(new CLastErrorFormat());
             func_name = TSTR("GetProcessImageFileNameW");
 
             query_success = (query_size != 0);
@@ -100,7 +100,7 @@ tstring CProcessPathQuery::query(HANDLE hProcess)
         else
         {
             query_size = GetModuleFileNameExW(hProcess, NULL, buf.get(), query_size);
-            e.reset(new CLastError());
+            e.reset(new CLastErrorFormat());
             func_name = TSTR("GetModuleFileNameExW");
 
             query_success = (query_size != 0);

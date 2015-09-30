@@ -189,7 +189,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\last_error.cpp"
+				RelativePath=".\last_error_format.cpp"
 				>
 			</File>
 			<File
@@ -299,7 +299,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\last_error.h"
+				RelativePath=".\last_error_format.h"
+				>
+			</File>
+			<File
+				RelativePath=".\last_error_recover.h"
 				>
 			</File>
 			<File

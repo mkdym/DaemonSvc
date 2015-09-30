@@ -2,7 +2,7 @@
 #include <string>
 #include "log_level.h"
 #include "vaformat.h"
-#include "last_error.h"
+#include "last_error_format.h"
 
 
 //you should call InitLog first
@@ -49,9 +49,9 @@ bool _LogBytes(const LOG_LEVEL level, const char *file, const int line,
                const void *buf, const unsigned long len, const std::wstring& wprefix);
 
 bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line,
-                 CLastError& e, const std::string& prefix);
+                 CLastErrorFormat& e, const std::string& prefix);
 bool _LogLastErr(const LOG_LEVEL level, const char *file, const int line,
-                 CLastError& e, const std::wstring& wprefix);
+                 CLastErrorFormat& e, const std::wstring& wprefix);
 
 
 

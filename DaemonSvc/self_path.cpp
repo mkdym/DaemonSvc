@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include "last_error.h"
+#include "last_error_format.h"
 #include "self_path.h"
 
 
@@ -12,7 +12,7 @@ CSelfPath::CSelfPath(void)
 
     if (!GetModuleFileNameA(NULL, full_path_buf, full_buf_size - 1))
     {
-        print_last_err(CLastError(), "GetModuleBaseName fail");
+        print_last_err(CLastErrorFormat(), "GetModuleBaseName fail");
     }
     else
     {

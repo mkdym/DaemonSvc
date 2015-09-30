@@ -24,7 +24,7 @@ bool CLoggerImpl::init(const std::string& dir, const unsigned long max_size)
             //file_path size limit 248, see MSDN CreateDirectory
             if (!CreateDirectoryA(log_dir.c_str(), NULL))
             {
-                CLastError e;
+                CLastErrorFormat e;
                 if (ERROR_ALREADY_EXISTS != e.code())
                 {
                     print_last_err(e, "CreateDirectory for create log dir[%s] fail", log_dir.c_str());
@@ -71,7 +71,7 @@ bool CLoggerImpl::log_bytes(const LOG_LEVEL level, const char* file, const int l
     return write(level, s_to_write);
 }
 
-bool CLoggerImpl::log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastError& e, const std::string& prefix)
+bool CLoggerImpl::log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastErrorFormat& e, const std::string& prefix)
 {
     std::string s_to_write = build_prefix(level, file, line) + prefix;
     s_to_write += ", error code: " + string_lexical_cast<char>(e.code()) + ", error msg: " + e.str() + "\r\n";
@@ -160,7 +160,7 @@ HANDLE CLoggerImpl::new_log_file(const std::string& log_file_dir, const std::str
             OPEN_ALWAYS,
             FILE_ATTRIBUTE_NORMAL,
             NULL);
-        CLastError e;//right behind Windows API call
+        CLastErrorFormat e;//right behind Windows API call
         if (INVALID_HANDLE_VALUE == h)
         {
             print_last_err(e, "CreateFile fail, file path: %s", file_path.c_str());
@@ -196,7 +196,7 @@ bool CLoggerImpl::write(const LOG_LEVEL level, const std::string& s)
             DWORD written_bytes = 0;
             if (!WriteFile(m_log_file_handle.get(), s.c_str(), s.size(), &written_bytes, NULL))
             {
-                print_last_err(CLastError(), "WriteFile fail");
+                print_last_err(CLastErrorFormat(), "WriteFile fail");
                 break;
             }
 

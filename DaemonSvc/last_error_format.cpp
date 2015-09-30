@@ -1,8 +1,8 @@
 #include "boost_algorithm_string.h"
-#include "last_error.h"
+#include "last_error_format.h"
 
 
-bool CLastError::translate_error_code(const DWORD code, std::string& s)
+bool CLastErrorFormat::translate_error_code(const DWORD code, std::string& s)
 {
     char* buf = NULL;
 
@@ -41,7 +41,7 @@ bool CLastError::translate_error_code(const DWORD code, std::string& s)
     }
 }
 
-bool CLastError::translate_error_code(const DWORD code, std::wstring& ws)
+bool CLastErrorFormat::translate_error_code(const DWORD code, std::wstring& ws)
 {
     wchar_t* buf = NULL;
 

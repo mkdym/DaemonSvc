@@ -17,7 +17,7 @@ FARPROC WindowsUtil::load_function(const tstring& module_name,
     {
         if (log)
         {
-            ErrorLogLastErr(CLastError(), TSTR("GetModuleHandle[%s] fail"), module_name.c_str());
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("GetModuleHandle[%s] fail"), module_name.c_str());
         }
         return NULL;
     }
@@ -28,7 +28,7 @@ FARPROC WindowsUtil::load_function(const tstring& module_name,
         {
             if (log)
             {
-                ErrorLogLastErr(CLastError(), TSTR("GetProcAddress[%s:%s] fail"), module_name.c_str(), func_name.c_str());
+                ErrorLogLastErr(CLastErrorFormat(), TSTR("GetProcAddress[%s:%s] fail"), module_name.c_str(), func_name.c_str());
             }
         }
         return func_addr;
@@ -44,7 +44,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
     {
         if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
         {
-            ErrorLogLastErr(CLastError(), "OpenProcessToken fail");
+            ErrorLogLastErr(CLastErrorFormat(), "OpenProcessToken fail");
             break;
         }
 
@@ -53,7 +53,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
             privilege_name.c_str(),             // privilege to lookup
             &luid))                             // receives LUID of privilege
         {
-            ErrorLogLastErr(CLastError(), TSTR("LookupPrivilegeValue[%s] fail"),
+            ErrorLogLastErr(CLastErrorFormat(), TSTR("LookupPrivilegeValue[%s] fail"),
                 privilege_name.c_str());
             break;
         }
@@ -73,7 +73,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
         // Enable the privilege or disable all privileges.
         BOOL adjust_success = AdjustTokenPrivileges(hToken, FALSE, &tp,
             sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL);
-        CLastError e;
+        CLastErrorFormat e;
         if (!adjust_success)
         {
             ErrorLogLastErr(e, TSTR("AdjustTokenPrivileges fail when %s [%s]"),

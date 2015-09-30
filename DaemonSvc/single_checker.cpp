@@ -31,12 +31,12 @@ bool CSingleChecker::single(const tstring& mutex_name)
             SECURITY_DESCRIPTOR sd;
             if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION))
             {
-                ErrorLogLastErr(CLastError(), "InitializeSecurityDescriptor fail");
+                ErrorLogLastErr(CLastErrorFormat(), "InitializeSecurityDescriptor fail");
                 break;
             }
             if (!SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE))
             {
-                ErrorLogLastErr(CLastError(), "SetSecurityDescriptorDacl fail");
+                ErrorLogLastErr(CLastErrorFormat(), "SetSecurityDescriptorDacl fail");
                 break;
             }
 
@@ -49,7 +49,7 @@ bool CSingleChecker::single(const tstring& mutex_name)
             mutex_global_name += mutex_name;
             m_mutex = CreateMutex(&sa, FALSE, mutex_global_name.c_str());
 
-            CLastError e;
+            CLastErrorFormat e;
             if (m_mutex)
             {
                 //创建成功且错误不是“已存在”，即确确实实是自己创建的，那么认为只有一个实例在运行，保留此句柄

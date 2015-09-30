@@ -49,7 +49,7 @@ bool CProcNonExistTask::start()
         m_hExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (NULL == m_hExitEvent)
         {
-            ErrorLogLastErr(CLastError(), "CreateEvent for notify proc non exist task thread exit fail");
+            ErrorLogLastErr(CLastErrorFormat(), "CreateEvent for notify proc non exist task thread exit fail");
         }
         else
         {
@@ -125,7 +125,7 @@ void CProcNonExistTask::worker_func()
             HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
             if (NULL == hProcess)
             {
-                ErrorLogLastErr(CLastError(), "OpenProcess[%lu] fail", pid);
+                ErrorLogLastErr(CLastErrorFormat(), "OpenProcess[%lu] fail", pid);
 
                 const DWORD wait_result = WaitForSingleObject(m_hExitEvent, m_interval_seconds * 1000);
                 if (WAIT_OBJECT_0 == wait_result)
@@ -164,7 +164,7 @@ void CProcNonExistTask::worker_func()
                     break;
 
                 default:
-                    ErrorLogLastErr(CLastError(), "WaitForMultipleObjects fail, return code: %lu", wait_result);
+                    ErrorLogLastErr(CLastErrorFormat(), "WaitForMultipleObjects fail, return code: %lu", wait_result);
                     //sleep some while for recover from error state
                     if (WAIT_OBJECT_0 == WaitForSingleObject(m_hExitEvent, 1000))
                     {

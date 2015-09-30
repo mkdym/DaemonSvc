@@ -12,7 +12,7 @@ CProcessScanner::CProcessScanner(const bool query_full_path)
     m_hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (INVALID_HANDLE_VALUE == m_hSnapshot)
     {
-        ErrorLogLastErr(CLastError(), "CreateToolhelp32Snapshot fail");
+        ErrorLogLastErr(CLastErrorFormat(), "CreateToolhelp32Snapshot fail");
     }
 }
 
@@ -43,7 +43,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         {
             if (!Process32First(m_hSnapshot, &pe32))
             {
-                ErrorLogLastErr(CLastError(), "Process32First fail");
+                ErrorLogLastErr(CLastErrorFormat(), "Process32First fail");
                 break;
             }
             m_first_enum = false;
@@ -52,7 +52,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         {
             if (!Process32Next(m_hSnapshot, &pe32))
             {
-                CLastError e;
+                CLastErrorFormat e;
                 if (e.code() != ERROR_NO_MORE_FILES)
                 {
                     ErrorLogLastErr(e, "Process32Next fail");

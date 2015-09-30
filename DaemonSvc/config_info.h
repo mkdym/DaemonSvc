@@ -9,23 +9,19 @@
 
 
 
-struct TaskInfoBase
+struct CommonInfo
 {
     RUN_AS_TYPE run_as;
     bool show_window;
     tstring cmd;
 
-    TaskInfoBase()
+    CommonInfo()
         : run_as(AS_LOCAL)
         , show_window(true)
     {
     }
 
-    virtual ~TaskInfoBase()
-    {
-    }
-
-    virtual std::string str()
+    std::string str()
     {
         std::string s = "run_as[" + cast_run_as_type_to_string(run_as)
             + "], show_window[" + string_lexical_cast<char>(show_window)
@@ -36,8 +32,9 @@ struct TaskInfoBase
 };
 
 
-struct TimeIntervalTaskInfo : public TaskInfoBase
+struct TimeIntervalTaskInfo
 {
+    CommonInfo common_info;
     DWORD interval_seconds;
 
     TimeIntervalTaskInfo()
@@ -49,28 +46,30 @@ struct TimeIntervalTaskInfo : public TaskInfoBase
     {
         std::string s;
         s = "interval_seconds[" + string_lexical_cast<char>(interval_seconds)
-            + "], " + TaskInfoBase::str();
+            + "], " + common_info.str();
         return s;
     }
 };
 
 
-struct TimePointTaskInfo : public TaskInfoBase
+struct TimePointTaskInfo
 {
+    CommonInfo common_info;
     PeriodTime pt;
 
     std::string str()
     {
         std::string s;
         s = "pt[" + pt.str()
-            + "], " + TaskInfoBase::str();
+            + "], " + common_info.str();
         return s;
     }
 };
 
 
-struct ProcNonExistTaskInfo : public TaskInfoBase
+struct ProcNonExistTaskInfo
 {
+    CommonInfo common_info;
     tstring proc_path;
     DWORD interval_seconds;
 
@@ -84,7 +83,7 @@ struct ProcNonExistTaskInfo : public TaskInfoBase
         std::string s;
         s = "proc_path[" + tstr2ansistr(proc_path)
             + "], interval_seconds[" + string_lexical_cast<char>(interval_seconds)
-            + "], " + TaskInfoBase::str();
+            + "], " + common_info.str();
         return s;
     }
 };

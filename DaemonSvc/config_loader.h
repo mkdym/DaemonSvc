@@ -12,23 +12,33 @@ public:
     CConfigLoader(const tstring& file_path);
     ~CConfigLoader(void);
 
-    typedef std::vector<TimeIntervalTaskInfo> time_interval_task_info_list;
-    typedef std::vector<TimePointTaskInfo> time_point_task_info_list;
-    typedef std::vector<ProcNonExistTaskInfo> proc_non_exist_task_info_list;
+    typedef TimeIntervalTaskInfo ti_info;
+    typedef TimePointTaskInfo tp_info;
+    typedef ProcNonExistTaskInfo pne_info;
 
-    void get(time_interval_task_info_list& infos) const;
-    void get(time_point_task_info_list& infos) const;
-    void get(proc_non_exist_task_info_list& infos) const;
+    typedef std::vector<ti_info> ti_info_list;
+    typedef std::vector<tp_info> tp_info_list;
+    typedef std::vector<pne_info> pne_info_list;
+
+    void get(ti_info_list& infos) const;
+    void get(tp_info_list& infos) const;
+    void get(pne_info_list& infos) const;
 
 private:
     void load(const tstring& file_path);
 
-    void load_time_interval_tasks_info(xml_doc_ptr pdoc);
-    void load_time_point_tasks_info(xml_doc_ptr pdoc);
-    void load_proc_non_exist_tasks_info(xml_doc_ptr pdoc);
+    static bool parse_common_info(xml_node_ptr pnode, CommonInfo& ci);
+
+    static bool parse_one_info(xml_node_ptr pnode, ti_info& info);
+    static bool parse_one_info(xml_node_ptr pnode, tp_info& info);
+    static bool parse_one_info(xml_node_ptr pnode, pne_info& info);
+
+    static void parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos);
+    static void parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos);
+    static void parse_all_infos(xml_doc_ptr pdoc, pne_info_list& infos);
 
 private:
-    time_interval_task_info_list m_time_interval_tasks_info;
-    time_point_task_info_list m_time_point_tasks_info;
-    proc_non_exist_task_info_list m_proc_non_exist_tasks_info;
+    ti_info_list m_ti_infos;
+    tp_info_list m_tp_infos;
+    pne_info_list m_pne_infos;
 };

@@ -86,43 +86,43 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
     CConfigLoader cfg(config_file);
 
     {
-        CConfigLoader::time_interval_task_info_list infos;
+        CConfigLoader::ti_info_list infos;
         cfg.get(infos);
 
-        for (CConfigLoader::time_interval_task_info_list::const_iterator iter_info = infos.begin();
+        for (CConfigLoader::ti_info_list::const_iterator iter_info = infos.begin();
             iter_info != infos.end();
             ++iter_info)
         {
             CTasksHolder::get_instance_ref().add_time_interval_task(boost::bind(cmd_run_as,
-                iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                iter_info->common_info.cmd, iter_info->common_info.run_as, iter_info->common_info.show_window),
                 iter_info->interval_seconds);
         }
     }
 
     {
-        CConfigLoader::time_point_task_info_list infos;
+        CConfigLoader::tp_info_list infos;
         cfg.get(infos);
 
-        for (CConfigLoader::time_point_task_info_list::const_iterator iter_info = infos.begin();
+        for (CConfigLoader::tp_info_list::const_iterator iter_info = infos.begin();
             iter_info != infos.end();
             ++iter_info)
         {
             CTasksHolder::get_instance_ref().add_time_point_task(boost::bind(cmd_run_as,
-                iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                iter_info->common_info.cmd, iter_info->common_info.run_as, iter_info->common_info.show_window),
                 iter_info->pt);
         }
     }
 
     {
-        CConfigLoader::proc_non_exist_task_info_list infos;
+        CConfigLoader::pne_info_list infos;
         cfg.get(infos);
 
-        for (CConfigLoader::proc_non_exist_task_info_list::const_iterator iter_info = infos.begin();
+        for (CConfigLoader::pne_info_list::const_iterator iter_info = infos.begin();
             iter_info != infos.end();
             ++iter_info)
         {
             CTasksHolder::get_instance_ref().add_proc_non_exist_task(boost::bind(cmd_run_as,
-                iter_info->cmd, iter_info->run_as, iter_info->show_window),
+                iter_info->common_info.cmd, iter_info->common_info.run_as, iter_info->common_info.show_window),
                 iter_info->proc_path, iter_info->interval_seconds);
         }
     }

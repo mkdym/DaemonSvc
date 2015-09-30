@@ -9,10 +9,16 @@ using namespace xml;
 
 
 
-static void LogNoAttrErrA(const std::string& node_path, const std::string& attr_name)
+static void LogXmlNodeErr(const std::string& node_path)
 {
-    ErrorLog("can not get[%s:%s] attr", node_path.c_str(), attr_name.c_str());
+    ErrorLog("can not get node[%s]", node_path.c_str());
 }
+
+static void LogXmlAttrErr(const std::string& attr_name)
+{
+    ErrorLog("can not get node attr[%s]", attr_name.c_str());
+}
+
 
 
 CConfigLoader::CConfigLoader(const tstring& file_path)
@@ -24,19 +30,19 @@ CConfigLoader::~CConfigLoader(void)
 {
 }
 
-void CConfigLoader::get(time_interval_task_info_list& infos) const
+void CConfigLoader::get(ti_info_list& infos) const
 {
-    infos = m_time_interval_tasks_info;
+    infos = m_ti_infos;
 }
 
-void CConfigLoader::get(time_point_task_info_list& infos) const
+void CConfigLoader::get(tp_info_list& infos) const
 {
-    infos = m_time_point_tasks_info;
+    infos = m_tp_infos;
 }
 
-void CConfigLoader::get(proc_non_exist_task_info_list& infos) const
+void CConfigLoader::get(pne_info_list& infos) const
 {
-    infos = m_proc_non_exist_tasks_info;
+    infos = m_pne_infos;
 }
 
 void CConfigLoader::load(const tstring& file_path)
@@ -55,13 +61,181 @@ void CConfigLoader::load(const tstring& file_path)
     }
     else
     {
-        load_time_interval_tasks_info(pdoc);
-        load_time_point_tasks_info(pdoc);
-        load_proc_non_exist_tasks_info(pdoc);
+        parse_all_infos(pdoc, m_ti_infos);
+        parse_all_infos(pdoc, m_tp_infos);
+        parse_all_infos(pdoc, m_pne_infos);
     }
 }
 
-void CConfigLoader::load_time_interval_tasks_info(xml_doc_ptr pdoc)
+bool CConfigLoader::parse_common_info(xml_node_ptr pnode, CommonInfo& ci)
+{
+    bool ret = false;
+
+    do 
+    {
+        std::string s;
+        std::string attr_name = "run_as_logon_users";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        ci.run_as = cast_run_as_type_from_string(s);
+
+        s.clear();
+        attr_name = "show_window";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        ci.show_window = any_lexical_cast(s, true);
+
+        ci.cmd = ansistr2tstr(get_node_value(pnode));
+
+        ret = true;
+
+    } while (false);
+
+    return ret;
+}
+
+bool CConfigLoader::parse_one_info(xml_node_ptr pnode, ti_info& info)
+{
+    bool ret = false;
+
+    do 
+    {
+        if (!parse_common_info(pnode, info.common_info))
+        {
+            break;
+        }
+
+        std::string s;
+        std::string attr_name = "interval_seconds";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.interval_seconds = any_lexical_cast(s, 0);
+
+        ret = true;
+
+    } while (false);
+
+    return ret;
+}
+
+bool CConfigLoader::parse_one_info(xml_node_ptr pnode, tp_info& info)
+{
+    bool ret = false;
+
+    do 
+    {
+        if (!parse_common_info(pnode, info.common_info))
+        {
+            break;
+        }
+
+        std::string s;
+        std::string attr_name = "type";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.pt.type = PeriodTime::cast_period_type_from_string(s);
+
+        attr_name = "dayofmonth";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.pt.dayofmonth = any_lexical_cast<unsigned short>(s, 0);
+
+        attr_name = "dayofweek";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.pt.dayofweek = any_lexical_cast<unsigned short>(s, 0);
+
+        attr_name = "hour";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.pt.hour = any_lexical_cast<unsigned short>(s, 0);
+
+        attr_name = "minute";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.pt.minute = any_lexical_cast<unsigned short>(s, 0);
+
+        attr_name = "deviation_minutes";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.pt.deviation_minutes = any_lexical_cast(s, 0);
+
+        if (!info.pt.valid(true))
+        {
+            ErrorLog("period time[%s] is not valid", info.pt.str());
+            break;
+        }
+
+        ret = true;
+
+    } while (false);
+
+    return ret;
+}
+
+bool CConfigLoader::parse_one_info(xml_node_ptr pnode, pne_info& info)
+{
+    bool ret = false;
+
+    do 
+    {
+        if (!parse_common_info(pnode, info.common_info))
+        {
+            break;
+        }
+
+        std::string s;
+        std::string attr_name = "proc_path";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.proc_path = ansistr2tstr(s);
+
+        attr_name = "interval_seconds";
+        if (!get_node_attr(pnode, attr_name, s))
+        {
+            LogXmlAttrErr(attr_name);
+            break;
+        }
+        info.interval_seconds = any_lexical_cast(s, 0);
+
+        ret = true;
+
+    } while (false);
+
+    return ret;
+}
+
+void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos)
 {
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/time_interval_tasks/task";
@@ -70,42 +244,16 @@ void CConfigLoader::load_time_interval_tasks_info(xml_doc_ptr pdoc)
         iter_node != nodes.end();
         ++iter_node)
     {
-        TimeIntervalTaskInfo info;
-        std::string attr_name;
-        std::string s;
-
-        attr_name = "interval_seconds";
-        if (!get_node_attr(*iter_node, attr_name, s))
+        ti_info info;
+        if (parse_one_info(*iter_node, info))
         {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
+            InfoLog("time_interval_task_info: %s", info.str().c_str());
+            infos.push_back(info);
         }
-        info.interval_seconds = any_lexical_cast(s, 0);
-
-        attr_name = "run_as_logon_users";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.run_as = cast_run_as_type_from_string(s);
-
-        attr_name = "show_window";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.show_window = any_lexical_cast(s, true);
-
-        info.cmd = ansistr2tstr(get_node_value(*iter_node));
-
-        InfoLog("time_interval_task_info: %s", info.str().c_str());
-        m_time_interval_tasks_info.push_back(info);
     }
 }
 
-void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
+void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos)
 {
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/time_point_tasks/task";
@@ -114,88 +262,16 @@ void CConfigLoader::load_time_point_tasks_info(xml_doc_ptr pdoc)
         iter_node != nodes.end();
         ++iter_node)
     {
-        TimePointTaskInfo info;
-        std::string attr_name;
-        std::string s;
-
-        attr_name = "type";
-        if (!get_node_attr(*iter_node, attr_name, s))
+        tp_info info;
+        if (parse_one_info(*iter_node, info))
         {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
+            InfoLog("time_point_task_info: %s", info.str().c_str());
+            infos.push_back(info);
         }
-        info.pt.type = PeriodTime::cast_period_type_from_string(s);
-
-        attr_name = "dayofmonth";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.pt.dayofmonth = any_lexical_cast<unsigned short>(s, 0);
-
-        attr_name = "dayofweek";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.pt.dayofweek = any_lexical_cast<unsigned short>(s, 0);
-
-        attr_name = "hour";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.pt.hour = any_lexical_cast<unsigned short>(s, 0);
-
-        attr_name = "minute";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.pt.minute = any_lexical_cast<unsigned short>(s, 0);
-
-        attr_name = "deviation_minutes";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.pt.deviation_minutes = any_lexical_cast(s, 0);
-
-        if (!info.pt.valid(true))
-        {
-            ErrorLog("period time[%s] is not valid", info.pt.str());
-            continue;
-        }
-
-        attr_name = "run_as_logon_users";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.run_as = cast_run_as_type_from_string(s);
-
-        attr_name = "show_window";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.show_window = any_lexical_cast(s, true);
-
-        info.cmd = ansistr2tstr(get_node_value(*iter_node));
-
-        InfoLog("time_point_task_info: %s", info.str().c_str());
-        m_time_point_tasks_info.push_back(info);
     }
 }
 
-void CConfigLoader::load_proc_non_exist_tasks_info(xml_doc_ptr pdoc)
+void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, pne_info_list& infos)
 {
     std::vector<xml_node_ptr> nodes;
     std::string node_path = "root/tasks/proc_non_exist_tasks/task";
@@ -204,46 +280,12 @@ void CConfigLoader::load_proc_non_exist_tasks_info(xml_doc_ptr pdoc)
         iter_node != nodes.end();
         ++iter_node)
     {
-        ProcNonExistTaskInfo info;
-        std::string attr_name;
-        std::string s;
-
-        attr_name = "proc_path";
-        if (!get_node_attr(*iter_node, attr_name, s))
+        pne_info info;
+        if (parse_one_info(*iter_node, info))
         {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
+            InfoLog("proc_non_exist_task_info: %s", info.str().c_str());
+            infos.push_back(info);
         }
-        info.proc_path = ansistr2tstr(s);
-
-        attr_name = "interval_seconds";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.interval_seconds = any_lexical_cast(s, 0);
-
-        attr_name = "run_as_logon_users";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.run_as = cast_run_as_type_from_string(s);
-
-        attr_name = "show_window";
-        if (!get_node_attr(*iter_node, attr_name, s))
-        {
-            LogNoAttrErrA(node_path, attr_name);
-            continue;
-        }
-        info.show_window = any_lexical_cast(s, true);
-
-        info.cmd = ansistr2tstr(get_node_value(*iter_node));
-
-        InfoLog("proc_non_exist_task_info: %s", info.str().c_str());
-        m_proc_non_exist_tasks_info.push_back(info);
     }
 }
 

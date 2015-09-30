@@ -50,7 +50,7 @@ xml_doc_ptr xml::load_xml_string(const std::string& s)
     return pdoc;
 }
 
-std::string xml::get_xml_string(xml_doc_ptr pdoc)
+std::string xml::get_xml_string(const xml_doc_ptr pdoc)
 {
     assert(pdoc);
 
@@ -107,7 +107,7 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
 }
 
 //todo: wow64
-bool xml::save_xml_to_file(xml_doc_ptr pdoc, const std::string& file_path)
+bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
 {
     assert(pdoc && !file_path.empty());
 
@@ -142,7 +142,7 @@ bool xml::save_xml_to_file(xml_doc_ptr pdoc, const std::string& file_path)
     }
 }
 
-xml_node_ptr xml::get_single_node(xml_doc_ptr pdoc, xml_node_ptr pparent_node, const std::string& node_path)
+xml_node_ptr xml::get_single_node(const xml_doc_ptr pdoc, const xml_node_ptr pparent_node, const std::string& node_path)
 {
     assert(pdoc || pparent_node);
 
@@ -172,8 +172,8 @@ xml_node_ptr xml::get_single_node(xml_doc_ptr pdoc, xml_node_ptr pparent_node, c
     }
 }
 
-void xml::get_node_list(xml_doc_ptr pdoc,
-                        xml_node_ptr pparent_node,
+void xml::get_node_list(const xml_doc_ptr pdoc,
+                        const xml_node_ptr pparent_node,
                         const std::string& node_path,
                         std::vector<xml_node_ptr>& nodes)
 {
@@ -207,7 +207,7 @@ void xml::get_node_list(xml_doc_ptr pdoc,
     }
 }
 
-std::string xml::get_node_value(xml_node_ptr pnode)
+std::string xml::get_node_value(const xml_node_ptr pnode)
 {
     assert(pnode);
 
@@ -220,7 +220,7 @@ std::string xml::get_node_value(xml_node_ptr pnode)
     return s;
 }
 
-bool xml::get_node_attr(xml_node_ptr pnode, const std::string& attr_name, std::string& attr_value)
+bool xml::get_node_attr(const xml_node_ptr pnode, const std::string& attr_name, std::string& attr_value)
 {
     assert(pnode);
 

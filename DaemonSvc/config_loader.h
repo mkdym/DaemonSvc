@@ -38,15 +38,15 @@ public:
 private:
     void load(const tstring& file_path);
 
-    static bool parse_common_info(xml_node_ptr pnode, CommonInfo& ci);
+    static bool parse_common_info(const xml_node_ptr pnode, CommonInfo& ci);
 
-    static bool parse_one_info(xml_node_ptr pnode, ti_info& info);
-    static bool parse_one_info(xml_node_ptr pnode, tp_info& info);
-    static bool parse_one_info(xml_node_ptr pnode, pne_info& info);
+    static bool parse_one_info(const xml_node_ptr pnode, ti_info& info);
+    static bool parse_one_info(const xml_node_ptr pnode, tp_info& info);
+    static bool parse_one_info(const xml_node_ptr pnode, pne_info& info);
 
-    static void parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos);
-    static void parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos);
-    static void parse_all_infos(xml_doc_ptr pdoc, pne_info_list& infos);
+    static void parse_all_infos(const xml_doc_ptr pdoc, ti_info_list& infos);
+    static void parse_all_infos(const xml_doc_ptr pdoc, tp_info_list& infos);
+    static void parse_all_infos(const xml_doc_ptr pdoc, pne_info_list& infos);
 
 private:
     ti_info_list m_ti_infos;

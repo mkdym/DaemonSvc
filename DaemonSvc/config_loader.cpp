@@ -52,7 +52,7 @@ void CConfigLoader::load(const tstring& file_path)
     }
 }
 
-bool CConfigLoader::parse_common_info(xml_node_ptr pnode, CommonInfo& ci)
+bool CConfigLoader::parse_common_info(const xml_node_ptr pnode, CommonInfo& ci)
 {
     bool ret = false;
 
@@ -85,7 +85,7 @@ bool CConfigLoader::parse_common_info(xml_node_ptr pnode, CommonInfo& ci)
     return ret;
 }
 
-bool CConfigLoader::parse_one_info(xml_node_ptr pnode, ti_info& info)
+bool CConfigLoader::parse_one_info(const xml_node_ptr pnode, ti_info& info)
 {
     bool ret = false;
 
@@ -112,7 +112,7 @@ bool CConfigLoader::parse_one_info(xml_node_ptr pnode, ti_info& info)
     return ret;
 }
 
-bool CConfigLoader::parse_one_info(xml_node_ptr pnode, tp_info& info)
+bool CConfigLoader::parse_one_info(const xml_node_ptr pnode, tp_info& info)
 {
     bool ret = false;
 
@@ -185,7 +185,7 @@ bool CConfigLoader::parse_one_info(xml_node_ptr pnode, tp_info& info)
     return ret;
 }
 
-bool CConfigLoader::parse_one_info(xml_node_ptr pnode, pne_info& info)
+bool CConfigLoader::parse_one_info(const xml_node_ptr pnode, pne_info& info)
 {
     bool ret = false;
 
@@ -220,7 +220,7 @@ bool CConfigLoader::parse_one_info(xml_node_ptr pnode, pne_info& info)
     return ret;
 }
 
-void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos)
+void CConfigLoader::parse_all_infos(const xml_doc_ptr pdoc, ti_info_list& infos)
 {
     InfoLog("parse time_interval_tasks begin");
 
@@ -242,7 +242,7 @@ void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, ti_info_list& infos)
     InfoLog("parse time_interval_tasks end");
 }
 
-void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos)
+void CConfigLoader::parse_all_infos(const xml_doc_ptr pdoc, tp_info_list& infos)
 {
     InfoLog("parse time_point_tasks begin");
 
@@ -264,7 +264,7 @@ void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, tp_info_list& infos)
     InfoLog("parse time_point_tasks end");
 }
 
-void CConfigLoader::parse_all_infos(xml_doc_ptr pdoc, pne_info_list& infos)
+void CConfigLoader::parse_all_infos(const xml_doc_ptr pdoc, pne_info_list& infos)
 {
     InfoLog("parse proc_non_exist_tasks begin");
 

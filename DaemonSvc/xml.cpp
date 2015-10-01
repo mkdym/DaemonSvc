@@ -1,11 +1,11 @@
 #include <cassert> //for assert
-#include <fstream> //for ofstream in save_xml_to_file
 #include <iterator> //for std::back_inserter
-#include <boost/smart_ptr/scoped_ptr.hpp> //for scoped_ptr in load_xml_file
+#include <Windows.h> //for File Functions
+#include <boost/smart_ptr/scoped_array.hpp> //for scoped_array in load_xml_file
 #include "../rapidxml-1.13/rapidxml.hpp"
-#include "../rapidxml-1.13/rapidxml_utils.hpp" //for rapidxml::file in load_xml_file
 #include "../rapidxml-1.13/rapidxml_print.hpp" //for rapidxml::print in get_xml_string
 #include "boost_algorithm_string.h" //for boost::algorithm::split in get_single_node
+#include "scoped_handle.h"
 #include "logger.h"
 #include "xml.h"
 
@@ -84,26 +84,53 @@ void xml::close_xml(xml_doc_ptr pdoc)
 //todo: wow64
 xml_doc_ptr xml::load_xml_file(const std::string& file_path)
 {
-    bool has_error = true;
-    boost::scoped_ptr<rapidxml::file<char> > pf;
-    try
-    {
-        pf.reset(new rapidxml::file<char>(file_path.c_str()));
-        has_error = false;
-    }
-    catch (std::runtime_error&)
-    {
-        ErrorLog("can not open file: %s", file_path.c_str());
-    }
+    xml_doc_ptr pdoc = NULL;
 
-    if (has_error)
+    do 
     {
-        return NULL;
-    }
-    else
-    {
-        return load_xml_string(pf->data());
-    }
+        scoped_handle<true> h(CreateFileA(file_path.c_str(),
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL));
+        CLastErrorFormat e;//right behind Windows API call
+        if (!h.valid())
+        {
+            ErrorLogLastErrEx(e, "CreateFileA fail, file path: %s", file_path.c_str());
+            break;
+        }
+
+        LARGE_INTEGER li = {0};
+        if (!GetFileSizeEx(h.get(), &li))
+        {
+            ErrorLogLastErr("GetFileSizeEx fail, file path: %s", file_path.c_str());
+            break;
+        }
+
+        if (li.HighPart)
+        {
+            ErrorLog("not support large(more than 4GB) files, file path: %s", file_path.c_str());
+            break;
+        }
+
+        //do not need zero memory, because read file return count
+        boost::scoped_array<char> data(new char[li.LowPart]);
+        DWORD bytes_read = 0;
+        if (!ReadFile(h.get(), data.get(), li.LowPart, &bytes_read, NULL))
+        {
+            ErrorLogLastErr("ReadFile fail, file path: %s", file_path.c_str());
+            break;
+        }
+
+        std::string s;
+        s.append(data.get(), bytes_read);
+        pdoc = load_xml_string(s);
+
+    } while (false);
+
+    return pdoc;
 }
 
 //todo: wow64
@@ -111,35 +138,43 @@ bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
 {
     assert(pdoc && !file_path.empty());
 
-    bool has_error = true;
-    try
-    {
-        std::ofstream f;
-        f.open(file_path.c_str(), std::ofstream::out | std::ofstream::trunc);
-        if (!f.is_open())
-        {
-            ErrorLog("can not open file[%s]", file_path.c_str());
-        }
-        else
-        {
-            std::string s = get_xml_string(pdoc);
-            f.write(s.c_str(), s.size());
-            has_error = false;
-        }
-    }
-    catch (std::ofstream::failure& e)
-    {
-        ErrorLog("can not open or write file[%s], error: %s", file_path.c_str(), e.what());
-    }
+    bool ret = false;
 
-    if (has_error)
+    do 
     {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
+        scoped_handle<true> h(CreateFileA(file_path.c_str(),
+            GENERIC_WRITE,
+            FILE_SHARE_READ,
+            NULL,
+            CREATE_ALWAYS,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL));
+        CLastErrorFormat e;//right behind Windows API call
+        if (!h.valid())
+        {
+            ErrorLogLastErrEx(e, "CreateFileA fail, file path: %s", file_path.c_str());
+            break;
+        }
+
+        std::string s = get_xml_string(pdoc);
+        DWORD written_bytes = 0;
+        if (!WriteFile(h.get(), s.c_str(), s.size(), &written_bytes, NULL))
+        {
+            ErrorLogLastErr("WriteFile fail, file path: %s", file_path.c_str());
+            break;
+        }
+
+        if (written_bytes != s.size())
+        {
+            ErrorLog("not all bytes written, to write: %lu, written: %lu", s.size(), written_bytes);
+            break;
+        }
+
+        ret = true;
+
+    } while (false);
+
+    return ret;
 }
 
 xml_node_ptr xml::get_single_node(const xml_doc_ptr pdoc, const xml_node_ptr pparent_node, const std::string& node_path)

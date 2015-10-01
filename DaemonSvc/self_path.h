@@ -30,6 +30,7 @@ public:
         return m_full;
     }
 
+    //no appended '\' or '/'
     const std::string& get_dir() const
     {
         return m_dir;

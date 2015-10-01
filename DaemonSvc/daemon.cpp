@@ -1,6 +1,6 @@
 #include "logger.h"
 #include "single_checker.h"
-#include "tasks_holder.h"
+#include "tasks_controller.h"
 #include "config_loader.h"
 #include "daemon.h"
 
@@ -66,8 +66,8 @@ void CDaemon::stop()
 {
     InfoLog("stop begin");
     //和start保持一致，都是remove_all
-    CTasksHolder::get_instance_ref().stop_all();
-    CTasksHolder::get_instance_ref().delete_all();
+    CTasksController::get_instance_ref().stop_all();
+    CTasksController::get_instance_ref().delete_all();
     SetEvent(m_exit_event.get());
     InfoLog("stop end");
 }
@@ -81,8 +81,8 @@ void CDaemon::restart()
 
 bool CDaemon::start_tasks_by_config(const tstring& config_file)
 {
-    CTasksHolder::get_instance_ref().stop_all();
-    CTasksHolder::get_instance_ref().delete_all();
+    CTasksController::get_instance_ref().stop_all();
+    CTasksController::get_instance_ref().delete_all();
     CConfigLoader cfg(config_file);
 
     {
@@ -91,7 +91,7 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
             iter_info != infos.end();
             ++iter_info)
         {
-            CTasksHolder::get_instance_ref().add_time_interval_task(boost::bind(cmd_run_as,
+            CTasksController::get_instance_ref().add_time_interval_task(boost::bind(cmd_run_as,
                 iter_info->common_info.cmd, iter_info->common_info.run_as, iter_info->common_info.show_window),
                 iter_info->interval_seconds);
         }
@@ -103,7 +103,7 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
             iter_info != infos.end();
             ++iter_info)
         {
-            CTasksHolder::get_instance_ref().add_time_point_task(boost::bind(cmd_run_as,
+            CTasksController::get_instance_ref().add_time_point_task(boost::bind(cmd_run_as,
                 iter_info->common_info.cmd, iter_info->common_info.run_as, iter_info->common_info.show_window),
                 iter_info->pt);
         }
@@ -115,14 +115,14 @@ bool CDaemon::start_tasks_by_config(const tstring& config_file)
             iter_info != infos.end();
             ++iter_info)
         {
-            CTasksHolder::get_instance_ref().add_proc_non_exist_task(boost::bind(cmd_run_as,
+            CTasksController::get_instance_ref().add_proc_non_exist_task(boost::bind(cmd_run_as,
                 iter_info->common_info.cmd, iter_info->common_info.run_as, iter_info->common_info.show_window),
                 iter_info->proc_path, iter_info->interval_seconds);
         }
     }
 
-    std::vector<CTasksHolder::TaskId> failed_ids;
-    CTasksHolder::get_instance_ref().start_all(failed_ids);
+    std::vector<CTasksController::TaskId> failed_ids;
+    CTasksController::get_instance_ref().start_all(failed_ids);
     if (!failed_ids.empty())
     {
         ErrorLog("start tasks fail");

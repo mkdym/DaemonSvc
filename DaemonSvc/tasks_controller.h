@@ -8,15 +8,15 @@
 #include "task_base.h"
 
 
-class CTasksHolder : public Singleton<CTasksHolder>
+class CTasksController : public Singleton<CTasksController>
 {
-    friend class Singleton<CTasksHolder>;
+    friend class Singleton<CTasksController>;
 
 private:
-    CTasksHolder(void);
+    CTasksController(void);
 
 public:
-    ~CTasksHolder(void);
+    ~CTasksController(void);
 
 public:
     typedef unsigned int TaskId;

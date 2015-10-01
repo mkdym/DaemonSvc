@@ -4,20 +4,20 @@
 #include "time_point_task.h"
 #include "time_interval_task.h"
 #include "proc_non_exist_task.h"
-#include "tasks_holder.h"
+#include "tasks_controller.h"
 
 
-CTasksHolder::CTasksHolder(void)
+CTasksController::CTasksController(void)
 {
 
 }
 
-CTasksHolder::~CTasksHolder(void)
+CTasksController::~CTasksController(void)
 {
 
 }
 
-CTasksHolder::TaskId CTasksHolder::add_time_point_task(const TaskFunc& f, const PeriodTime& period)
+CTasksController::TaskId CTasksController::add_time_point_task(const TaskFunc& f, const PeriodTime& period)
 {
     assert(period.valid());
 
@@ -27,7 +27,7 @@ CTasksHolder::TaskId CTasksHolder::add_time_point_task(const TaskFunc& f, const 
     return id;
 }
 
-CTasksHolder::TaskId CTasksHolder::add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds)
+CTasksController::TaskId CTasksController::add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds)
 {
     assert(interval_seconds);
 
@@ -37,7 +37,7 @@ CTasksHolder::TaskId CTasksHolder::add_time_interval_task(const TaskFunc& f, con
     return id;
 }
 
-CTasksHolder::TaskId CTasksHolder::add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
+CTasksController::TaskId CTasksController::add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds)
 {
     assert(!proc_path.empty());
     assert(interval_seconds);
@@ -48,7 +48,7 @@ CTasksHolder::TaskId CTasksHolder::add_proc_non_exist_task(const TaskFunc& f, co
     return id;
 }
 
-bool CTasksHolder::start_one(const TaskId id)
+bool CTasksController::start_one(const TaskId id)
 {
     TaskBasePtr ptask;
     {
@@ -78,7 +78,7 @@ bool CTasksHolder::start_one(const TaskId id)
     }
 }
 
-void CTasksHolder::start_all(std::vector<TaskId>& failed_ids)
+void CTasksController::start_all(std::vector<TaskId>& failed_ids)
 {
     TaskMap tasks;
     {
@@ -101,7 +101,7 @@ void CTasksHolder::start_all(std::vector<TaskId>& failed_ids)
     }
 }
 
-void CTasksHolder::stop_one(const TaskId id)
+void CTasksController::stop_one(const TaskId id)
 {
     TaskBasePtr ptask;
     {
@@ -126,7 +126,7 @@ void CTasksHolder::stop_one(const TaskId id)
     }
 }
 
-void CTasksHolder::stop_all()
+void CTasksController::stop_all()
 {
     TaskMap tasks;
     {
@@ -146,7 +146,7 @@ void CTasksHolder::stop_all()
     }
 }
 
-void CTasksHolder::delete_one(const TaskId id)
+void CTasksController::delete_one(const TaskId id)
 {
     boost::lock_guard<boost::mutex> locker(m_tasks_lock);
     TaskMap::const_iterator it_task = m_tasks.find(id);
@@ -156,13 +156,13 @@ void CTasksHolder::delete_one(const TaskId id)
     }
 }
 
-void CTasksHolder::delete_all()
+void CTasksController::delete_all()
 {
     boost::lock_guard<boost::mutex> locker(m_tasks_lock);
     m_tasks.clear();
 }
 
-CTasksHolder::TaskId CTasksHolder::alloc_task_num_id()
+CTasksController::TaskId CTasksController::alloc_task_num_id()
 {
     //todo: are these two static vars have thread-safety problem???
     static TaskId id = 0;

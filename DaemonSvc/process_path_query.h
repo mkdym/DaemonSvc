@@ -14,5 +14,6 @@ public:
 
 public:
     tstring query(const DWORD pid);
+    //the process handle must have PROCESS_QUERY_INFORMATION | PROCESS_VM_READ privileges
     tstring query(HANDLE hProcess);
 };

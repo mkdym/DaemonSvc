@@ -66,17 +66,32 @@ private:
 //you can change it
 const size_t MAX_PRINT_LAST_ERROR_BUFFER = 4096;
 
-#define print_last_err(e, s, ...)          _print_last_err(e, vaformat(MAX_PRINT_LAST_ERROR_BUFFER, s, __VA_ARGS__))
+
+#define print_last_err(s, ...)          _print_last_err(vaformat(MAX_PRINT_LAST_ERROR_BUFFER, s, __VA_ARGS__))
+#define print_last_err_ex(e, s, ...)          _print_last_err_ex(e, vaformat(MAX_PRINT_LAST_ERROR_BUFFER, s, __VA_ARGS__))
 
 
 //do not use the functions which is started with "_", use macros
-inline void _print_last_err(CLastErrorFormat& e, const std::string& prefix)
+inline void _print_last_err(const std::string& prefix)
+{
+    //do not use std::cout, because it's not thread-safe
+    CLastErrorFormat e;
+    printf_s("%s, error code: %lu, error msg: %s\r\n", prefix.c_str(), e.code(), e.str().c_str());
+}
+
+inline void _print_last_err(const std::wstring& wprefix)
+{
+    CLastErrorFormat e;
+    wprintf_s(L"%s, error code: %lu, error msg: %s\r\n", wprefix.c_str(), e.code(), e.wstr().c_str());
+}
+
+inline void _print_last_err_ex(CLastErrorFormat& e, const std::string& prefix)
 {
     //do not use std::cout, because it's not thread-safe
     printf_s("%s, error code: %lu, error msg: %s\r\n", prefix.c_str(), e.code(), e.str().c_str());
 }
 
-inline void _print_last_err(CLastErrorFormat& e, const std::wstring& wprefix)
+inline void _print_last_err_ex(CLastErrorFormat& e, const std::wstring& wprefix)
 {
     wprintf_s(L"%s, error code: %lu, error msg: %s\r\n", wprefix.c_str(), e.code(), e.wstr().c_str());
 }

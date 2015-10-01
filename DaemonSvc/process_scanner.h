@@ -23,9 +23,17 @@ struct ProcessInfo
 };
 
 
+
 class CProcessScanner
 {
 public:
+    //if query_full_path is true, returned "info" will contains a not empty full path string if no error
+    //I skipped 3 pid full path query: 0, 4, 8
+    //so you will always get an empty string for the 3 pid
+    //because I can not get their path
+    //in order to reduce error log, I skipped them
+    //      on Windows 2000, "System Process" id is 0, "System" is 4
+    //      on other Windows, "System Process" id is 0, "System" is 8
     CProcessScanner(const bool query_full_path);
     ~CProcessScanner(void);
 

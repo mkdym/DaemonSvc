@@ -49,9 +49,10 @@ CProcessPathQuery::~CProcessPathQuery(void)
 {
 }
 
-tstring CProcessPathQuery::query(const DWORD pid)
+tstring CProcessPathQuery::query(const DWORD pid, bool& native_name)
 {
     tstring s;
+    native_name = false;
 
     scoped_handle<false> hProcess(OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
     if (!hProcess.valid())
@@ -60,61 +61,91 @@ tstring CProcessPathQuery::query(const DWORD pid)
     }
     else
     {
-        s = query(hProcess.get());
+        s = query(hProcess.get(), native_name);
     }
 
     return s;
 }
 
-tstring CProcessPathQuery::query(HANDLE hProcess)
+tstring CProcessPathQuery::query(HANDLE hProcess, bool& native_name)
 {
     std::wstring ws;
+    native_name = false;
 
-    for (unsigned char times_index = 0; times_index != 10; ++times_index)
+    const unsigned char MAX_TIMES = 10;
+    const DWORD PER_INCREASE = 500;
+
+    unsigned char times_index = 1;
+    for (; times_index != (MAX_TIMES + 1); ++times_index)
     {
-        const DWORD buf_size = times_index * 500;
+        const DWORD buf_size = times_index * PER_INCREASE;
+
+        //do not need memset 0, because will return count
         boost::scoped_array<wchar_t> buf(new wchar_t[buf_size]);
-        memset(buf.get(), 0, sizeof(wchar_t) * buf_size);
 
-        BOOL query_success = false;
-        DWORD query_size = buf_size;
-
-        tstring func_name;
-        boost::scoped_ptr<CLastErrorFormat> e;
         if (g_fnQueryFullProcessImageNameW)
         {
-            query_success = g_fnQueryFullProcessImageNameW(hProcess, 0, buf.get(), &query_size);
-            e.reset(new CLastErrorFormat());
-            func_name = TSTR("QueryFullProcessImageNameW");
-        }
-        else if (g_fnGetProcessImageFileNameW)
-        {
-            query_size = g_fnGetProcessImageFileNameW(hProcess, buf.get(), query_size);
-            e.reset(new CLastErrorFormat());
-            func_name = TSTR("GetProcessImageFileNameW");
+            DWORD query_size = buf_size;
+            if (g_fnQueryFullProcessImageNameW(hProcess, 0, buf.get(), &query_size))
+            {
+                //success
+                ws.append(buf.get(), query_size);
+                break;
+            }
 
-            query_success = (query_size != 0);
+            CLastErrorFormat e;
+            if (e.code() != ERROR_INSUFFICIENT_BUFFER)
+            {
+                //fail
+                ErrorLogLastErrEx(e, "QueryFullProcessImageNameW fail");
+                break;
+            }
         }
         else
         {
-            query_size = GetModuleFileNameExW(hProcess, NULL, buf.get(), query_size);
-            e.reset(new CLastErrorFormat());
-            func_name = TSTR("GetModuleFileNameExW");
+            const DWORD query_size_1 = GetModuleFileNameExW(hProcess, NULL, buf.get(), buf_size);
+            if (query_size_1)
+            {
+                //success
+                ws.append(buf.get(), query_size_1);
+                break;
+            }
 
-            query_success = (query_size != 0);
-        }
+            CLastErrorFormat e1;
+            if (e1.code() != ERROR_INSUFFICIENT_BUFFER)
+            {
+                //fail
+                if (NULL == g_fnGetProcessImageFileNameW)
+                {
+                    ErrorLogLastErrEx(e1, "GetModuleFileNameExW fail");
+                    break;
+                }
 
-        if (query_success)
-        {
-            ws.append(buf.get(), query_size);
-            break;
-        }
+                //try GetProcessImageFileNameW
+                const DWORD query_size_2 = g_fnGetProcessImageFileNameW(hProcess, buf.get(), buf_size);
+                if (query_size_2)
+                {
+                    //success
+                    native_name = true;//in native name format, see GetProcessImageFileNameW in MSDN
+                    ws.append(buf.get(), query_size_2);
+                    break;
+                }
 
-        if (e->code() != ERROR_INSUFFICIENT_BUFFER)
-        {
-            ErrorLogLastErrEx(*(e.get()), TSTR("%s fail"), func_name.c_str());
-            break;
+                CLastErrorFormat e2;
+                if (e2.code() != ERROR_INSUFFICIENT_BUFFER)
+                {
+                    //fail
+                    ErrorLogLastErrEx(e1, "GetModuleFileNameExW fail");
+                    ErrorLogLastErrEx(e2, "GetProcessImageFileNameW fail");
+                    break;
+                }
+            }
         }
+    }
+
+    if (MAX_TIMES == times_index)
+    {
+        ErrorLog("process path is too long, support max size[%lu]", MAX_TIMES * PER_INCREASE);
     }
 
     return widestr2tstr(ws);

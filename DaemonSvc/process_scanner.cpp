@@ -64,13 +64,19 @@ bool CProcessScanner::next(ProcessInfo& info)
         info.full_path.clear();
         if (m_query_full_path)
         {
-            if (0 == info.pid || 4 == info.pid)
+            //skip "System Process" and "System"
+            //on Windows 2000, "System Process" id is 0, "System" is 4
+            //on other Windows, "System Process" id is 0, "System" is 8
+            //todo: maybe not correct
+            if (0 == info.pid || 4 == info.pid || 8 == info.pid)
             {
                 //system process
             }
             else
             {
-                info.full_path = m_process_path_query.query(info.pid);
+                //todo: convert
+                bool native_name = false;
+                info.full_path = m_process_path_query.query(info.pid, native_name);
             }
         }
 

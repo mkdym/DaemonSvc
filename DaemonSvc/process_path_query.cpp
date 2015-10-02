@@ -83,6 +83,7 @@ tstring CProcessPathQuery::query(HANDLE hProcess, bool& native_name)
         //do not need memset 0, because will return count
         boost::scoped_array<wchar_t> buf(new wchar_t[buf_size]);
 
+        //Windows Vista/2008 and later versions have function "QueryFullProcessImageNameW"
         if (g_fnQueryFullProcessImageNameW)
         {
             DWORD query_size = buf_size;
@@ -103,6 +104,9 @@ tstring CProcessPathQuery::query(HANDLE hProcess, bool& native_name)
         }
         else
         {
+            //all versions of Windows have function "GetModuleFileNameExW"
+            //but fail when process is starting and pe header is not well prepared
+            //or 32bits process queries 64bits process(maybe)
             const DWORD query_size_1 = GetModuleFileNameExW(hProcess, NULL, buf.get(), buf_size);
             if (query_size_1)
             {
@@ -121,6 +125,8 @@ tstring CProcessPathQuery::query(HANDLE hProcess, bool& native_name)
                     break;
                 }
 
+                //Windows XP and later versions have function "GetProcessImageFileNameW"
+                //but it returns a native path
                 //try GetProcessImageFileNameW
                 const DWORD query_size_2 = g_fnGetProcessImageFileNameW(hProcess, buf.get(), buf_size);
                 if (query_size_2)

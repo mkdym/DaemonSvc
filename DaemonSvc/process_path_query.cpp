@@ -26,15 +26,15 @@ static fnGetProcessImageFileNameW g_fnGetProcessImageFileNameW;
 static void load_query_funcs()
 {
     g_fnQueryFullProcessImageNameW = reinterpret_cast<fnQueryFullProcessImageNameW>
-        (WindowsUtil::load_function(TSTR("Kernel32.dll"), TSTR("QueryFullProcessImageNameW")));
+        (WindowsUtil::load_function("Kernel32.dll", "QueryFullProcessImageNameW"));
 
     g_fnGetProcessImageFileNameW = reinterpret_cast<fnGetProcessImageFileNameW>
-        (WindowsUtil::load_function(TSTR("Psapi.dll"), TSTR("GetProcessImageFileNameW")));
+        (WindowsUtil::load_function("Psapi.dll", "GetProcessImageFileNameW"));
 
     if (NULL == g_fnGetProcessImageFileNameW)
     {
         g_fnGetProcessImageFileNameW = reinterpret_cast<fnGetProcessImageFileNameW>
-            (WindowsUtil::load_function(TSTR("Kernel32.dll"), TSTR("GetProcessImageFileNameW")));
+            (WindowsUtil::load_function("Kernel32.dll", "GetProcessImageFileNameW"));
     }
 }
 

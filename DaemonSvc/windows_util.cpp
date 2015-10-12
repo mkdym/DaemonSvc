@@ -1,5 +1,3 @@
-#include <Windows.h>
-#include "str_encode.h"
 #include "scoped_handle.h"
 #include "logger.h"
 #include "windows_util.h"
@@ -9,27 +7,27 @@
 
 
 
-FARPROC WindowsUtil::load_function(const tstring& module_name,
-                                   const tstring& func_name,
+FARPROC WindowsUtil::load_function(const std::string& module_name,
+                                   const std::string& func_name,
                                    const bool log /*= true*/)
 {
-    HMODULE hModule = GetModuleHandle(module_name.c_str());
+    HMODULE hModule = GetModuleHandleA(module_name.c_str());
     if (NULL == hModule)
     {
         if (log)
         {
-            ErrorLogLastErr(TSTR("GetModuleHandle[%s] fail"), module_name.c_str());
+            ErrorLogLastErr("GetModuleHandle[%s] fail", module_name.c_str());
         }
         return NULL;
     }
     else
     {
-        FARPROC func_addr = GetProcAddress(hModule, tstr2ansistr(func_name).c_str());
+        FARPROC func_addr = GetProcAddress(hModule, func_name.c_str());
         if (NULL == func_addr)
         {
             if (log)
             {
-                ErrorLogLastErr(TSTR("GetProcAddress[%s:%s] fail"), module_name.c_str(), func_name.c_str());
+                ErrorLogLastErr("GetProcAddress[%s:%s] fail", module_name.c_str(), func_name.c_str());
             }
         }
         return func_addr;

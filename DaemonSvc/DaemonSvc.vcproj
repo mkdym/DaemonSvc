@@ -241,7 +241,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tasks_holder.cpp"
+				RelativePath=".\tasks_controller.cpp"
 				>
 			</File>
 			<File
@@ -371,7 +371,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tasks_holder.h"
+				RelativePath=".\tasks_controller.h"
 				>
 			</File>
 			<File

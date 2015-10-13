@@ -17,11 +17,11 @@ public:
     //on return, if native_name is true, returned string is native name
     //for example, \Device\Harddisk0\Partition1\WINNT\System32\Ctype.nls
     //see GetProcessImageFileNameW in MSDN
-    //you can use xxx to convert it to DOS name: C:\Winnt\System32\Ctype.nls
+    //you can use CDosPathConverter to convert it to DOS name: C:\Winnt\System32\Ctype.nls
     //I do not put the conversion in "query", because it costs some time to prepare
     //once prepared, you can use it for many conversions
     //typical scenario is in process scanner
-    //found in testing:
+    //found in self-testing:
     //      on Windows 2000, you will get
     //              "\SystemRoot\System32\smss.exe" for smss.exe
     //              "\??\C:\WINNT\system32\csrss.exe" for csrss.exe

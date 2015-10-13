@@ -4,6 +4,7 @@
 #include "scoped_handle.h"
 #include "tdef.h"
 #include "process_path_query.h"
+#include "dos_path_converter.h"
 
 
 struct ProcessInfo
@@ -46,6 +47,7 @@ private:
     bool m_query_full_path;
 
     CProcessPathQuery m_process_path_query;
+    CDosPathConverter m_dos_path_converter;
 };
 
 

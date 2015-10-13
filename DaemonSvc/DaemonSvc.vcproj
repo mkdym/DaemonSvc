@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dos_path_converter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\last_error_format.cpp"
 				>
 			</File>
@@ -296,6 +300,10 @@
 			</File>
 			<File
 				RelativePath=".\daemon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\dos_path_converter.h"
 				>
 			</File>
 			<File

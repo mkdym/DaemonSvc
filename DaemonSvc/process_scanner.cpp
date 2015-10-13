@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <Tlhelp32.h>
 #include "boost_algorithm_string.h"
+#include "str_encode.h"
 #include "logger.h"
 #include "process_scanner.h"
 
@@ -74,9 +75,18 @@ bool CProcessScanner::next(ProcessInfo& info)
             }
             else
             {
-                //todo: convert
                 bool native_name = false;
                 info.full_path = m_process_path_query.query(info.pid, native_name);
+                if (!info.full_path.empty() && native_name)
+                {
+                    //convert native name to dos name
+                    info.full_path = widestr2tstr(m_dos_path_converter.to_dos_path(tstr2widestr(info.full_path)));
+                }
+                //convert short pathname
+                if (!info.full_path.empty())
+                {
+                    info.full_path = CDosPathConverter::to_long_path_name(info.full_path);
+                }
             }
         }
 

@@ -89,6 +89,8 @@ void CTimePointTask::worker_func()
         //若在，则执行，并更新上一次执行时间
         //若不在，则进行下一次等待
 
+        //等待时间：等待误差时间的一半，若这一半大于10分钟，则以10分钟计
+
         //todo
         const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), INFINITE);
         if (WAIT_OBJECT_0 == wait_result)

@@ -17,6 +17,27 @@ const size_t MAX_LOG_BUFFER = 1024;
 
 
 
+
+#if defined(DISABLE_LOG)
+
+#define ErrorLog(s, ...)
+#define InfoLog(s, ...)
+#define DebugLog(s, ...)
+
+#define ErrorLogBytes(buf, len, prefix, ...)
+#define InfoLogBytes(buf, len, prefix, ...)
+#define DebugLogBytes(buf, len, prefix, ...)
+
+#define ErrorLogLastErr(prefix, ...)
+#define InfoLogLastErr(prefix, ...)
+#define DebugLogLastErr(prefix, ...)
+
+#define ErrorLogLastErrEx(e, prefix, ...)
+#define InfoLogLastErrEx(e, prefix, ...)
+#define DebugLogLastErrEx(e, prefix, ...)
+
+#else
+
 #define ErrorLog(s, ...)          _Log(LOG_ERROR, __FILE__, __LINE__, vaformat(MAX_LOG_BUFFER, s, __VA_ARGS__))
 #define InfoLog(s, ...)           _Log(LOG_INFO, __FILE__, __LINE__, vaformat(MAX_LOG_BUFFER, s, __VA_ARGS__))
 #define DebugLog(s, ...)          _Log(LOG_DEBUG, __FILE__, __LINE__, vaformat(MAX_LOG_BUFFER, s, __VA_ARGS__))
@@ -42,9 +63,12 @@ const size_t MAX_LOG_BUFFER = 1024;
 #define DebugLogLastErrEx(e, prefix, ...)         \
     _LogLastErrEx(LOG_DEBUG, __FILE__, __LINE__, e, vaformat(MAX_LOG_BUFFER, prefix, __VA_ARGS__))
 
+#endif
 
-bool InitLog(const std::string& dir, const unsigned long max_size);
-bool InitLog(const std::wstring& dir, const unsigned long max_size);
+
+
+bool InitLog(const std::string& dir, const unsigned long max_size, const LOG_LEVEL max_level);
+bool InitLog(const std::wstring& dir, const unsigned long max_size, const LOG_LEVEL max_level);
 
 
 bool _Log(const LOG_LEVEL level, const char *file, const int line, const std::string& s);

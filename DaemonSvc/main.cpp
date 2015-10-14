@@ -30,7 +30,7 @@ void restart(const CWin32Service::ArgList& args)
 
 int main(int argc, char * argv[])
 {
-    InitLog("", 0);
+    InitLog("", 0, LOG_DEBUG);
     //try to enable debug privilege for querying other processes' info
     WindowsUtil::set_privilege(SE_DEBUG_NAME, true);
 

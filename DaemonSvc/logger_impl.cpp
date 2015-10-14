@@ -192,7 +192,6 @@ HANDLE CLoggerImpl::new_log_file() const
 
 bool CLoggerImpl::write(const LOG_LEVEL level, const std::string& s)
 {
-    //todo: control level output
     printf_s("%s", s.c_str());
     OutputDebugStringA(s.c_str());
 

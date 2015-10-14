@@ -24,7 +24,7 @@ struct CommonInfo
     std::string str()
     {
         std::string s = "run_as[" + cast_run_as_type_to_string(run_as)
-            + "], show_window[" + string_lexical_cast<char>(show_window)
+            + "], show_window[" + lexical_cast_to_string<char>(show_window)
             + "], cmd[" + tstr2ansistr(cmd)
             + "]";
         return s;
@@ -45,7 +45,7 @@ struct TimeIntervalTaskInfo
     std::string str()
     {
         std::string s;
-        s = "interval_seconds[" + string_lexical_cast<char>(interval_seconds)
+        s = "interval_seconds[" + lexical_cast_to_string<char>(interval_seconds)
             + "], " + common_info.str();
         return s;
     }
@@ -82,7 +82,7 @@ struct ProcNonExistTaskInfo
     {
         std::string s;
         s = "proc_path[" + tstr2ansistr(proc_path)
-            + "], interval_seconds[" + string_lexical_cast<char>(interval_seconds)
+            + "], interval_seconds[" + lexical_cast_to_string<char>(interval_seconds)
             + "], " + common_info.str();
         return s;
     }

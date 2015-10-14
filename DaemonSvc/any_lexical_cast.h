@@ -32,7 +32,7 @@ std::wstring any_lexical_cast<std::wstring, bool>(const bool& src, const std::ws
 
 
 template<typename CharType, typename Source>
-std::basic_string<CharType> string_lexical_cast(const Source& src)
+std::basic_string<CharType> lexical_cast_to_string(const Source& src)
 {
     static const std::basic_string<CharType> empty_str;
     return any_lexical_cast<std::basic_string<CharType>, Source>(src, empty_str);

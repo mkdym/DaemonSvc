@@ -63,7 +63,7 @@ bool CLoggerImpl::log_string(const LOG_LEVEL level, const char* file, const int 
 
 bool CLoggerImpl::log_bytes(const LOG_LEVEL level, const char* file, const int line, const void *buf, const unsigned long len, const std::string& prefix)
 {
-    const std::string len_str = string_lexical_cast<char>(len);
+    const std::string len_str = lexical_cast_to_string<char>(len);
     std::string s_to_write = build_prefix(level, file, line)
         + prefix + "\r\n" + "@@@@@begin, buffer size = " + len_str + "@@@@@\r\n";
     s_to_write.append(reinterpret_cast<const char *>(buf), len);
@@ -74,7 +74,7 @@ bool CLoggerImpl::log_bytes(const LOG_LEVEL level, const char* file, const int l
 bool CLoggerImpl::log_last_error(const LOG_LEVEL level, const char* file, const int line, CLastErrorFormat& e, const std::string& prefix)
 {
     std::string s_to_write = build_prefix(level, file, line) + prefix;
-    s_to_write += ", error code: " + string_lexical_cast<char>(e.code()) + ", error msg: " + e.str() + "\r\n";
+    s_to_write += ", error code: " + lexical_cast_to_string<char>(e.code()) + ", error msg: " + e.str() + "\r\n";
     return write(level, s_to_write);
 }
 
@@ -94,9 +94,9 @@ std::string CLoggerImpl::build_prefix(const LOG_LEVEL level, const char* file, c
     s += time_buf;//buf is large enough to hold string and a null-terminated ch
 
     {
-        static const DWORD pid = GetCurrentProcessId();
-        const DWORD tid = GetCurrentThreadId();//todo: tls
-        s += "[" + string_lexical_cast<char>(pid) + ":" + string_lexical_cast<char>(tid) + "] ";
+        static const std::string pid_str = lexical_cast_to_string<char>(GetCurrentProcessId());
+        const std::string tid_str = lexical_cast_to_string<char>(GetCurrentThreadId());//todo: tls
+        s += "[" + pid_str + ":" + tid_str + "] ";
     }
 
     switch (level)
@@ -120,7 +120,7 @@ std::string CLoggerImpl::build_prefix(const LOG_LEVEL level, const char* file, c
 
     s += "[";
     s += file;
-    s += ":" + string_lexical_cast<char>(line) + "] ";
+    s += ":" + lexical_cast_to_string<char>(line) + "] ";
 
     return s;
 }
@@ -149,7 +149,7 @@ HANDLE CLoggerImpl::new_log_file(const std::string& log_file_dir, const std::str
 
         {
             static const DWORD pid = GetCurrentProcessId();
-            file_path += string_lexical_cast<char>(pid);
+            file_path += lexical_cast_to_string<char>(pid);
         }
 
         file_path += ".log";

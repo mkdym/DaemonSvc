@@ -13,7 +13,7 @@
 
 //max valist format string buffer
 //you can change it
-const size_t MAX_LOG_BUFFER = 4096;
+const size_t MAX_LOG_BUFFER = 1024;
 
 
 

@@ -5,25 +5,25 @@
 #include "vaformat.h"
 
 
-static const size_t MIN_BUF_SIZE = 200;
+static const size_t MIN_BUF_SIZE = 1024;
 
 
 //do not use Windows API, because Windows API will modify last error code
 //while vaformat is always used to build last error log string
-std::string vaformat(const size_t size_hint, const char* msg, ...)
+std::string vaformat(const size_t max_size, const char* msg, ...)
 {
     boost::scoped_array<char> scoped_buf;
     char buf_on_stack[MIN_BUF_SIZE] = {0};
 
     char* buf = buf_on_stack;
     size_t buf_size = MIN_BUF_SIZE;
-    if (size_hint > MIN_BUF_SIZE)
+    if (max_size > MIN_BUF_SIZE)
     {
         //no need to memset, because _vsnprintf_s will return count
-        scoped_buf.reset(new char[size_hint]);
+        scoped_buf.reset(new char[max_size]);
 
         buf = scoped_buf.get();
-        buf_size = size_hint;
+        buf_size = max_size;
     }
 
     std::string s;
@@ -46,20 +46,20 @@ std::string vaformat(const size_t size_hint, const char* msg, ...)
 }
 
 //see comments above
-std::wstring vaformat(const size_t size_hint, const wchar_t* wmsg, ...)
+std::wstring vaformat(const size_t max_size, const wchar_t* wmsg, ...)
 {
     boost::scoped_array<wchar_t> scoped_buf;
     wchar_t buf_on_stack[MIN_BUF_SIZE] = {0};
 
     wchar_t* buf = buf_on_stack;
     size_t buf_size = MIN_BUF_SIZE;
-    if (size_hint > MIN_BUF_SIZE)
+    if (max_size > MIN_BUF_SIZE)
     {
         //no need to memset, because _vsnprintf_s will return count
-        scoped_buf.reset(new wchar_t[size_hint]);
+        scoped_buf.reset(new wchar_t[max_size]);
 
         buf = scoped_buf.get();
-        buf_size = size_hint;
+        buf_size = max_size;
     }
 
     std::wstring ws;

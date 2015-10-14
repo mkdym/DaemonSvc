@@ -64,7 +64,7 @@ private:
 
 //max valist format string buffer
 //you can change it
-const size_t MAX_PRINT_LAST_ERROR_BUFFER = 4096;
+const size_t MAX_PRINT_LAST_ERROR_BUFFER = 1024;
 
 
 #define print_last_err(s, ...)          _print_last_err(vaformat(MAX_PRINT_LAST_ERROR_BUFFER, s, __VA_ARGS__))

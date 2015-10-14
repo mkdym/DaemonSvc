@@ -1,9 +1,23 @@
-#include <Windows.h>
 #include <boost/thread/lock_guard.hpp>
+#include <boost/thread/tss.hpp> // for boost::thread_specific_ptr
 #include "any_lexical_cast.h"
 #include "self_path.h"
 #include "logger_impl.h"
 
+
+static boost::thread_specific_ptr<std::string> g_tid_str;
+
+
+CLoggerImpl::CLoggerImpl()
+    : m_write_len(0)
+{
+    m_pid_str = lexical_cast_to_string<char>(GetCurrentProcessId());
+}
+
+CLoggerImpl::~CLoggerImpl()
+{
+
+}
 
 bool CLoggerImpl::init(const std::string& dir, const unsigned long max_size)
 {
@@ -44,7 +58,7 @@ bool CLoggerImpl::init(const std::string& dir, const unsigned long max_size)
                 m_log_file_max_size = 10 * 1024 * 1024;//10MB
             }
 
-            m_log_file_handle.reset(new_log_file(m_log_file_dir, m_log_file_name));
+            m_log_file_handle.reset(new_log_file());
             m_write_len = 0;
             ret = m_log_file_handle.valid();
         }
@@ -78,7 +92,7 @@ bool CLoggerImpl::log_last_error(const LOG_LEVEL level, const char* file, const 
     return write(level, s_to_write);
 }
 
-std::string CLoggerImpl::build_prefix(const LOG_LEVEL level, const char* file, const int line)
+std::string CLoggerImpl::build_prefix(const LOG_LEVEL level, const char* file, const int line) const
 {
     std::string s;
 
@@ -93,11 +107,13 @@ std::string CLoggerImpl::build_prefix(const LOG_LEVEL level, const char* file, c
         systime.wMilliseconds);
     s += time_buf;//buf is large enough to hold string and a null-terminated ch
 
+    //set tid tls
+    if(NULL == g_tid_str.get())
     {
-        static const std::string pid_str = lexical_cast_to_string<char>(GetCurrentProcessId());
-        const std::string tid_str = lexical_cast_to_string<char>(GetCurrentThreadId());//todo: tls
-        s += "[" + pid_str + ":" + tid_str + "] ";
+        const std::string tid_str = lexical_cast_to_string<char>(GetCurrentThreadId());
+        g_tid_str.reset(new std::string(tid_str));
     }
+    s += "[" + m_pid_str + ":" + *(g_tid_str.get()) + "] ";
 
     switch (level)
     {
@@ -125,13 +141,13 @@ std::string CLoggerImpl::build_prefix(const LOG_LEVEL level, const char* file, c
     return s;
 }
 
-HANDLE CLoggerImpl::new_log_file(const std::string& log_file_dir, const std::string& log_file_name)
+HANDLE CLoggerImpl::new_log_file() const
 {
     HANDLE h = INVALID_HANDLE_VALUE;
 
     do 
     {
-        std::string file_path = log_file_dir + "\\" + log_file_name;
+        std::string file_path = m_log_file_dir + "\\" + m_log_file_name;
 
         //get current time string
         {
@@ -140,7 +156,7 @@ HANDLE CLoggerImpl::new_log_file(const std::string& log_file_dir, const std::str
 
             const size_t time_buf_size = 100;
             char time_buf[time_buf_size] = {0};
-            //have a "." before after
+            //have a "." before and after
             sprintf_s(time_buf, ".%04d%02d%02d%02d%02d%02d.",
                 systime.wYear, systime.wMonth, systime.wDay,
                 systime.wHour, systime.wMinute, systime.wSecond);
@@ -176,7 +192,7 @@ HANDLE CLoggerImpl::new_log_file(const std::string& log_file_dir, const std::str
 
 bool CLoggerImpl::write(const LOG_LEVEL level, const std::string& s)
 {
-    //todo: level
+    //todo: control level output
     printf_s("%s", s.c_str());
     OutputDebugStringA(s.c_str());
 
@@ -208,7 +224,7 @@ bool CLoggerImpl::write(const LOG_LEVEL level, const std::string& s)
 
             if (m_write_len >= m_log_file_max_size)
             {
-                HANDLE h = new_log_file(m_log_file_dir, m_log_file_name);
+                HANDLE h = new_log_file();
                 if (INVALID_HANDLE_VALUE == h)
                 {
                     printf_s("new log file fail\r\n");

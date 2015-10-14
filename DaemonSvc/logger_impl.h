@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <Windows.h>
 #include <boost/thread/mutex.hpp>
 #include "last_error_format.h"
 #include "log_level.h"
@@ -16,15 +17,10 @@ class CLoggerImpl : public Singleton<CLoggerImpl>
     friend class Singleton<CLoggerImpl>;
 
 private:
-    CLoggerImpl()
-        : m_write_len(0)
-    {
-    }
+    CLoggerImpl();
 
 public:
-    ~CLoggerImpl()
-    {
-    }
+    ~CLoggerImpl();
 
 public:
     //if dir is empty, use exe dir
@@ -55,11 +51,13 @@ public:
     }
 
 private:
-    static std::string build_prefix(const LOG_LEVEL level, const char* file, const int line);
-    static HANDLE new_log_file(const std::string& log_file_dir, const std::string& log_file_name);
+    std::string build_prefix(const LOG_LEVEL level, const char* file, const int line) const;
+    HANDLE new_log_file() const;
     bool write(const LOG_LEVEL level, const std::string& s);
 
 private:
+    std::string m_pid_str;//for thread-safety, init it in ctor, rather than use local static var in build_prefix
+
     std::string m_log_file_dir;
     std::string m_log_file_name;
     unsigned long m_log_file_max_size;//in bytes

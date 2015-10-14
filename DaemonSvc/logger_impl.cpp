@@ -163,10 +163,7 @@ HANDLE CLoggerImpl::new_log_file() const
             file_path += time_buf;//buf is large enough to hold string and a null-terminated ch
         }
 
-        {
-            static const DWORD pid = GetCurrentProcessId();
-            file_path += lexical_cast_to_string<char>(pid);
-        }
+        file_path += m_pid_str;
 
         file_path += ".log";
         h = CreateFileA(file_path.c_str(),

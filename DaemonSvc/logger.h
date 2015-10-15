@@ -6,7 +6,7 @@
 
 
 //you should call InitLog first
-//do not use the functions which is started with "_", use macros
+//do not use the functions which are started with "_", use macros
 //use char version as possible as you can
 //because wchar_t version is based on char version: all wchar_t string will be converted to char string
 
@@ -67,6 +67,9 @@ const size_t MAX_LOG_BUFFER = 1024;
 
 
 
+//dir: log dir. if empty, use [exe_dir]\log
+//max_size: log file size limit, if exceeded, create new log file. if 0, use default size limit(10MB)
+//max_level: if level > max_level, ingore. see log_level.h. typically, you should sepecify LOG_INFO. LOG_DEBUG will log all
 bool InitLog(const std::string& dir, const unsigned long max_size, const LOG_LEVEL max_level);
 bool InitLog(const std::wstring& dir, const unsigned long max_size, const LOG_LEVEL max_level);
 

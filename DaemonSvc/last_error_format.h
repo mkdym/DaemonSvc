@@ -71,7 +71,7 @@ const size_t MAX_PRINT_LAST_ERROR_BUFFER = 1024;
 #define print_last_err_ex(e, s, ...)          _print_last_err_ex(e, vaformat(MAX_PRINT_LAST_ERROR_BUFFER, s, __VA_ARGS__))
 
 
-//do not use the functions which is started with "_", use macros above
+//do not use the functions which are started with "_", use macros above
 inline void _print_last_err(const std::string& prefix)
 {
     //do not use std::cout, because it's not thread-safe

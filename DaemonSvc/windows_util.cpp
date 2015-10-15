@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include "scoped_handle.h"
 #include "logger.h"
 #include "windows_util.h"
@@ -7,7 +8,7 @@
 
 
 
-FARPROC WindowsUtil::load_function(const std::string& module_name,
+void* WindowsUtil::load_function(const std::string& module_name,
                                    const std::string& func_name,
                                    const bool log /*= true*/)
 {

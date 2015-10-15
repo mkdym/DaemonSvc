@@ -95,10 +95,9 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
             OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL,
             NULL));
-        CLastErrorFormat e;//right behind Windows API call
         if (!h.valid())
         {
-            ErrorLogLastErrEx(e, "CreateFileA fail, file path: %s", file_path.c_str());
+            ErrorLogLastErr("CreateFileA fail, file path: %s", file_path.c_str());
             break;
         }
 
@@ -149,10 +148,9 @@ bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
             CREATE_ALWAYS,
             FILE_ATTRIBUTE_NORMAL,
             NULL));
-        CLastErrorFormat e;//right behind Windows API call
         if (!h.valid())
         {
-            ErrorLogLastErrEx(e, "CreateFileA fail, file path: %s", file_path.c_str());
+            ErrorLogLastErr("CreateFileA fail, file path: %s", file_path.c_str());
             break;
         }
 

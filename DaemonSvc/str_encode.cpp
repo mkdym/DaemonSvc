@@ -13,15 +13,6 @@
 static const unsigned int CP_US_ASCII = 20127;
 
 
-std::wstring ansistr2widestr(const std::string& s)
-{
-    return multistr2widestr(CP_ACP, s);
-}
-
-std::string widestr2ansistr(const std::wstring& ws)
-{
-    return widestr2multistr(CP_ACP, ws, NULL);
-}
 
 std::wstring multistr2widestr(const unsigned int from_code_page, const std::string& s)
 {

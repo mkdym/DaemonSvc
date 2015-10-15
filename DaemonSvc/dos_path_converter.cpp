@@ -87,6 +87,8 @@ std::wstring CDosPathConverter::to_dos_path(const std::wstring& native_name) con
 {
     std::wstring dos_path;
 
+    //todo: improve performance
+    //use find-replace
     for (DriveNameMap::const_iterator iter_name = m_dos2native.begin();
         iter_name != m_dos2native.end();
         ++iter_name)
@@ -105,6 +107,8 @@ std::wstring CDosPathConverter::to_native_path(const std::wstring& dos_name) con
 {
     std::wstring native_path;
 
+    //todo: improve performance
+    //use find-replace
     for (DriveNameMap::const_iterator iter_name = m_dos2native.begin();
         iter_name != m_dos2native.end();
         ++iter_name)

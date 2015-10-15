@@ -6,6 +6,7 @@
 #include "../rapidxml-1.13/rapidxml_print.hpp" //for rapidxml::print in get_xml_string
 #include "boost_algorithm_string.h" //for boost::algorithm::split in get_single_node
 #include "scoped_handle.h"
+#include "scoped_disable_wow64_fsredirection.h"
 #include "logger.h"
 #include "xml.h"
 
@@ -81,13 +82,14 @@ void xml::close_xml(xml_doc_ptr pdoc)
     pdoc = NULL;
 }
 
-//todo: wow64
 xml_doc_ptr xml::load_xml_file(const std::string& file_path)
 {
     xml_doc_ptr pdoc = NULL;
 
     do 
     {
+        scoped_disable_wow64_fsredirection wow64;
+
         scoped_handle<true> h(CreateFileA(file_path.c_str(),
             GENERIC_READ,
             FILE_SHARE_READ,
@@ -132,7 +134,6 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
     return pdoc;
 }
 
-//todo: wow64
 bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
 {
     assert(pdoc && !file_path.empty());
@@ -141,6 +142,8 @@ bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
 
     do 
     {
+        scoped_disable_wow64_fsredirection wow64;
+
         scoped_handle<true> h(CreateFileA(file_path.c_str(),
             GENERIC_WRITE,
             FILE_SHARE_READ,

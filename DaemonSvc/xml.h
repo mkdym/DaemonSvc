@@ -30,6 +30,7 @@ namespace xml
 
     //if parse error, return NULL
     //should call close_xml on returned xml ptr to release resource when no longer needed
+    //have disabled wow64 fs redirection in function
     xml_doc_ptr load_xml_file(const std::string& file_path);
     bool save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path);
 

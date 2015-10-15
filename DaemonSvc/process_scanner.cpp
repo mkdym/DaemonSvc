@@ -87,6 +87,10 @@ bool CProcessScanner::next(ProcessInfo& info)
                 {
                     info.full_path = CDosPathConverter::to_long_path_name(info.full_path);
                 }
+                if (info.full_path.empty())
+                {
+                    ErrorLog(TSTR("can not get process [%s:%d] full path"), info.exe_name.c_str(), info.pid);
+                }
             }
         }
 

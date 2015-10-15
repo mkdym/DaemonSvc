@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\scoped_disable_wow64_fsredirection.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\self_path.cpp"
 				>
 			</File>
@@ -344,6 +348,10 @@
 			</File>
 			<File
 				RelativePath=".\process_scanner.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scoped_disable_wow64_fsredirection.h"
 				>
 			</File>
 			<File

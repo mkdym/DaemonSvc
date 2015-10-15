@@ -6,6 +6,7 @@
 #include <boost/thread/once.hpp>
 #include "boost_algorithm_string.h"
 #include "logger.h"
+#include "scoped_disable_wow64_fsredirection.h"
 #include "windows_util.h"
 #include "dos_path_converter.h"
 
@@ -249,6 +250,8 @@ tstring CDosPathConverter::to_long_path_name(const tstring& short_path_name)
 
     do 
     {
+        scoped_disable_wow64_fsredirection wow64;
+
         const DWORD buf_need_size = GetLongPathName(short_path_name.c_str(), NULL, 0);
         CLastErrorFormat e_1st;
         if (0 == buf_need_size)

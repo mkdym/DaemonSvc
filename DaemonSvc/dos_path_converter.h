@@ -15,6 +15,7 @@ public:
     std::wstring to_dos_path(const std::wstring& native_name) const;
     std::wstring to_native_path(const std::wstring& dos_name) const;
 
+    //have disabled wow64 fs redirection inner
     static tstring to_long_path_name(const tstring& short_path_name);
 
 private:

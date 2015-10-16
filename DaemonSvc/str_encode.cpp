@@ -60,7 +60,17 @@ std::string widestr2multistr(const unsigned int to_code_page, const std::wstring
             break;
         }
 
-        int need_ch_len = WideCharToMultiByte(to_code_page, 0, ws.c_str(), ws.size(), NULL, 0, default_char, NULL);
+        //lpUsedDefaultChar: For the CP_UTF7 and CP_UTF8 settings for CodePage, this parameter must be set to a null pointer
+        //Otherwise, the function fails with ERROR_INVALID_PARAMETER.
+        //see MSDN
+        const char *final_default_char = default_char;
+        if (to_code_page == CP_UTF7
+            || to_code_page == CP_UTF8)
+        {
+            final_default_char = NULL;
+        }
+
+        int need_ch_len = WideCharToMultiByte(to_code_page, 0, ws.c_str(), ws.size(), NULL, 0, final_default_char, NULL);
         if (0 == need_ch_len)
         {
             print_last_err("WideCharToMultiByte fail when query need size");
@@ -70,7 +80,7 @@ std::string widestr2multistr(const unsigned int to_code_page, const std::wstring
         boost::scoped_array<char> str_buf(new char[need_ch_len]);
         memset(str_buf.get(), 0, need_ch_len * sizeof(char));
 
-        need_ch_len = WideCharToMultiByte(to_code_page, 0, ws.c_str(), ws.size(), str_buf.get(), need_ch_len, default_char, NULL);
+        need_ch_len = WideCharToMultiByte(to_code_page, 0, ws.c_str(), ws.size(), str_buf.get(), need_ch_len, final_default_char, NULL);
         if (0 == need_ch_len)
         {
             print_last_err("WideCharToMultiByte fail");

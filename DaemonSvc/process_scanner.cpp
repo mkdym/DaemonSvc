@@ -1,8 +1,9 @@
 #include <Windows.h>
 #include <Tlhelp32.h>
 #include "boost_algorithm_string.h"
-#include "str_encode.h"
 #include "logger.h"
+#include "os_ver.h"
+#include "str_encode.h"
 #include "process_scanner.h"
 
 
@@ -65,6 +66,8 @@ bool CProcessScanner::next(ProcessInfo& info)
         info.full_path.clear();
         if (m_query_full_path)
         {
+            static OS_VER os_v = get_os_version();
+
             //skip "System Process" and "System"
             //on Windows 2000, "System Process" id is 0, "System" is 4
             //on other Windows, "System Process" id is 0, "System" is 8
@@ -72,6 +75,11 @@ bool CProcessScanner::next(ProcessInfo& info)
             if (0 == info.pid || 4 == info.pid || 8 == info.pid)
             {
                 //system process
+            }
+            else if (os_v.v >= OS_VER::WIN_VISTA
+                && boost::algorithm::iequals(info.exe_name, TSTR("audiodg.exe")))
+            {
+                //can not get process "audiodg.exe" full path
             }
             else
             {

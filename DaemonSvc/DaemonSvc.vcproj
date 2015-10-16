@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\os_ver.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\period_time.cpp"
 				>
 			</File>
@@ -328,6 +332,10 @@
 			</File>
 			<File
 				RelativePath=".\logger_impl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\os_ver.h"
 				>
 			</File>
 			<File

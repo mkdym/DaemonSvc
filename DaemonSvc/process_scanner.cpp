@@ -76,7 +76,7 @@ bool CProcessScanner::next(ProcessInfo& info)
             {
                 //system process
             }
-            else if (os_v.v >= OS_VER::WIN_VISTA
+            else if (os_v.major_version >= 6
                 && boost::algorithm::iequals(info.exe_name, TSTR("audiodg.exe")))
             {
                 //can not get process "audiodg.exe" full path

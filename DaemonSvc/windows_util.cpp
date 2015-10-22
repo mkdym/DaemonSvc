@@ -41,7 +41,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
 
     do 
     {
-        scoped_handle<false> hToken;
+        scoped_handle<> hToken;
         {
             HANDLE hToken_ = NULL;
             if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken_))

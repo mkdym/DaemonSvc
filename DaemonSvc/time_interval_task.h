@@ -27,5 +27,5 @@ private:
     const DWORD m_interval_seconds;
 
     boost::thread m_worker_thread;
-    scoped_handle<false> m_exit_event;
+    scoped_handle<> m_exit_event;
 };

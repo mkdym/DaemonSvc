@@ -117,7 +117,7 @@ void CProcNonExistTask::worker_func()
         else//exist
         {
             const DWORD pid = pids.at(0);
-            scoped_handle<false> hProcess(OpenProcess(SYNCHRONIZE, FALSE, pid));
+            scoped_handle<> hProcess(OpenProcess(SYNCHRONIZE, FALSE, pid));
             if (!hProcess.valid())
             {
                 ErrorLogLastErr("OpenProcess[%lu] fail", pid);

@@ -54,7 +54,7 @@ tstring CProcessPathQuery::query(const DWORD pid, bool& native_name)
     tstring s;
     native_name = false;
 
-    scoped_handle<false> hProcess(OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
+    scoped_handle<> hProcess(OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
     if (!hProcess.valid())
     {
         ErrorLogLastErr("OpenProcess[%lu] fail", pid);

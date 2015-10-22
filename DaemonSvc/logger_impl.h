@@ -62,7 +62,7 @@ private:
     std::string m_log_file_name;
     unsigned long m_log_file_max_size;//in bytes
     boost::mutex m_log_file_lock;
-    scoped_handle<true> m_log_file_handle;
+    scoped_handle<INVALID_HANDLE_VALUE> m_log_file_handle;
     unsigned long m_write_len;
 };
 

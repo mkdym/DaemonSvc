@@ -90,7 +90,7 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
     {
         scoped_disable_wow64_fsredirection wow64;
 
-        scoped_handle<true> h(CreateFileA(file_path.c_str(),
+        scoped_handle<INVALID_HANDLE_VALUE> h(CreateFileA(file_path.c_str(),
             GENERIC_READ,
             FILE_SHARE_READ,
             NULL,
@@ -144,7 +144,7 @@ bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
     {
         scoped_disable_wow64_fsredirection wow64;
 
-        scoped_handle<true> h(CreateFileA(file_path.c_str(),
+        scoped_handle<INVALID_HANDLE_VALUE> h(CreateFileA(file_path.c_str(),
             GENERIC_WRITE,
             FILE_SHARE_READ,
             NULL,

@@ -25,5 +25,5 @@ private:
     bool start_tasks_by_config(const tstring& config_file);
 
 private:
-    scoped_handle<false> m_exit_event;
+    scoped_handle<> m_exit_event;
 };

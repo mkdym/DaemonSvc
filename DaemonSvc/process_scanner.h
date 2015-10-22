@@ -42,7 +42,7 @@ public:
     bool next(ProcessInfo& info);
 
 private:
-    scoped_handle<true> m_hSnapshot;
+    scoped_handle<INVALID_HANDLE_VALUE> m_hSnapshot;
     bool m_first_enum;
     bool m_query_full_path;
 

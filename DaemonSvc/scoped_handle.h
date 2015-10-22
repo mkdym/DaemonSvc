@@ -9,25 +9,21 @@
 //    reset(CreateFile(...));
 //    const DWORD e = GetLastError();
 //if you don't recover last error code, then e may be CloseHandle's last error code
-
-//if is_file_handle is true, invalid handle value will be INVALID_HANDLE_VALUE
-//otherwise is NULL
-template<bool is_file_handle = false>
+//invalid_value may be NULL or INVALID_HANDLE_VALUE
+template<HANDLE invalid_value = NULL>
 class scoped_handle : public boost::noncopyable
 {
 public:
     scoped_handle()
-        : h_invalid_(is_file_handle ? INVALID_HANDLE_VALUE : NULL)
     {
         //do not assign h_ in initialization list
         //in order to avoid errors because of initialization sequence
-        h_ = h_invalid_;
+        h_ = invalid_value;
     }
 
     //HANDLE is a ptr, so do not need HANDLE* or HANDLE&
     //just assign by value
     scoped_handle(HANDLE h)
-        : h_invalid_(is_file_handle ? INVALID_HANDLE_VALUE : NULL)
     {
         h_ = h;
     }
@@ -46,7 +42,7 @@ public:
 
     void destory()
     {
-        if (h_invalid_ != h_)
+        if (h_ != invalid_value)
         {
             //CloseHandle will set last error code
             //so we should recover it
@@ -54,13 +50,13 @@ public:
             last_error_recover r;
 
             CloseHandle(h_);
-            h_ = h_invalid_;
+            h_ = invalid_value;
         }
     }
 
     bool valid() const
     {
-        return h_invalid_ != h_;
+        return h_ != invalid_value;
     }
 
     HANDLE get() const
@@ -68,8 +64,12 @@ public:
         return h_;
     }
 
+    HANDLE *get_ptr() const
+    {
+        return &h_;
+    }
+
 private:
-    const HANDLE h_invalid_;
     HANDLE h_;
 };
 

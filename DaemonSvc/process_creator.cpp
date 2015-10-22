@@ -16,7 +16,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
 
     do 
     {
-        scoped_handle<false> hSourceToken;
+        scoped_handle<> hSourceToken;
         {
             HANDLE hSourceToken_ = NULL;
             //if (!OpenProcessToken(hSourceProcess, TOKEN_QUERY | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY, &hToken))
@@ -28,7 +28,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
             hSourceToken.reset(hSourceToken_);
         }
 
-        scoped_handle<false> hTargetToken;
+        scoped_handle<> hTargetToken;
         {
             HANDLE hTargetToken_ = NULL;
             if (!DuplicateTokenEx(hSourceToken.get(),

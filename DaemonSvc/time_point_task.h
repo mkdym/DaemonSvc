@@ -31,5 +31,5 @@ private:
     const PeriodTime m_period;
 
     boost::thread m_worker_thread;
-    scoped_handle<false> m_exit_event;
+    scoped_handle<> m_exit_event;
 };

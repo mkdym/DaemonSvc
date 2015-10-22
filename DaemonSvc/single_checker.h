@@ -19,7 +19,7 @@ public:
     bool single(const tstring& mutex_name);
 
 private:
-    scoped_handle<false> m_mutex;
+    scoped_handle<> m_mutex;
 };
 
 

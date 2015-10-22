@@ -10,6 +10,7 @@
 //    const DWORD e = GetLastError();
 //if you don't recover last error code, then e may be CloseHandle's last error code
 //invalid_value may be NULL or INVALID_HANDLE_VALUE
+//todo: make type 'HANDLE' and func 'CloseHandle' be template parameters
 template<HANDLE invalid_value = NULL>
 class scoped_handle : public boost::noncopyable
 {

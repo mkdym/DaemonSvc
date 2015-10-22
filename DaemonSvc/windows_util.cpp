@@ -42,14 +42,10 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
     do 
     {
         scoped_handle<> hToken;
+        if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, hToken.get_ptr()))
         {
-            HANDLE hToken_ = NULL;
-            if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken_))
-            {
-                ErrorLogLastErr("OpenProcessToken fail");
-                break;
-            }
-            hToken.reset(hToken_);
+            ErrorLogLastErr("OpenProcessToken fail");
+            break;
         }
 
         LUID luid = {0};
@@ -75,7 +71,7 @@ bool WindowsUtil::set_privilege(const tstring& privilege_name, const bool enable
         }
 
         // Enable the privilege or disable all privileges.
-        BOOL adjust_success = AdjustTokenPrivileges(hToken.get(), FALSE, &tp,
+        BOOL adjust_success = AdjustTokenPrivileges(hToken.get_ref(), FALSE, &tp,
             sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL);
         CLastErrorFormat e;
         if (!adjust_success)

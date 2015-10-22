@@ -23,7 +23,7 @@ public:
 
     //HANDLE is a ptr, so do not need HANDLE* or HANDLE&
     //just assign by value
-    scoped_handle(HANDLE h)
+    scoped_handle(const HANDLE &h)
     {
         h_ = h;
     }
@@ -34,7 +34,7 @@ public:
     }
 
     //you should ensure not self-assignment
-    void reset(HANDLE h)
+    void reset(const HANDLE &h)
     {
         destory();
         h_ = h;
@@ -59,12 +59,12 @@ public:
         return h_ != invalid_value;
     }
 
-    HANDLE get() const
+    HANDLE& get_ref()
     {
         return h_;
     }
 
-    HANDLE *get_ptr() const
+    HANDLE* get_ptr()
     {
         return &h_;
     }

@@ -61,7 +61,7 @@ tstring CProcessPathQuery::query(const DWORD pid, bool& native_name)
     }
     else
     {
-        s = query(hProcess.get(), native_name);
+        s = query(hProcess.get_ref(), native_name);
     }
 
     return s;

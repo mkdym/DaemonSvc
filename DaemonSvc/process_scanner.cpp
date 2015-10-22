@@ -38,7 +38,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         pe32.dwSize = sizeof(pe32);
         if (m_first_enum)
         {
-            if (!Process32First(m_hSnapshot.get(), &pe32))
+            if (!Process32First(m_hSnapshot.get_ref(), &pe32))
             {
                 ErrorLogLastErr("Process32First fail");
                 break;
@@ -47,7 +47,7 @@ bool CProcessScanner::next(ProcessInfo& info)
         }
         else
         {
-            if (!Process32Next(m_hSnapshot.get(), &pe32))
+            if (!Process32Next(m_hSnapshot.get_ref(), &pe32))
             {
                 CLastErrorFormat e;
                 if (e.code() != ERROR_NO_MORE_FILES)

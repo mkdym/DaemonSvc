@@ -104,7 +104,7 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
         }
 
         LARGE_INTEGER li = {0};
-        if (!GetFileSizeEx(h.get(), &li))
+        if (!GetFileSizeEx(h.get_ref(), &li))
         {
             ErrorLogLastErr("GetFileSizeEx fail, file path: %s", file_path.c_str());
             break;
@@ -119,7 +119,7 @@ xml_doc_ptr xml::load_xml_file(const std::string& file_path)
         //do not need zero memory, because read file return count
         boost::scoped_array<char> data(new char[li.LowPart]);
         DWORD bytes_read = 0;
-        if (!ReadFile(h.get(), data.get(), li.LowPart, &bytes_read, NULL))
+        if (!ReadFile(h.get_ref(), data.get(), li.LowPart, &bytes_read, NULL))
         {
             ErrorLogLastErr("ReadFile fail, file path: %s", file_path.c_str());
             break;
@@ -159,7 +159,7 @@ bool xml::save_xml_to_file(const xml_doc_ptr pdoc, const std::string& file_path)
 
         std::string s = get_xml_string(pdoc);
         DWORD written_bytes = 0;
-        if (!WriteFile(h.get(), s.c_str(), s.size(), &written_bytes, NULL))
+        if (!WriteFile(h.get_ref(), s.c_str(), s.size(), &written_bytes, NULL))
         {
             ErrorLogLastErr("WriteFile fail, file path: %s", file_path.c_str());
             break;

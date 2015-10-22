@@ -48,7 +48,7 @@ bool CDaemon::start()
 void CDaemon::keep_running()
 {
     InfoLog("keep_running begin");
-    const DWORD r = WaitForSingleObject(m_exit_event.get(), INFINITE);
+    const DWORD r = WaitForSingleObject(m_exit_event.get_ref(), INFINITE);
     switch (r)
     {
     case WAIT_OBJECT_0:
@@ -68,7 +68,7 @@ void CDaemon::stop()
     //和start保持一致，都是remove_all
     CTasksController::get_instance_ref().stop_all();
     CTasksController::get_instance_ref().delete_all();
-    SetEvent(m_exit_event.get());
+    SetEvent(m_exit_event.get_ref());
     InfoLog("stop end");
 }
 

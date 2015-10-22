@@ -71,7 +71,7 @@ void CProcNonExistTask::stop()
     {
         assert(m_exit_event.valid());
 
-        SetEvent(m_exit_event.get());
+        SetEvent(m_exit_event.get_ref());
         if (m_worker_thread.joinable())
         {
             m_worker_thread.join();
@@ -107,7 +107,7 @@ void CProcNonExistTask::worker_func()
             }
 
             //sleep some while if function has done something which will effect later on
-            const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), 1000);
+            const DWORD wait_result = WaitForSingleObject(m_exit_event.get_ref(), 1000);
             if (WAIT_OBJECT_0 == wait_result)
             {
                 InfoLog("got exit notify");
@@ -122,7 +122,7 @@ void CProcNonExistTask::worker_func()
             {
                 ErrorLogLastErr("OpenProcess[%lu] fail", pid);
 
-                const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), m_interval_seconds * 1000);
+                const DWORD wait_result = WaitForSingleObject(m_exit_event.get_ref(), m_interval_seconds * 1000);
                 if (WAIT_OBJECT_0 == wait_result)
                 {
                     InfoLog("got exit notify");
@@ -133,7 +133,7 @@ void CProcNonExistTask::worker_func()
             {
                 bool should_break = false;
 
-                HANDLE pHandles[2] = {m_exit_event.get(), hProcess.get()};
+                HANDLE pHandles[2] = {m_exit_event.get_ref(), hProcess.get_ref()};
                 const DWORD wait_result = WaitForMultipleObjects(sizeof(pHandles) / sizeof(pHandles[0]),
                     pHandles, FALSE, INFINITE);
                 switch (wait_result)
@@ -161,7 +161,7 @@ void CProcNonExistTask::worker_func()
                 default:
                     ErrorLogLastErr("WaitForMultipleObjects fail, return code: %lu", wait_result);
                     //sleep some while for recover from error state
-                    if (WAIT_OBJECT_0 == WaitForSingleObject(m_exit_event.get(), 1000))
+                    if (WAIT_OBJECT_0 == WaitForSingleObject(m_exit_event.get_ref(), 1000))
                     {
                         InfoLog("got exit notify");
                         should_break = true;

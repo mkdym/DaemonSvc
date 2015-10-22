@@ -62,7 +62,7 @@ void CTimePointTask::stop()
     {
         assert(m_exit_event.valid());
 
-        SetEvent(m_exit_event.get());
+        SetEvent(m_exit_event.get_ref());
         if (m_worker_thread.joinable())
         {
             m_worker_thread.join();
@@ -92,7 +92,7 @@ void CTimePointTask::worker_func()
         //等待时间：等待误差时间的一半，若这一半大于10分钟，则以10分钟计
 
         //todo
-        const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), INFINITE);
+        const DWORD wait_result = WaitForSingleObject(m_exit_event.get_ref(), INFINITE);
         if (WAIT_OBJECT_0 == wait_result)
         {
             InfoLog("got exit notify");

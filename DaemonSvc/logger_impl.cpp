@@ -206,7 +206,7 @@ bool CLoggerImpl::write(const LOG_LEVEL level, const std::string& s)
             }
 
             DWORD written_bytes = 0;
-            if (!WriteFile(m_log_file_handle.get(), s.c_str(), s.size(), &written_bytes, NULL))
+            if (!WriteFile(m_log_file_handle.get_ref(), s.c_str(), s.size(), &written_bytes, NULL))
             {
                 print_last_err("WriteFile fail");
                 break;

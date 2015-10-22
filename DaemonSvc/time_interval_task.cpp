@@ -61,7 +61,7 @@ void CTimeIntervalTask::stop()
     {
         assert(m_exit_event.valid());
 
-        SetEvent(m_exit_event.get());
+        SetEvent(m_exit_event.get_ref());
         if (m_worker_thread.joinable())
         {
             m_worker_thread.join();
@@ -77,7 +77,7 @@ void CTimeIntervalTask::worker_func()
 
     while (true)
     {
-        const DWORD wait_result = WaitForSingleObject(m_exit_event.get(), m_interval_seconds * 1000);
+        const DWORD wait_result = WaitForSingleObject(m_exit_event.get_ref(), m_interval_seconds * 1000);
         if (WAIT_OBJECT_0 == wait_result)
         {
             InfoLog("got exit notify");
@@ -102,7 +102,7 @@ void CTimeIntervalTask::worker_func()
         {
             ErrorLogLastErr("WaitForSingleObject fail, return code: %lu", wait_result);
             //sleep some while for recover from error state
-            if (WAIT_OBJECT_0 == WaitForSingleObject(m_exit_event.get(), 1000))
+            if (WAIT_OBJECT_0 == WaitForSingleObject(m_exit_event.get_ref(), 1000))
             {
                 InfoLog("got exit notify");
                 break;

@@ -17,31 +17,23 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
     do 
     {
         scoped_handle<> hSourceToken;
+        //if (!OpenProcessToken(hSourceProcess, TOKEN_QUERY | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY, hSourceToken.get_ptr()))
+        if (!OpenProcessToken(hSourceProcess, TOKEN_DUPLICATE, hSourceToken.get_ptr()))
         {
-            HANDLE hSourceToken_ = NULL;
-            //if (!OpenProcessToken(hSourceProcess, TOKEN_QUERY | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY, &hToken))
-            if (!OpenProcessToken(hSourceProcess, TOKEN_DUPLICATE, &hSourceToken_))
-            {
-                ErrorLogLastErr("OpenProcessToken fail");
-                break;
-            }
-            hSourceToken.reset(hSourceToken_);
+            ErrorLogLastErr("OpenProcessToken fail");
+            break;
         }
 
         scoped_handle<> hTargetToken;
+        if (!DuplicateTokenEx(hSourceToken.get_ref(),
+            MAXIMUM_ALLOWED,
+            NULL,
+            SecurityDelegation,
+            TokenPrimary,
+            hTargetToken.get_ptr()))
         {
-            HANDLE hTargetToken_ = NULL;
-            if (!DuplicateTokenEx(hSourceToken.get(),
-                MAXIMUM_ALLOWED,
-                NULL,
-                SecurityDelegation,
-                TokenPrimary,
-                &hTargetToken_))
-            {
-                ErrorLogLastErr("DuplicateTokenEx fail");
-                break;
-            }
-            hTargetToken.reset(hTargetToken_);
+            ErrorLogLastErr("DuplicateTokenEx fail");
+            break;
         }
 
         STARTUPINFO si = {0};
@@ -56,7 +48,7 @@ HANDLE ProcessCreator::create_process_as_same_token(HANDLE hSourceProcess,
         memcpy_s(cmd_array.get(), command.size() * sizeof(tchar),
             command.c_str(), command.size() * sizeof(tchar));
 
-        if (!CreateProcessAsUser(hTargetToken.get(),
+        if (!CreateProcessAsUser(hTargetToken.get_ref(),
             NULL,
             cmd_array.get(),
             NULL,

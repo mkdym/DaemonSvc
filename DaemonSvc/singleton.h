@@ -66,7 +66,7 @@ public:
 
 protected:
     Singleton(){}
-    ~Singleton(){}
+    virtual ~Singleton(){}
 
 private:
     static void init()

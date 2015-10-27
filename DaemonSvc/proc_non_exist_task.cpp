@@ -144,18 +144,7 @@ void CProcNonExistTask::worker_func()
                     break;
 
                 case WAIT_OBJECT_0 + 1:
-                    InfoLog(TSTR("process[%s] exited, try to execute function if has"), m_proc_path.c_str());
-                    if (m_f)
-                    {
-                        try
-                        {
-                            m_f();
-                        }
-                        catch (...)
-                        {
-                            ErrorLog("execute proc non exist task function exception");
-                        }
-                    }
+                    InfoLog(TSTR("process[%s] exited"), m_proc_path.c_str());
                     break;
 
                 default:

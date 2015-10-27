@@ -91,45 +91,40 @@ bool cmd_run_as(const tstring& command,
         {
             std::vector<DWORD> pids;
             find_pids_by_path(TSTR("explorer.exe"), pids);
-            for (std::vector<DWORD>::const_iterator iter_pid = pids.begin();
-                iter_pid != pids.end();
-                ++iter_pid)
+            if (pids.empty())
             {
-                InfoLog("explorer.exe pid=%lu", *iter_pid);
-                DWORD created_pid = 0;
-                HANDLE hProcess = ProcessCreator::create_process_as_same_token(*iter_pid,
-                    command, created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
-                if (hProcess)
+                ErrorLog("can not find any explorer.exe");
+            }
+            else
+            {
+                for (std::vector<DWORD>::const_iterator iter_pid = pids.begin();
+                    iter_pid != pids.end();
+                    ++iter_pid)
                 {
-                    InfoLog("create_process_as_same_token success, pid=%lu", created_pid);
-                    processes.push_back(hProcess);
-                    if (as_type == AS_LOGON_USER)
+                    InfoLog("explorer.exe pid=%lu", *iter_pid);
+                    DWORD created_pid = 0;
+                    HANDLE hProcess = ProcessCreator::create_process_as_same_token(*iter_pid,
+                        command, created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
+                    if (hProcess)
                     {
-                        break;
+                        InfoLog("create_process_as_same_token success, pid=%lu", created_pid);
+                        processes.push_back(hProcess);
+                        if (as_type == AS_LOGON_USER)
+                        {
+                            break;
+                        }
                     }
-                }
-                else
-                {
-                    ErrorLog(TSTR("create_process_as_same_token fail, pid=%lu, cmd=[%s]"),
-                        *iter_pid, command.c_str());
+                    else
+                    {
+                        ErrorLog(TSTR("create_process_as_same_token fail, pid=%lu, cmd=[%s]"),
+                            *iter_pid, command.c_str());
+                    }
                 }
             }
 
             if (processes.empty())
             {
-                ErrorLog("no new process in user context was created, all fail, try create in local context");
-                DWORD created_pid = 0;
-                HANDLE hProcess = ProcessCreator::create_process_in_local_context(command,
-                    created_pid, CREATE_NEW_CONSOLE, TSTR(""), sw_flag);
-                if (hProcess)
-                {
-                    InfoLog("create_process_in_local_context success, pid=%lu", created_pid);
-                    processes.push_back(hProcess);
-                }
-                else
-                {
-                    ErrorLog("create_process_in_local_context fail");
-                }
+                ErrorLog("no new process in user context was created");
             }
         }
         break;

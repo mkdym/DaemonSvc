@@ -16,17 +16,13 @@ class scoped_handle : public boost::noncopyable
 {
 public:
     scoped_handle()
+        : h_(invalid_value)
     {
-        //do not assign h_ in initialization list
-        //in order to avoid errors because of initialization sequence
-        h_ = invalid_value;
     }
 
-    //HANDLE is a ptr, so do not need HANDLE* or HANDLE&
-    //just assign by value
     scoped_handle(const HANDLE &h)
+        : h_(h)
     {
-        h_ = h;
     }
 
     ~scoped_handle()

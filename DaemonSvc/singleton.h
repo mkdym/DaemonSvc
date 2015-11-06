@@ -83,7 +83,7 @@ private:
 
 
 template<typename Type>
-boost::once_flag Singleton<Type>::once_;
+boost::once_flag Singleton<Type>::once_ = BOOST_ONCE_INIT;
 
 template<typename Type>
 typename Singleton<Type>::InstancePtr Singleton<Type>::p_;

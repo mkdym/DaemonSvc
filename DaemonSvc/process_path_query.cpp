@@ -13,7 +13,7 @@
 
 
 
-static boost::once_flag once_;
+static boost::once_flag once_ = BOOST_ONCE_INIT;
 
 
 typedef BOOL (WINAPI *fnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD dwFlags, LPTSTR lpExeName, PDWORD lpdwSize);

@@ -71,7 +71,7 @@ static void load_query_funcs()
 }
 
 
-static boost::once_flag once_;
+static boost::once_flag once_ = BOOST_ONCE_INIT;
 
 
 CDosPathConverter::CDosPathConverter(void)

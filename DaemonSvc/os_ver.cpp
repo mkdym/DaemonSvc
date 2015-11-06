@@ -21,7 +21,7 @@ static OS_VER g_os_ver;
 
 
 
-static boost::once_flag once_for_query_64bits;
+static boost::once_flag once_for_query_64bits = BOOST_ONCE_INIT;
 static void query_64bits()
 {
     typedef UINT (WINAPI *fnGetSystemWow64DirectoryA)(LPSTR, UINT);
@@ -53,7 +53,7 @@ bool is_64bits_os()
 }
 
 
-static boost::once_flag once_for_query_os_ver;
+static boost::once_flag once_for_query_os_ver = BOOST_ONCE_INIT;
 static void query_os_version()
 {
     g_os_ver.v = OS_VER::VER_UNKNOWN;

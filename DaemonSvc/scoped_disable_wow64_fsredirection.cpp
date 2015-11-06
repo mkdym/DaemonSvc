@@ -6,7 +6,7 @@
 
 
 
-static boost::once_flag once_;
+static boost::once_flag once_ = BOOST_ONCE_INIT;
 
 
 typedef int (__stdcall *fnWow64DisableWow64FsRedirection)(void *);

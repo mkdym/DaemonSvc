@@ -1,6 +1,7 @@
 #include <cassert>
 #include <Windows.h>
 #include <boost/bind.hpp>
+#include "exception_catcher.h"
 #include "logger.h"
 #include "time_interval_task.h"
 
@@ -73,6 +74,7 @@ void CTimeIntervalTask::stop()
 
 void CTimeIntervalTask::worker_func()
 {
+    exception_catcher::set_thread_exception_handlers();
     InfoLog("time interval task worker thread func begin");
 
     while (true)

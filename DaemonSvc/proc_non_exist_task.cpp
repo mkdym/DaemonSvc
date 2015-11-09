@@ -1,6 +1,7 @@
 #include <cassert>
 #include <Windows.h>
 #include <boost/bind.hpp>
+#include "exception_catcher.h"
 #include "logger.h"
 #include "process_path_query.h"
 #include "process_scanner.h"
@@ -83,6 +84,7 @@ void CProcNonExistTask::stop()
 
 void CProcNonExistTask::worker_func()
 {
+    exception_catcher::set_thread_exception_handlers();
     InfoLog("proc non exist task worker thread func begin");
 
     while (true)

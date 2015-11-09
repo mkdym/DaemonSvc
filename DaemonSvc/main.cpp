@@ -1,6 +1,7 @@
 #include <boost/bind.hpp>
-#include "logger.h"
+#include "exception_catcher.h"
 #include "daemon.h"
+#include "logger.h"
 #include "win32_service.h"
 #include "windows_util.h"
 
@@ -31,6 +32,10 @@ void restart(const CWin32Service::ArgList& args)
 int main(int argc, char * argv[])
 {
     InitLog("", 0, LOG_DEBUG);
+
+    exception_catcher::set_process_exception_handlers();
+    exception_catcher::set_thread_exception_handlers();
+
     //try to enable debug privilege for querying other processes' info
     WindowsUtil::set_privilege(SE_DEBUG_NAME, true);
 

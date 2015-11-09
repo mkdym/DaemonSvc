@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\exception_catcher.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\last_error_format.cpp"
 				>
 			</File>
@@ -314,6 +318,10 @@
 			</File>
 			<File
 				RelativePath=".\dos_path_converter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\exception_catcher.h"
 				>
 			</File>
 			<File

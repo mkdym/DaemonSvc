@@ -1,6 +1,7 @@
 #include <cassert>
 #include <Windows.h>
 #include <boost/bind.hpp>
+#include "exception_catcher.h"
 #include "logger.h"
 #include "time_point_task.h"
 
@@ -74,6 +75,7 @@ void CTimePointTask::stop()
 
 void CTimePointTask::worker_func()
 {
+    exception_catcher::set_thread_exception_handlers();
     InfoLog("time point task worker thread func begin");
     ErrorLog("time point task not implemented");
 

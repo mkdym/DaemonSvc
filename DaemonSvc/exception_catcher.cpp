@@ -15,6 +15,7 @@
 
 
 
+//copy from invarg.c of VC9.0
 #if defined (_AMD64_)
 
 PRUNTIME_FUNCTION

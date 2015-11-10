@@ -23,7 +23,11 @@ namespace exception_catcher
 //
 //
 //代码修改自http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
-//仅有一处大修改：原代码中GetExceptionPointers的实现是复制自vc8.0，我这里是复制自vc9.0
+//有两处大修改：
+//      1. 原代码中GetExceptionPointers的实现是复制自vc8.0，我这里是复制自vc9.0
+//      2. 原代码中是动态获取MiniDumpWriteDump函数的地址，我这里是静态链接了Dbghelp.dll
+//  因为经我测试，虽然Windows2000的Dbghelp.dll里没有MiniDumpWriteDump函数，但是是可以用WindowsXPSP3的Dbghelp.dll而正常生成dump文件的
+//  所以，你最好将WindowsXPSP3的Dbghelp.dll和你的应用程序一同发布。我没有测试其它版本的Dbghelp.dll是否能在Windows2000上用
 //
 //
 

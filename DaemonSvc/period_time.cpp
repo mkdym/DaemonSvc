@@ -232,7 +232,7 @@ void PeriodTime::throw_period_type_cast_exception(const std::string& s)
     std::string s_except("unexpected PERIOD_TYPE string[");
     s_except += s + "]";
     ErrorLog(s_except.c_str());
-    throw std::bad_cast(s_except.c_str());
+    throw std::runtime_error(s_except.c_str());
 }
 
 void PeriodTime::throw_period_type_cast_exception(const PERIOD_TYPE& type)
@@ -242,7 +242,7 @@ void PeriodTime::throw_period_type_cast_exception(const PERIOD_TYPE& type)
     sprintf_s(buf, 200, "unexpected PERIOD_TYPE number[%d]", type);
     buf[buf_size - 1] = 0;
     ErrorLog(buf);
-    throw std::bad_cast(buf);
+    throw std::runtime_error(buf);
 }
 
 

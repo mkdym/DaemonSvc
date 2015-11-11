@@ -21,7 +21,6 @@ public:
 public:
     typedef unsigned int TaskId;
 
-    //diff «ŒÛ≤Ó
     TaskId add_time_point_task(const TaskFunc& f, const PeriodTime& period);
     TaskId add_time_interval_task(const TaskFunc& f, const DWORD interval_seconds);
     TaskId add_proc_non_exist_task(const TaskFunc& f, const tstring& proc_path, const DWORD interval_seconds);

@@ -239,7 +239,7 @@ void PeriodTime::throw_period_type_cast_exception(const PERIOD_TYPE& type)
 {
     const int buf_size = 200;
     char buf[buf_size] = {0};
-    sprintf_s(buf, 200, "unexpected PERIOD_TYPE number[%d]", type);
+    sprintf_s(buf, buf_size, "unexpected PERIOD_TYPE number[%d]", type);
     buf[buf_size - 1] = 0;
     ErrorLog(buf);
     throw std::runtime_error(buf);

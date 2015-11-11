@@ -5,6 +5,8 @@
 #include "tdef.h"
 
 
+//CSingleChecker::single will create a mutex, and hold it for mutual exclusion
+//so "mutual exclusion" will effect until you call CSingleChecker::single
 class CSingleChecker : public Singleton<CSingleChecker>
 {
     friend class Singleton<CSingleChecker>;

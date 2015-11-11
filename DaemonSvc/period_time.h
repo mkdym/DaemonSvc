@@ -6,8 +6,7 @@ struct PeriodTime
 {
     enum PERIOD_TYPE
     {
-        UNKNOWN = 0, //error
-        DAILY,
+        DAILY = 0,
         WEEKLY,
         MONTHLY,
     };
@@ -46,6 +45,9 @@ private:
     bool valid_dayofweek(const bool log) const;
     bool valid_dayofmonth(const bool log) const;
     bool valid_deviation_minutes(const bool log) const;
+
+    static void throw_period_type_cast_exception(const std::string& s);
+    static void throw_period_type_cast_exception(const PERIOD_TYPE& type);
 };
 
 

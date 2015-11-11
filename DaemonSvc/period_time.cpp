@@ -1,4 +1,5 @@
 #pragma once
+#include <exception>
 #include "boost_algorithm_string.h"
 #include "logger.h"
 #include "period_time.h"
@@ -24,8 +25,8 @@ PeriodTime::PERIOD_TYPE PeriodTime::cast_period_type_from_string(const std::stri
     }
     else
     {
-        ErrorLog("can not cast string[%s] to PERIOD_TYPE", s_lower.c_str());
-        return UNKNOWN;
+        throw_period_type_cast_exception(s_lower);
+        return MONTHLY;//will never execute
     }
 }
 
@@ -47,8 +48,7 @@ std::string PeriodTime::cast_period_type_to_string(const PERIOD_TYPE& type)
         break;
 
     default:
-        ErrorLog("unknown PERIOD_TYPE: %d", type);
-        s = "unknown";
+        throw_period_type_cast_exception(type);
         break;
     }
     return s;
@@ -82,10 +82,7 @@ bool PeriodTime::valid(const bool log /*= false*/) const
         break;
 
     default:
-        if (log)
-        {
-            ErrorLog("type UNKNOWN");
-        }
+        throw_period_type_cast_exception(type);
         break;
     }
 
@@ -118,12 +115,13 @@ std::string PeriodTime::str() const
         break;
 
     default:
+        throw_period_type_cast_exception(type);
         break;
     }
 
     if (-1 == format_ret)
     {
-        ErrorLog("format error, or type unknown");
+        ErrorLog("format error");
     }
     else
     {
@@ -216,6 +214,7 @@ bool PeriodTime::valid_deviation_minutes(const bool log) const
         break;
 
     default:
+        throw_period_type_cast_exception(type);
         break;
     }
 
@@ -226,6 +225,24 @@ bool PeriodTime::valid_deviation_minutes(const bool log) const
     }
 
     return bReturn;
+}
+
+void PeriodTime::throw_period_type_cast_exception(const std::string& s)
+{
+    std::string s_except("unexpected PERIOD_TYPE string[");
+    s_except += s + "]";
+    ErrorLog(s_except.c_str());
+    throw std::bad_cast(s_except.c_str());
+}
+
+void PeriodTime::throw_period_type_cast_exception(const PERIOD_TYPE& type)
+{
+    const int buf_size = 200;
+    char buf[buf_size] = {0};
+    sprintf_s(buf, 200, "unexpected PERIOD_TYPE number[%d]", type);
+    buf[buf_size - 1] = 0;
+    ErrorLog(buf);
+    throw std::bad_cast(buf);
 }
 
 

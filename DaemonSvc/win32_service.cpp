@@ -75,7 +75,7 @@ bool CWin32Service::init(const ServiceInfo& info)
     {
         for(int arg_index = 0; arg_index != arg_count; ++arg_index)
         {
-            m_args.push_back(arg_str_list[arg_index]);
+            m_args.push_back(widestr2tstr(arg_str_list[arg_index]));
         }
         LocalFree(arg_str_list);
 

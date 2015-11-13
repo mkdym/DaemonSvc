@@ -16,8 +16,8 @@
 static boost::once_flag once_ = BOOST_ONCE_INIT;
 
 
-typedef BOOL (WINAPI *fnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD dwFlags, LPTSTR lpExeName, PDWORD lpdwSize);
-typedef DWORD (WINAPI *fnGetProcessImageFileNameW)(HANDLE hProcess, LPTSTR lpImageFileName, DWORD nSize);
+typedef BOOL (WINAPI *fnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD dwFlags, LPWSTR lpExeName, PDWORD lpdwSize);
+typedef DWORD (WINAPI *fnGetProcessImageFileNameW)(HANDLE hProcess, LPWSTR lpImageFileName, DWORD nSize);
 
 static fnQueryFullProcessImageNameW g_fnQueryFullProcessImageNameW = NULL;
 static fnGetProcessImageFileNameW g_fnGetProcessImageFileNameW = NULL;

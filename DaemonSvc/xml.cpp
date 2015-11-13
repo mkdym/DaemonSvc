@@ -3,12 +3,19 @@
 #include <Windows.h> //for File Functions
 #include <boost/smart_ptr/scoped_array.hpp> //for scoped_array in load_xml_file
 #include "../rapidxml-1.13/rapidxml.hpp"
+
+//to disable warning: [rapidxml_print.hpp(178) : warning C4100: “flags”: 未引用的形参]
+#pragma warning(push)
+#pragma warning(disable:4100)
 #include "../rapidxml-1.13/rapidxml_print.hpp" //for rapidxml::print in get_xml_string
+#pragma warning(pop)
+
 #include "boost_algorithm_string.h" //for boost::algorithm::split in get_single_node
 #include "scoped_handle.h"
 #include "scoped_disable_wow64_fsredirection.h"
 #include "logger.h"
 #include "xml.h"
+
 
 
 typedef rapidxml::xml_document<char> ch_xml_doc;
